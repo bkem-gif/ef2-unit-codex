@@ -400,7 +400,7 @@ Source: `runtime/bundles/mounted/1.11.42/assets/index.js`. Classes registered wi
 - **Role:** Ranged DPS (shuriken stacker / rage)
 - **Attack:** bouncing shurikens (`numBounce=3`); each hit +4% atk-speed (up to 25 stacks = +100%)
 - **Rage:** at 25 stacks → 180t (~3s) window firing bonus shurikens (`doRangeAttack(target,4)`)
-- **Skill:** `SylphidTornado1` volley at divergent targets; **Ⅱ** adds a 3rd tornado at 1.2× power
+- **Skill:** `SylphidTornado1` volley — each tornado vacuums enemies in, roots them (`binding(30)`) and deals 0.6×/30t over 300t, then knocks back on expiry; **Ⅱ** adds a 3rd tornado (count only — per-tick dmg stays 0.6×)
 
 **In-game text**
 - Normal: "Fires shurikens in rapid succession, and each hit gradually increases attack speed.\nRage: When attack speed reaches its maximum, additional shurikens are fired with each normal attack."
@@ -419,10 +419,12 @@ Source: `runtime/bundles/mounted/1.11.42/assets/index.js`. Classes registered wi
 - Fires `SylphidTornado1` (power `i = 1`, **Ⅱ 1.2**): base spawns the tornado on the target plus one "most divergent" (most opposite-direction) target via `findMostDivergentTarget` (gated by `DIVERGE_THRESHOLD=0.7` dot-product), else a random-offset extra.
 - **Ⅱ:** adds a 3rd tornado at the next most-divergent target (excluding the first two).
 - If no live target, scatters `spawnTornadoAtRandomOffset` tornados (2 base / 3 Ⅱ).
+- **Each `SylphidTornado1` lives 300t:** vacuums enemies within r70 toward its center; every 30t it hits enemies within r50 for **0.6× damage + `binding(30)` (root)**; on expiry it **knocks back** everything within r90. (The 0.6× is the weapon's hard-coded `DMG_PER_TICK` — the Ⅱ `1.2` "power" sets `damagePercent` but the tornado ignores it, so Ⅱ only adds tornado **count**, not per-tick damage.)
 
 **Buffs & debuffs**
 - Self atk-speed (ramp): +4% per stack (value 0.04·stacks), 600t (~10s), refreshing — id 220
 - Self atk-speed (rage): +100% (value 1.0), 180t (~3s) — id 220; cleared to value 0 when rage ends
+- Skill tornado debuffs: **root** — `binding(30)` re-applied every 30t over the tornado's 300t life; plus a vacuum-pull (r70) and a knockBack burst on expiry (r90)
 
 **Base → Ⅱ**
 - Skill tornado power 1→1.2; max tornados 2→3 (and random-scatter fallback 2→3).
@@ -430,7 +432,10 @@ Source: `runtime/bundles/mounted/1.11.42/assets/index.js`. Classes registered wi
 **Key values**
 | | base | Ⅱ |
 |---|---|---|
-| skill power | 1 | 1.2 |
+| skill "power" (spawn arg) | 1 | 1.2 (per-tick dmg still 0.6×) |
+| tornado per-tick dmg | 0.6× (fixed) / 30t | same |
+| tornado root | `binding(30)` / 30t | same |
+| tornado life | 300t | same |
 | max tornados / scatter | 2 | 3 |
 | ATKSPD_PER_STACK | 0.04 (+4%) | 0.04 |
 | ATKSPD_MAX_STACK | 25 (⇒ +100%, triggers rage) | 25 |
@@ -445,7 +450,7 @@ Source: `runtime/bundles/mounted/1.11.42/assets/index.js`. Classes registered wi
 **Formulas**
 - `atkSpd = orgAtkSpd × (1 + 0.04·stacks)`; at 25 stacks ⇒ `×(1+1.0)` = +100% (×2), which fires rage. Rage holds +100% for 180t.
 
-**✓ Matches description** — "each hit increases attack speed" = +0.04/stack (`onShurikenHit`); "max attack speed → additional shurikens" = at 25 stacks rage triggers and normals fire the extra `doRangeAttack(target,4)`. Skill = tornados, evolved fires one more (3 vs 2) at 1.2× power.
+**✓ Matches description** — "each hit increases attack speed" = +0.04/stack (`onShurikenHit`); "max attack speed → additional shurikens" = at 25 stacks rage triggers and normals fire the extra `doRangeAttack(target,4)`. Skill = tornados, evolved fires one more (3 vs 2). ⚠️ The blurb ("deal damage") omits the tornado's **root / vacuum / knockBack**, and the Ⅱ `1.2` "power" arg doesn't actually raise damage (per-tick is the fixed `DMG_PER_TICK=0.6`) — only the tornado count changes.
 
 ---
 

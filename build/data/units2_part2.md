@@ -550,7 +550,7 @@ NOTE ON kindNum: kindNum→className is supplied at runtime by server `bookList`
 **At a glance**
 - **Role:** Ranged DPS (flying multi-target lancer, bouncing skill spears)
 - **Attack:** `GriffinSpear1`, spread across 2 (base) / 3 (Ⅱ) enemies in the facing direction
-- **Skill:** 3 `GriffinSuperSpear1` casts (×1.5) that bounce/chain (`numBounce`)
+- **Skill:** 3 `GriffinSuperSpear1` casts (×1.5) that bounce/chain (`numBounce`); each spear knocks back + `stun(30)` on hit
 - **Stats:** air unit, airHeight 75
 
 **In-game text**
@@ -562,11 +562,11 @@ NOTE ON kindNum: kindNum→className is supplied at runtime by server `bookList`
 
 **Skill — bouncing super-spears**
 - objSkill frames {152,170,188} (3 casts): `onSkillStartFrame` collects enemies within 220 (target first).
-- `skillMain` fires one `GriffinSuperSpear1` per cast via `fireSkillArrow`, dmg mult 1.5, `bounceCount = this.numBounce`.
+- `skillMain` fires one `GriffinSuperSpear1` per cast via `fireSkillArrow`, dmg mult 1.5, `bounceCount = this.numBounce`. Each spear's `onHitMain` applies **knockBack (power 10) + `stun(30)`** on hit.
 - Spear fire offset randomized `35 + 20*random`.
 
 **Buffs & debuffs**
-- None confirmed in this class body (any super-spear bounce/freeze lives in the `GriffinSuperSpear1` weapon, not here). No ally buffs.
+- The skill spears carry the CC: `GriffinSuperSpear1.onHitMain` applies **knockBack (power 10) + `stun(30)`** on each hit (verified in the weapon, not this class). No freeze; no ally buffs.
 
 **Base → Ⅱ**
 - Normal-attack target count 2 → 3. Skill fires 3 bouncing super-spears regardless of tier.

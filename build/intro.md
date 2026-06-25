@@ -26,6 +26,23 @@ delta** wherever the two disagree. Reverse-engineered from the game bundle
 - **Cooldown desync:** units that pulse on a timer randomize the *first* cooldown (`skillCoolDown = N*random`)
   so multiple copies don't fire in lockstep.
 
+### How skills fire (mana, casting, triggering)
+Skills are **per-unit**, not global — every unit instance tracks its own mana and casts independently.
+
+- **Mana fills passively:** each tick, `mana += 1` for every unit (in `execute`). A unit with `maxMana = N` becomes
+  skill-ready after **N ticks** (≈ N/60 s at 1×) — attacking doesn't speed it up; it's pure elapsed time.
+- **A cast replaces an attack:** a unit only acts on its attack cadence (`atkDuration = 1e4/atkSpd`, gated by
+  `attackCoolDown`). When it's ready to swing at a target, `attack(t)` chooses
+  **`hasSkill && mana ≥ maxMana ? gotoSkillState() : gotoAttackState(t)`** — so the skill *takes the place of* the next
+  normal attack once mana is full. It is **not** on a separate timer and **cannot** fire without a valid target in range.
+- **Casting resets mana** (`mana = 0`), restarting the cycle. The skill then plays its `skillFrames` animation, and the
+  actual effect (projectiles, buffs, summons) fires on the `objSkill` hit-frames via
+  `skillMain` / `onSkillStartFrame` / `onSkillEndFrame`.
+- **Silence** blocks the cast (the `attack` gate bails on `numSilence > 0`) *and* drains 200 mana — delaying the next skill.
+- **Per-unit gates / variants:** some units add a condition on top of full mana — a few require `mana ≥ 2·maxMana`,
+  Gold Goblin needs ≥3 nearby coins, CrowKnight needs its Flash state. A separate family (drummer-type auras) doesn't use
+  mana at all — they pulse from `attackMain` on a randomized `skillCoolDown` instead (see "Cooldown desync" above).
+
 ### The buff system (this is what "buffs" means mechanically)
 Buffs are applied by calling, on a unit (self or an ally), one of:
 `addAttackSpeedBuff` · `addMoveSpeedBuff` · `addAttackDamageBuff` · `addDefenseBuff` · `addMaxHealthBuff` ·
@@ -102,6 +119,11 @@ longer duration, extra hit-frames via `objAtk` swaps, more targets/projectiles).
 9. **Elf Castle (`ElfTown5`, 10001):** its "Knockback / Special Skill" text is a placeholder stub with no
    matching code mechanic (it's a multishot arrow turret).
 10. **DarkNinja1:** auto-cast gated on `mana ≥ 500` while its own `maxMana = 250` — condition unreachable as written.
+11. **Skill-weapon CC (multi-weapon units):** units that fire a *different* weapon for their skill carry CC in that
+    weapon which the blurbs omit — **Pilot1** missiles add 25% `stun(10)` + a 0.5× splash (35% `stun(8)`); **Wind Mage**
+    & **Sylphid** tornados **root** (`binding`); **Griffin Rider** super-spears knockBack + `stun(30)`; **Ice Mage**
+    (`OrcBlizzardMage1`) rain has a 20% `freeze(60)`. The inverse also bites: **Steam Punk**'s skill missile
+    (`SteamMissile1`) does **not** stun — only its normal-attack `SteamFire1` does.
 
 **Internal class name ≠ display name:** `TigerRider1` = **Forest Guardian** (81/84) · `GreatMage1` = **Fire Mage**
 (66/75) · `Ant1` = **Ent** (65/74) · `OrcBlizzardMage1` = generic **Ice Mage** (67/76) · `OrcWolfRider1`'s

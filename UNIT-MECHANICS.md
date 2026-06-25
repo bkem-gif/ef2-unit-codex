@@ -26,6 +26,23 @@ delta** wherever the two disagree. Reverse-engineered from the game bundle
 - **Cooldown desync:** units that pulse on a timer randomize the *first* cooldown (`skillCoolDown = N*random`)
   so multiple copies don't fire in lockstep.
 
+### How skills fire (mana, casting, triggering)
+Skills are **per-unit**, not global — every unit instance tracks its own mana and casts independently.
+
+- **Mana fills passively:** each tick, `mana += 1` for every unit (in `execute`). A unit with `maxMana = N` becomes
+  skill-ready after **N ticks** (≈ N/60 s at 1×) — attacking doesn't speed it up; it's pure elapsed time.
+- **A cast replaces an attack:** a unit only acts on its attack cadence (`atkDuration = 1e4/atkSpd`, gated by
+  `attackCoolDown`). When it's ready to swing at a target, `attack(t)` chooses
+  **`hasSkill && mana ≥ maxMana ? gotoSkillState() : gotoAttackState(t)`** — so the skill *takes the place of* the next
+  normal attack once mana is full. It is **not** on a separate timer and **cannot** fire without a valid target in range.
+- **Casting resets mana** (`mana = 0`), restarting the cycle. The skill then plays its `skillFrames` animation, and the
+  actual effect (projectiles, buffs, summons) fires on the `objSkill` hit-frames via
+  `skillMain` / `onSkillStartFrame` / `onSkillEndFrame`.
+- **Silence** blocks the cast (the `attack` gate bails on `numSilence > 0`) *and* drains 200 mana — delaying the next skill.
+- **Per-unit gates / variants:** some units add a condition on top of full mana — a few require `mana ≥ 2·maxMana`,
+  Gold Goblin needs ≥3 nearby coins, CrowKnight needs its Flash state. A separate family (drummer-type auras) doesn't use
+  mana at all — they pulse from `attackMain` on a randomized `skillCoolDown` instead (see "Cooldown desync" above).
+
 ### The buff system (this is what "buffs" means mechanically)
 Buffs are applied by calling, on a unit (self or an ally), one of:
 `addAttackSpeedBuff` · `addMoveSpeedBuff` · `addAttackDamageBuff` · `addDefenseBuff` · `addMaxHealthBuff` ·
@@ -102,6 +119,11 @@ longer duration, extra hit-frames via `objAtk` swaps, more targets/projectiles).
 9. **Elf Castle (`ElfTown5`, 10001):** its "Knockback / Special Skill" text is a placeholder stub with no
    matching code mechanic (it's a multishot arrow turret).
 10. **DarkNinja1:** auto-cast gated on `mana ≥ 500` while its own `maxMana = 250` — condition unreachable as written.
+11. **Skill-weapon CC (multi-weapon units):** units that fire a *different* weapon for their skill carry CC in that
+    weapon which the blurbs omit — **Pilot1** missiles add 25% `stun(10)` + a 0.5× splash (35% `stun(8)`); **Wind Mage**
+    & **Sylphid** tornados **root** (`binding`); **Griffin Rider** super-spears knockBack + `stun(30)`; **Ice Mage**
+    (`OrcBlizzardMage1`) rain has a 20% `freeze(60)`. The inverse also bites: **Steam Punk**'s skill missile
+    (`SteamMissile1`) does **not** stun — only its normal-attack `SteamFire1` does.
 
 **Internal class name ≠ display name:** `TigerRider1` = **Forest Guardian** (81/84) · `GreatMage1` = **Fire Mage**
 (66/75) · `Ant1` = **Ent** (65/74) · `OrcBlizzardMage1` = generic **Ice Mage** (67/76) · `OrcWolfRider1`'s
@@ -603,7 +625,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - **Role:** Mage / ranged AoE (multi-target tornado skill)
 - **Attack:** `GreenEnergyBall` with `numShot=1.5` (Ⅱ 2.5)
 - **Skill:** spawns 2 tornadoes (Ⅱ 4) on target + nearest enemies ≤200
-- **Tornado:** whirls 70t (Ⅱ 100t), 0.3× per-tick DoT
+- **Tornado:** whirls 70t (Ⅱ 100t); roots the target (`binding(12)` re-applied every 10t) + 0.3× damage every 30t
 
 **In-game text**
 - Normal: "Launches an energy ball to attack enemies from range."
@@ -614,7 +636,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Skill — tornadoes**
 - `skillMain` picks `t = 2·evolStage+2` targets → 2 base, 4 evolved: the locked target plus nearest enemies within 200.
-- Spawns a `Twist` (tornado) on each via `spawnTwist`, each whirling for 70t (Ⅱ 100t), dealing 0.3× per-tick DoT.
+- Spawns a `Twist` (tornado) on each via `spawnTwist`, each whirling for 70t (Ⅱ 100t). The tornado **pins the target to its position**, re-applies `binding(12)` (root) every 10t, and deals `0.3×` damage every 30t — a hard root, not just DoT.
 
 **Base → Ⅱ**
 - Basic numShot 1.5 → 2.5; skill targets 2 → 4; tornado whirl 70t → 100t ("for longer, hitting more enemies").
@@ -626,7 +648,8 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | skill target count | 2 (`2·0+2`) | 4 (`2·1+2`) |
 | skill gather range | 200 | 200 |
 | tornado whirl dur | 70t | 100t |
-| Twist per-tick dmg | 0.3× | 0.3× |
+| Twist dmg (every 30t) | 0.3× | 0.3× |
+| Twist root | `binding(12)` / 10t | same |
 
 **Formulas**
 - Evolved skill targets `2·1+2 = 4` vs base `2·0+2 = 2`.
@@ -634,7 +657,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **✓ Matches description** — "for longer, hitting more enemies" = whirl 70→100 and targets 2→4 when evolved. (`OBJ_ATK` `{57:1}` and `OBJ_SKL` `{101:1}` frame sets identical base/evolved; only counts/durations differ.)
 
 **Notes**
-- `weaponClass=GreenEnergyBall` (`MagicalHitEffect`, speed 9). Tornado is weapon class `Twist`, spawned procedurally; drifts toward target then whirls in place. Twist deals sustained DoT, no stat debuff.
+- `weaponClass=GreenEnergyBall` (`MagicalHitEffect`, speed 9). Tornado is weapon class `Twist`, spawned procedurally; drifts toward target then whirls in place. **Twist is a hard root, not just DoT:** it re-binds the target (`binding(12)`) every 10t and drags it to the tornado's position, dealing 0.3× damage every 30t. (The in-game blurb only says "sustained damage" — the root is undocumented.)
 
 ---
 
@@ -1776,13 +1799,13 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 ---
 
 ### Ice Mage — `OrcBlizzardMage1` (kindNum: 67 · Ⅱ 76) — Orc-tribe variant
-**TL;DR.** A ranged caster that pelts enemies with ice shards and rains spread-damage ice on several targets at once as its skill.
+**TL;DR.** A ranged caster that pelts enemies with ice shards and rains spread-damage ice on several targets at once as its skill — and each rain drop can also briefly freeze.
 
 **At a glance**
 - **Role:** Ranged mage (ice rain AoE)
 - **Attack:** fires `IceFlake` projectiles; Ⅱ fires twice per swing ("continuously")
 - **Skill:** rains projectiles on the nearest 3 (Ⅱ 4) enemies in a 220 (Ⅱ 260) radius at ×0.4 each
-- **No freeze:** deals spread damage only — applies no freeze in code
+- **Freeze:** each rain drop has a 20% chance to freeze its target for 60t (~1.0s)
 
 **In-game text**
 - Normal: "Fires ice shards to attack enemies from range." (Ⅱ: "…continuously…")
@@ -1792,7 +1815,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Fires `IceFlake`; base `objAtk={39:1}` (one hit), Ⅱ `objAtk={39:1,42:1}` (two hits/swing) → matches "continuously."
 
 **Skill — ice rain (frames 49–79)**
-- Gathers enemies within radius 220 (Ⅱ 260), filters those already hit (`attackedSet`), takes the nearest 3 (Ⅱ 4), and rains `OrcBlizzardMageRain1` at ×0.4 each.
+- Gathers enemies within radius 220 (Ⅱ 260), filters those already hit (`attackedSet`), takes the nearest 3 (Ⅱ 4), and rains `OrcBlizzardMageRain1` at ×0.4 each. Each raindrop's `onHitMain` rolls `chance(.2)` → `freeze(60)` (~1.0s) on its target.
 - `attackedSet` resets once candidates are exhausted, so it cycles fresh targets across the 4 skill rain frames.
 
 **Base → Ⅱ**
@@ -1804,13 +1827,14 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | skill radius (`i`) | 220 | 260 |
 | skill targets/batch (`s`) | 3 | 4 |
 | rain dmg mult | ×0.4 | ×0.4 |
+| rain freeze | 20% → `freeze(60)` | same |
 | objAtk | {39:1} | {39:1,42:1} |
 | objSkill | {62:1,66:1,71:1,75:1} | same |
 | weaponClass | IceFlake | IceFlake |
 
 **⚠️ Description vs code**
 - Behaviour matches the generic "Ice Mage" text, BUT this is a **naming/tribe mismatch**: the class is `OrcBlizzardMage1` (Orc tribe, own `sheetName`) yet reuses the generic Ice-Mage (67/76) description string — kindNum binding matched here by behaviour only; confirm in the data config.
-- It is NOT the in-game "Frost Mage" (kindNum 21, enhanced freezing projectiles): this unit deals spread damage and applies **no freeze**.
+- It is NOT the in-game "Frost Mage" (kindNum 21, enhanced freezing projectiles): this unit's hits are mostly spread damage, but the **skill rain does apply a light freeze** — `OrcBlizzardMageRain1` rolls 20% → `freeze(60)` per drop (an earlier note here that said "no freeze" was wrong).
 
 ---
 
@@ -1920,7 +1944,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **At a glance**
 - **Role:** Air ranged DPS
 - **Attack:** `FireBullet` at up to 4 (Ⅱ 7) targets; base 85% single shot, Ⅱ fires a geometric burst
-- **Skill:** launches 3 (Ⅱ 5) `PilotMissile1` at 1.5× dmg, then taunts exactly 1 enemy
+- **Skill:** launches 3 (Ⅱ 5) `PilotMissile1` (1.5× dmg, 25% `stun(10)` + ≤4-enemy 0.5× splash w/ 35% `stun(8)`), then taunts exactly 1 enemy
 - **Flying:** `isAir=true`, airHeight 75
 
 **In-game text**
@@ -1933,10 +1957,11 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - **Ⅱ:** fires one shot, then keeps firing extra shots while `chance(.4)` succeeds (geometric burst), cycling through `attackTargetList`.
 
 **Skill — missile volley + single taunt (mana-gated)**
-- Takes the nearest 5 attackable enemies (`getAttackableEnemyList(5)`), launches `skillShotCount` missiles at 1.5× dmg round-robin across them.
+- Takes the nearest 5 attackable enemies (`getAttackableEnemyList(5)`), launches `skillShotCount` missiles at 1.5× dmg round-robin across them. Each `PilotMissile1` on hit: **25% chance to `stun(10)`** the primary target, and splashes up to 4 nearby enemies (~30px) for **0.5× damage with a 35% `stun(8)`** each.
 - Then **taunts exactly 1 enemy**: sets `s.target=this` for the first enemy not already targeting the Pilot, then `break` (a direct retarget, not the radius `taunt()` helper).
 
 **Buffs & debuffs**
+- Missile stun (skill): 25% `stun(10)` on the primary target; each splash victim (≤4, ~30px) takes 0.5× damage + 35% `stun(8)`.
 - Taunt-of-one: directly reassigns `target=this` on a single enemy.
 
 **Base → Ⅱ**
@@ -1955,6 +1980,8 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | skill target search | nearest 5 | nearest 5 |
 | skill dmg mult | 1.5 | 1.5 |
 | taunt count | 1 enemy | 1 enemy |
+| missile stun (primary) | 25% → `stun(10)` | same |
+| missile splash | ≤4 × 0.5 dmg, 35% → `stun(8)` | same |
 
 **Formulas**
 - Ⅱ normal-attack shot count = 1 + Geometric(.4) per call (expected ≈ 1.67), each at a cycled target.
@@ -2249,7 +2276,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - **Role:** Ranged DPS (shuriken stacker / rage)
 - **Attack:** bouncing shurikens (`numBounce=3`); each hit +4% atk-speed (up to 25 stacks = +100%)
 - **Rage:** at 25 stacks → 180t (~3s) window firing bonus shurikens (`doRangeAttack(target,4)`)
-- **Skill:** `SylphidTornado1` volley at divergent targets; **Ⅱ** adds a 3rd tornado at 1.2× power
+- **Skill:** `SylphidTornado1` volley — each tornado vacuums enemies in, roots them (`binding(30)`) and deals 0.6×/30t over 300t, then knocks back on expiry; **Ⅱ** adds a 3rd tornado (count only — per-tick dmg stays 0.6×)
 
 **In-game text**
 - Normal: "Fires shurikens in rapid succession, and each hit gradually increases attack speed.\nRage: When attack speed reaches its maximum, additional shurikens are fired with each normal attack."
@@ -2268,10 +2295,12 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Fires `SylphidTornado1` (power `i = 1`, **Ⅱ 1.2**): base spawns the tornado on the target plus one "most divergent" (most opposite-direction) target via `findMostDivergentTarget` (gated by `DIVERGE_THRESHOLD=0.7` dot-product), else a random-offset extra.
 - **Ⅱ:** adds a 3rd tornado at the next most-divergent target (excluding the first two).
 - If no live target, scatters `spawnTornadoAtRandomOffset` tornados (2 base / 3 Ⅱ).
+- **Each `SylphidTornado1` lives 300t:** vacuums enemies within r70 toward its center; every 30t it hits enemies within r50 for **0.6× damage + `binding(30)` (root)**; on expiry it **knocks back** everything within r90. (The 0.6× is the weapon's hard-coded `DMG_PER_TICK` — the Ⅱ `1.2` "power" sets `damagePercent` but the tornado ignores it, so Ⅱ only adds tornado **count**, not per-tick damage.)
 
 **Buffs & debuffs**
 - Self atk-speed (ramp): +4% per stack (value 0.04·stacks), 600t (~10s), refreshing — id 220
 - Self atk-speed (rage): +100% (value 1.0), 180t (~3s) — id 220; cleared to value 0 when rage ends
+- Skill tornado debuffs: **root** — `binding(30)` re-applied every 30t over the tornado's 300t life; plus a vacuum-pull (r70) and a knockBack burst on expiry (r90)
 
 **Base → Ⅱ**
 - Skill tornado power 1→1.2; max tornados 2→3 (and random-scatter fallback 2→3).
@@ -2279,7 +2308,10 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Key values**
 | | base | Ⅱ |
 |---|---|---|
-| skill power | 1 | 1.2 |
+| skill "power" (spawn arg) | 1 | 1.2 (per-tick dmg still 0.6×) |
+| tornado per-tick dmg | 0.6× (fixed) / 30t | same |
+| tornado root | `binding(30)` / 30t | same |
+| tornado life | 300t | same |
 | max tornados / scatter | 2 | 3 |
 | ATKSPD_PER_STACK | 0.04 (+4%) | 0.04 |
 | ATKSPD_MAX_STACK | 25 (⇒ +100%, triggers rage) | 25 |
@@ -2294,7 +2326,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Formulas**
 - `atkSpd = orgAtkSpd × (1 + 0.04·stacks)`; at 25 stacks ⇒ `×(1+1.0)` = +100% (×2), which fires rage. Rage holds +100% for 180t.
 
-**✓ Matches description** — "each hit increases attack speed" = +0.04/stack (`onShurikenHit`); "max attack speed → additional shurikens" = at 25 stacks rage triggers and normals fire the extra `doRangeAttack(target,4)`. Skill = tornados, evolved fires one more (3 vs 2) at 1.2× power.
+**✓ Matches description** — "each hit increases attack speed" = +0.04/stack (`onShurikenHit`); "max attack speed → additional shurikens" = at 25 stacks rage triggers and normals fire the extra `doRangeAttack(target,4)`. Skill = tornados, evolved fires one more (3 vs 2). ⚠️ The blurb ("deal damage") omits the tornado's **root / vacuum / knockBack**, and the Ⅱ `1.2` "power" arg doesn't actually raise damage (per-tick is the fixed `DMG_PER_TICK=0.6`) — only the tornado count changes.
 
 ---
 
@@ -3976,6 +4008,7 @@ The three "King" bosses below all extend `BaseRaidUnit`. Shared framework (verif
 
 **Skill — Druid drills**
 - `skillMain` spawns large `DruidDrill1` projectiles (`whirlTotal=90`, scale 3, `setData(0.6)`) toward the main target + a divergent second target (`pickDivergentTarget`), or two random-direction drills if no enemies within 400.
+- Each drill hits enemies within r50 for **0.6× damage + knockBack** (`±6, -2`, 24t), re-hitting the same target every 24t over its 90t life — damage + knockback only, no root (the `binding(60)` below is the *normal* vine attack, not the drill).
 
 **Buffs & debuffs**
 - `binding(60)` (root/immobilize) on vined enemies + periodic damage; auto-applies to already-CC'd enemies; spreads on kill. Air units exempt throughout.
@@ -4288,7 +4321,7 @@ The three "King" bosses below all extend `BaseRaidUnit`. Shared framework (verif
 **At a glance**
 - **Role:** Ranged DPS (flying multi-target lancer, bouncing skill spears)
 - **Attack:** `GriffinSpear1`, spread across 2 (base) / 3 (Ⅱ) enemies in the facing direction
-- **Skill:** 3 `GriffinSuperSpear1` casts (×1.5) that bounce/chain (`numBounce`)
+- **Skill:** 3 `GriffinSuperSpear1` casts (×1.5) that bounce/chain (`numBounce`); each spear knocks back + `stun(30)` on hit
 - **Stats:** air unit, airHeight 75
 
 **In-game text**
@@ -4300,11 +4333,11 @@ The three "King" bosses below all extend `BaseRaidUnit`. Shared framework (verif
 
 **Skill — bouncing super-spears**
 - objSkill frames {152,170,188} (3 casts): `onSkillStartFrame` collects enemies within 220 (target first).
-- `skillMain` fires one `GriffinSuperSpear1` per cast via `fireSkillArrow`, dmg mult 1.5, `bounceCount = this.numBounce`.
+- `skillMain` fires one `GriffinSuperSpear1` per cast via `fireSkillArrow`, dmg mult 1.5, `bounceCount = this.numBounce`. Each spear's `onHitMain` applies **knockBack (power 10) + `stun(30)`** on hit.
 - Spear fire offset randomized `35 + 20*random`.
 
 **Buffs & debuffs**
-- None confirmed in this class body (any super-spear bounce/freeze lives in the `GriffinSuperSpear1` weapon, not here). No ally buffs.
+- The skill spears carry the CC: `GriffinSuperSpear1.onHitMain` applies **knockBack (power 10) + `stun(30)`** on each hit (verified in the weapon, not this class). No freeze; no ally buffs.
 
 **Base → Ⅱ**
 - Normal-attack target count 2 → 3. Skill fires 3 bouncing super-spears regardless of tier.

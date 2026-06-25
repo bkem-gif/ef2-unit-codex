@@ -377,7 +377,7 @@
 **At a glance**
 - **Role:** Air ranged DPS
 - **Attack:** `FireBullet` at up to 4 (Ⅱ 7) targets; base 85% single shot, Ⅱ fires a geometric burst
-- **Skill:** launches 3 (Ⅱ 5) `PilotMissile1` at 1.5× dmg, then taunts exactly 1 enemy
+- **Skill:** launches 3 (Ⅱ 5) `PilotMissile1` (1.5× dmg, 25% `stun(10)` + ≤4-enemy 0.5× splash w/ 35% `stun(8)`), then taunts exactly 1 enemy
 - **Flying:** `isAir=true`, airHeight 75
 
 **In-game text**
@@ -390,10 +390,11 @@
 - **Ⅱ:** fires one shot, then keeps firing extra shots while `chance(.4)` succeeds (geometric burst), cycling through `attackTargetList`.
 
 **Skill — missile volley + single taunt (mana-gated)**
-- Takes the nearest 5 attackable enemies (`getAttackableEnemyList(5)`), launches `skillShotCount` missiles at 1.5× dmg round-robin across them.
+- Takes the nearest 5 attackable enemies (`getAttackableEnemyList(5)`), launches `skillShotCount` missiles at 1.5× dmg round-robin across them. Each `PilotMissile1` on hit: **25% chance to `stun(10)`** the primary target, and splashes up to 4 nearby enemies (~30px) for **0.5× damage with a 35% `stun(8)`** each.
 - Then **taunts exactly 1 enemy**: sets `s.target=this` for the first enemy not already targeting the Pilot, then `break` (a direct retarget, not the radius `taunt()` helper).
 
 **Buffs & debuffs**
+- Missile stun (skill): 25% `stun(10)` on the primary target; each splash victim (≤4, ~30px) takes 0.5× damage + 35% `stun(8)`.
 - Taunt-of-one: directly reassigns `target=this` on a single enemy.
 
 **Base → Ⅱ**
@@ -412,6 +413,8 @@
 | skill target search | nearest 5 | nearest 5 |
 | skill dmg mult | 1.5 | 1.5 |
 | taunt count | 1 enemy | 1 enemy |
+| missile stun (primary) | 25% → `stun(10)` | same |
+| missile splash | ≤4 × 0.5 dmg, 35% → `stun(8)` | same |
 
 **Formulas**
 - Ⅱ normal-attack shot count = 1 + Geometric(.4) per call (expected ≈ 1.67), each at a cycled target.

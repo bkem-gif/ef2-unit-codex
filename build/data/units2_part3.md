@@ -436,7 +436,7 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 - **Role:** Mage / ranged AoE (multi-target tornado skill)
 - **Attack:** `GreenEnergyBall` with `numShot=1.5` (Ⅱ 2.5)
 - **Skill:** spawns 2 tornadoes (Ⅱ 4) on target + nearest enemies ≤200
-- **Tornado:** whirls 70t (Ⅱ 100t), 0.3× per-tick DoT
+- **Tornado:** whirls 70t (Ⅱ 100t); roots the target (`binding(12)` re-applied every 10t) + 0.3× damage every 30t
 
 **In-game text**
 - Normal: "Launches an energy ball to attack enemies from range."
@@ -447,7 +447,7 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 
 **Skill — tornadoes**
 - `skillMain` picks `t = 2·evolStage+2` targets → 2 base, 4 evolved: the locked target plus nearest enemies within 200.
-- Spawns a `Twist` (tornado) on each via `spawnTwist`, each whirling for 70t (Ⅱ 100t), dealing 0.3× per-tick DoT.
+- Spawns a `Twist` (tornado) on each via `spawnTwist`, each whirling for 70t (Ⅱ 100t). The tornado **pins the target to its position**, re-applies `binding(12)` (root) every 10t, and deals `0.3×` damage every 30t — a hard root, not just DoT.
 
 **Base → Ⅱ**
 - Basic numShot 1.5 → 2.5; skill targets 2 → 4; tornado whirl 70t → 100t ("for longer, hitting more enemies").
@@ -459,7 +459,8 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 | skill target count | 2 (`2·0+2`) | 4 (`2·1+2`) |
 | skill gather range | 200 | 200 |
 | tornado whirl dur | 70t | 100t |
-| Twist per-tick dmg | 0.3× | 0.3× |
+| Twist dmg (every 30t) | 0.3× | 0.3× |
+| Twist root | `binding(12)` / 10t | same |
 
 **Formulas**
 - Evolved skill targets `2·1+2 = 4` vs base `2·0+2 = 2`.
@@ -467,7 +468,7 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 **✓ Matches description** — "for longer, hitting more enemies" = whirl 70→100 and targets 2→4 when evolved. (`OBJ_ATK` `{57:1}` and `OBJ_SKL` `{101:1}` frame sets identical base/evolved; only counts/durations differ.)
 
 **Notes**
-- `weaponClass=GreenEnergyBall` (`MagicalHitEffect`, speed 9). Tornado is weapon class `Twist`, spawned procedurally; drifts toward target then whirls in place. Twist deals sustained DoT, no stat debuff.
+- `weaponClass=GreenEnergyBall` (`MagicalHitEffect`, speed 9). Tornado is weapon class `Twist`, spawned procedurally; drifts toward target then whirls in place. **Twist is a hard root, not just DoT:** it re-binds the target (`binding(12)`) every 10t and drags it to the tornado's position, dealing 0.3× damage every 30t. (The in-game blurb only says "sustained damage" — the root is undocumented.)
 
 ---
 
@@ -545,6 +546,7 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 
 **Skill — Druid drills**
 - `skillMain` spawns large `DruidDrill1` projectiles (`whirlTotal=90`, scale 3, `setData(0.6)`) toward the main target + a divergent second target (`pickDivergentTarget`), or two random-direction drills if no enemies within 400.
+- Each drill hits enemies within r50 for **0.6× damage + knockBack** (`±6, -2`, 24t), re-hitting the same target every 24t over its 90t life — damage + knockback only, no root (the `binding(60)` below is the *normal* vine attack, not the drill).
 
 **Buffs & debuffs**
 - `binding(60)` (root/immobilize) on vined enemies + periodic damage; auto-applies to already-CC'd enemies; spreads on kill. Air units exempt throughout.
