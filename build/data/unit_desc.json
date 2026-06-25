@@ -1,0 +1,582 @@
+{
+"1": {
+"NAME": "Infantry",
+"NATK": "Strikes nearby enemies with a sword.",
+"SATK": "Delivers a powerful strike that damages enemies and has a chance to stun them."
+},
+"2": {
+"NAME": "Heavy Armor",
+"NATK": "Attacks nearby enemies with a melee strike.",
+"SATK": "After attacking, deploys a power shield that blocks almost all physical and magic damage for a period of time."
+},
+"3": {
+"NAME": "Firebird",
+"NATK": "Soars through the sky and launches flaming shots from extreme range.",
+"SATK": "Fires a powerful fireball that deals heavy damage and has a chance to stun enemies."
+},
+"4": {
+"NAME": "Gunner",
+"NATK": "Attacks enemies from range with precise shots.",
+"SATK": "Fires a powerful projectile that guarantees a stun."
+},
+"5": {
+"NAME": "Hammer Knight",
+"NATK": "Delivers a melee blow with a heavy hammer.",
+"SATK": "Slams the ground with great force, dealing AoE damage to nearby enemies, with a chance to stun them and trigger Taunt."
+},
+"6": {
+"NAME": "Mounted Knight",
+"NATK": "Unleashes a rapid flurry of melee hits on enemies.",
+"SATK": "Launches a combo attack that alternates between the main target and nearby enemies. Taunt triggers after a certain number of uses."
+},
+"7": {
+"NAME": "Elf Archer",
+"NATK": "Fires arrows to attack enemies from range.",
+"SATK": "Fires 3 arrows at once, hitting up to 3 enemies simultaneously."
+},
+"8": {
+"NAME": "Elf Warrior",
+"NATK": "Strikes enemies with a melee double hit.",
+"SATK": "Unleashes a triple-hit combo with 1.5x power, dealing heavy melee damage."
+},
+"9": {
+"NAME": "Poison Archer",
+"NATK": "Fires a poison arrow that reduces enemies' movement speed and attack speed.",
+"SATK": "Fires a 1.5x power poison arrow that creates a poison cloud and slows nearby enemies."
+},
+"10": {
+"NAME": "High Elf Archer",
+"NATK": "Attacks enemies from range with precise magic arrows.",
+"SATK": "Rapidly fires magic arrows to hit multiple enemies at once."
+},
+"11": {
+"NAME": "Green Eagle",
+"NATK": "Soars through the sky and fires ranged projectiles at enemies.",
+"SATK": "Launches 3 consecutive wind attacks, dealing damage and knocking enemies back."
+},
+"12": {
+"NAME": "Wind Mage",
+"NATK": "Launches an energy ball to attack enemies from range.",
+"SATK": "Summons a tornado at the enemy's location, dealing sustained damage."
+},
+"13": {
+"NAME": "Skeleton Soldier",
+"NATK": "Attacks nearby enemies using a bone as a weapon.",
+"SATK": "Delivers a heavy strike that deals massive damage and has a chance to stun enemies."
+},
+"14": {
+"NAME": "Dark Mage",
+"NATK": "Attacks enemies from range with dark bullets.",
+"SATK": "Fires a dark orb that deals massive damage to enemies."
+},
+"15": {
+"NAME": "Ghost",
+"NATK": "Attacks enemies from range with a spirit orb.",
+"SATK": "Becomes invisible and avoids enemy targeting for a certain period of time."
+},
+"16": {
+"NAME": "Skeleton Warrior",
+"NATK": "Strikes enemies with a melee double hit.",
+"SATK": "While invisible, unleashes a rapid flurry of attacks that deals multiple hits."
+},
+"17": {
+"NAME": "Great Hammer",
+"NATK": "Strikes enemies with a hammer and has a chance to stun them.",
+"SATK": "Delivers a heavy strike that deals massive damage, inflicts AoE damage on nearby enemies, and has a chance to stun them."
+},
+"18": {
+"NAME": "Dark Sorcerer",
+"NATK": "Fires dark projectiles from a distance and periodically summons skeleton soldiers.",
+"SATK": "Curses enemies, grants a shield to allies, and summons skeletons."
+},
+"19": {
+"NAME": "Orc Fighter",
+"NATK": "Attacks enemies with a rapid double melee strike.",
+"SATK": "Delivers a heavy strike that deals massive damage and knocks enemies back."
+},
+"20": {
+"NAME": "Orc Hunter",
+"NATK": "Attacks enemies with a melee strike.",
+"SATK": "Teleports to the farthest enemy, delivers a heavy strike, freezes the target, and grants itself a ranged evasion buff."
+},
+"21": {
+"NAME": "Frost Mage",
+"NATK": "Fires ice magic projectiles to attack enemies from a distance.",
+"SATK": "Fires enhanced freezing projectiles that deal massive damage to enemies."
+},
+"22": {
+"NAME": "Orc Wing",
+"NATK": "Fires energy projectiles from the air to attack enemies at range.",
+"SATK": "Fires enhanced energy projectiles that deal massive damage."
+},
+"23": {
+"NAME": "Orc Axeman",
+"NATK": "Strikes with an axe in melee and deals AoE damage to enemies ahead.",
+"SATK": "After a melee attack, throws an axe to strike additional enemies. Can also hit airborne enemies."
+},
+"24": {
+"NAME": "Orc Hammerman",
+"NATK": "Attacks enemies in melee with a hammer.",
+"SATK": "Summons an ice decoy to draw enemy attacks in your place."
+},
+"25": {
+"NAME": "Wolf Rider",
+"NATK": "Deals AoE damage to nearby enemies along with a melee attack.",
+"SATK": "Summons a wolf and grants nearby allies a movement speed and attack speed buff. Activates Taunt after a set number of uses."
+},
+"26": {
+"NAME": "Infantry Ⅱ",
+"NATK": "Slashes enemies with a sword in melee.",
+"SATK": "Unleashes a powerful strike that deals greater damage and stuns enemies with a higher chance."
+},
+"27": {
+"NAME": "Heavy Armor Ⅱ",
+"NATK": "Attacks enemies with a melee strike.",
+"SATK": "After attacking, deploys a Power Shield that blocks nearly all physical and magical damage for a set duration."
+},
+"28": {
+"NAME": "Firebird Ⅱ",
+"NATK": "Soars through the sky and launches flaming shots from extreme range.",
+"SATK": "Fires a powerful fireball that deals greater damage and stuns enemies with a higher chance."
+},
+"29": {
+"NAME": "Gunner Ⅱ",
+"NATK": "Attacks enemies from a distance with precise shots.",
+"SATK": "Fires an enhanced bullet that guarantees a longer stun on enemies."
+},
+"30": {
+"NAME": "Hammer Knight Ⅱ",
+"NATK": "Delivers a powerful melee strike with a heavy hammer.",
+"SATK": "Slams a wider area with a powerful strike, dealing heavy damage, stunning enemies with a higher chance, and can activate Taunt."
+},
+"31": {
+"NAME": "Mounted Knight Ⅱ",
+"NATK": "Strikes with rapid melee combos. Killing an enemy grants a movement speed buff.",
+"SATK": "Delivers an enhanced combo attack alternating between the main target and nearby enemies. Activates Taunt after a set number of uses."
+},
+"32": {
+"NAME": "Elf Archer Ⅱ",
+"NATK": "Fires arrows to attack enemies from a distance.",
+"SATK": "Fires 3 arrows at once, striking up to 3 enemies simultaneously."
+},
+"33": {
+"NAME": "Elf Warrior Ⅱ",
+"NATK": "Attacks enemies with a melee double-hit.",
+"SATK": "Unleashes a 3-hit combo at 1.5x power, dealing heavy melee damage."
+},
+"34": {
+"NAME": "Poison Archer Ⅱ",
+"NATK": "Fires a poison arrow that reduces enemies' movement speed and attack speed.",
+"SATK": "Fires a poison arrow at 1.5x power, creating a poison cloud that slows nearby enemies."
+},
+"35": {
+"NAME": "High Elf Archer Ⅱ",
+"NATK": "Launches precise magic arrows at an increased fire rate to attack from range.",
+"SATK": "Fires a rapid volley of magic arrows, striking multiple enemies at once."
+},
+"36": {
+"NAME": "Green Eagle Ⅱ",
+"NATK": "Soars through the air, firing ranged projectiles at enemies below.",
+"SATK": "Launches 3 wind blasts in succession, damaging enemies and knocking them back."
+},
+"37": {
+"NAME": "Wind Mage Ⅱ",
+"NATK": "Fires an energy ball to attack enemies from a distance.",
+"SATK": "Summons a tornado for longer, hitting more enemies and dealing sustained damage."
+},
+"38": {
+"NAME": "Skeleton Soldier Ⅱ",
+"NATK": "Attacks enemies with a bone in melee combat.",
+"SATK": "Delivers a powerful heavy strike for massive damage with a high chance to stun."
+},
+"39": {
+"NAME": "Dark Mage Ⅱ",
+"NATK": "Unleashes dark projectiles at an increased fire rate for ranged attacks.",
+"SATK": "Launches a dark orb that deals even greater damage to enemies."
+},
+"40": {
+"NAME": "Ghost Ⅱ",
+"NATK": "Hurls ghost orbs at an increased fire rate for ranged attacks.",
+"SATK": "Turns invisible for a longer duration, evading enemy attacks."
+},
+"41": {
+"NAME": "Skeleton Warrior Ⅱ",
+"NATK": "Attacks enemies with a melee double-hit.",
+"SATK": "From stealth, unleashes a furious rapid-fire combo that deals massive damage."
+},
+"42": {
+"NAME": "Great Hammer Ⅱ",
+"NATK": "Swings a hammer in melee combat with a chance to stun enemies.",
+"SATK": "Strikes with devastating power, dealing heavy damage over a wider area with a high chance to stun."
+},
+"43": {
+"NAME": "Dark Sorcerer Ⅱ",
+"NATK": "Fires dark projectiles at an increased fire rate. Periodically summons a skeleton soldier.",
+"SATK": "Curses more enemies, shields more allies, and summons skeletons to fight at your side."
+},
+"44": {
+"NAME": "Orc Fighter Ⅱ",
+"NATK": "Attacks enemies with a melee double-hit.",
+"SATK": "Strikes with tremendous force, dealing even greater damage and sending enemies flying farther back."
+},
+"45": {
+"NAME": "Orc Hunter Ⅱ",
+"NATK": "Attacks enemies with a basic melee strike.",
+"SATK": "Teleports to the farthest enemy, delivering a more powerful strike and freezing them for longer. Grants yourself a ranged evasion buff."
+},
+"46": {
+"NAME": "Ice Mage Ⅱ",
+"NATK": "Fires enhanced ice magic projectiles at an increased fire rate, with a chance to strike additional targets.",
+"SATK": "Fires an enhanced freezing projectile that deals heavy damage to enemies."
+},
+"47": {
+"NAME": "Orc Wing Ⅱ",
+"NATK": "Fires energy projectiles from the air for ranged attacks.",
+"SATK": "Fires an enhanced energy projectile that deals heavy damage."
+},
+"48": {
+"NAME": "Orc Axeman Ⅱ",
+"NATK": "Strikes with an axe in melee, dealing wider AoE damage to enemies ahead.",
+"SATK": "After a melee attack, hurls more axes to strike additional enemies. Can also hit airborne targets."
+},
+"49": {
+"NAME": "Orc Hammerman Ⅱ",
+"NATK": "Swings a hammer to deal AoE damage to nearby enemies.",
+"SATK": "Summons an ice clone for a longer duration to take hits in your place."
+},
+"50": {
+"NAME": "Wolf Rider Ⅱ",
+"NATK": "Deals AoE damage to nearby enemies along with a melee attack.",
+"SATK": "Increases the number of wolves that can be summoned and strengthens the movement speed and attack speed buffs granted to nearby allies. Activates Taunt after a set number of uses."
+},
+"51": {
+"NAME": "Unicorn Archer",
+"NATK": "Fires arcing arrows that can hit up to 3 enemies at once.",
+"SATK": "Fires a volley of arcing arrows in succession, dealing damage to enemies across a wide area."
+},
+"52": {
+"NAME": "Unicorn Archer Ⅱ",
+"NATK": "Fires arcing arrows that can hit up to 3 enemies at once.",
+"SATK": "Fires more arcing arrows at a faster rate, dealing damage to enemies across a wide area."
+},
+"53": {
+"NAME": "Fairy",
+"NATK": "Soars through the sky and attacks from range with music-note bullets.",
+"SATK": "Grants nearby allies a buff that restores HP and mana, and increases movement speed."
+},
+"54": {
+"NAME": "Fairy Ⅱ",
+"NATK": "Soars through the sky and attacks from range with music-note bullets.",
+"SATK": "Restores more HP and mana to nearby allies, with a stronger movement speed boost."
+},
+"55": {
+"NAME": "Priest",
+"NATK": "Attacks from range with light energy and has a chance to stun enemies.",
+"SATK": "Restores HP for all allies and grants them a shield."
+},
+"56": {
+"NAME": "Priest Ⅱ",
+"NATK": "Attacks from range with light energy and has a chance to stun enemies.",
+"SATK": "Greatly restores HP for all allies and grants them an enhanced shield."
+},
+"57": {
+"NAME": "Dark Archer",
+"NATK": "Fires silence-infused arrows to hit multiple enemies at once. Defeated enemies have a chance to revive as allied soldiers.",
+"SATK": "Fires an enhanced arrow that deals heavy damage to multiple enemies and applies a long silence."
+},
+"58": {
+"NAME": "Dark Archer Ⅱ",
+"NATK": "Fires silence-infused arrows to hit more enemies at once. Defeated enemies have a higher chance to revive as allied soldiers.",
+"SATK": "Fires an enhanced arrow that hits even more enemies with heavy damage and an even longer silence."
+},
+"59": {
+"NAME": "Death Knight",
+"NATK": "Delivers a heavy melee strike that deals AoE damage to enemies ahead and has a chance to inflict Curse.",
+"SATK": "Summons skeleton soldiers to support you in battle."
+},
+"60": {
+"NAME": "Death Knight Ⅱ",
+"NATK": "Delivers a heavy melee strike that deals AoE damage to enemies ahead and has a higher chance to inflict Curse.",
+"SATK": "Summons stronger skeleton soldiers to support you in battle."
+},
+"61": {
+"NAME": "Bigfoot",
+"NATK": "Deals AoE damage to nearby enemies with its huge body and has a chance to freeze them.",
+"SATK": "Unleashes a powerful AoE strike forward, freezing multiple enemies."
+},
+"62": {
+"NAME": "Golem",
+"NATK": "Deals AoE damage to nearby enemies with its giant fists and has a chance to stun them.",
+"SATK": "Deals a powerful AoE strike and deploys a physical barrier. Using it a set number of times triggers a taunt."
+},
+"63": {
+"NAME": "Hand of Death",
+"NATK": "Delivers a melee attack with a powerful fist that knocks enemies back.",
+"SATK": "Unleashes consecutive AoE attacks forward, launching multiple enemies into the air."
+},
+"64": {
+"NAME": "Wolf Warrior",
+"NATK": "Teleports to enemies and unleashes an assassination-style combo attack.",
+"SATK": "Teleports up to 10 times to deliver a chain of strikes, then taunts enemies to draw their attacks."
+},
+"65": {
+"NAME": "Ent",
+"NATK": "Performs a melee attack with its massive body, dealing AoE damage to nearby enemies.",
+"SATK": "Drops a boulder onto enemies, launching them into the air."
+},
+"66": {
+"NAME": "Fire Mage",
+"NATK": "Fires flaming magic projectiles to attack enemies from range.",
+"SATK": "Summons multiple fire birds that spread damage across enemies."
+},
+"67": {
+"NAME": "Ice Mage",
+"NATK": "Fires ice shards to attack enemies from range.",
+"SATK": "Unleashes a barrage of ice rain on multiple enemies in range, dealing spread damage."
+},
+"68": {
+"NAME": "Bomber",
+"NATK": "Throws multiple small bombs for ranged attacks. After defeating a certain number of enemies, enters a frenzy state.",
+"SATK": "Detects the densest enemy cluster and drops 2 large bombs on that location."
+},
+"69": {
+"NAME": "Drums of the Battlefield",
+"NATK": "Supports allies by beating a drum instead of attacking.",
+"SATK": "Temporarily increases ATK, attack speed, and movement speed for all allied heroes."
+},
+"70": {
+"NAME": "Bigfoot Ⅱ",
+"NATK": "Deals AoE damage to nearby enemies with its massive body and has a chance to freeze them.",
+"SATK": "Strikes forward in a wider area with a powerful blow, freezing multiple enemies."
+},
+"71": {
+"NAME": "Golem Ⅱ",
+"NATK": "Deals AoE damage to more enemies with its giant fists and has a higher chance to stun them.",
+"SATK": "Deals a powerful AoE strike and deploys a physical barrier. Taunt activates after a set number of uses."
+},
+"72": {
+"NAME": "Hand of Death Ⅱ",
+"NATK": "Delivers a melee attack with a powerful fist that knocks enemies back.",
+"SATK": "Strikes forward with consecutive attacks in a wider area, launching multiple enemies even higher into the air."
+},
+"73": {
+"NAME": "Wolf Warrior Ⅱ",
+"NATK": "Teleports to enemies and unleashes an assassination-style combo attack.",
+"SATK": "Teleports up to 10 times to unleash a chain of attacks, then taunts enemies to draw their attacks. Teleport chain attacks can also trigger during normal attacks."
+},
+"74": {
+"NAME": "Ent Ⅱ",
+"NATK": "Performs a melee attack with its massive body, dealing damage to a wider area of enemies.",
+"SATK": "Drops more boulders to launch enemies into the air."
+},
+"75": {
+"NAME": "Fire Mage Ⅱ",
+"NATK": "Fires flaming magic projectiles to attack enemies from range.",
+"SATK": "Summons more fire birds to deal spread damage to enemies."
+},
+"76": {
+"NAME": "Ice Mage Ⅱ",
+"NATK": "Fires ice shards continuously to attack enemies from range.",
+"SATK": "Unleashes a barrage of ice rain over a larger area, dealing spread damage to enemies."
+},
+"77": {
+"NAME": "Bomber Ⅱ",
+"NATK": "Throws more small bombs for ranged attacks. After defeating a certain number of enemies, enters a stronger frenzy state.",
+"SATK": "Detects the densest enemy cluster and drops 3 large bombs on the location."
+},
+"78": {
+"NAME": "Drums of the Battlefield Ⅱ",
+"NATK": "Supports allies by beating a drum instead of attacking.",
+"SATK": "Further boosts ATK, attack speed, and movement speed of all allied heroes for a limited time."
+},
+"79": {
+"NAME": "Pilot",
+"NATK": "Fires consecutive shots from the air at multiple enemies.",
+"SATK": "Launches a missile and taunts 1 enemy, forcing them to target you."
+},
+"80": {
+"NAME": "Pilot Ⅱ",
+"NATK": "Fires consecutive shots from the air at more enemies.",
+"SATK": "Fires more missiles and taunts 1 enemy, forcing them to target you."
+},
+"81": {
+"NAME": "Forest Guardian",
+"NATK": "Fires magic arrows at enemies within range.",
+"SATK": "Attacks multiple enemies at once with a barrage of arrows, and has a chance to grant itself a Speed Up buff."
+},
+"82": {
+"NAME": "Steam Punk",
+"NATK": "Fires a homing missile that has a chance to stun 2 enemies.",
+"SATK": "Fires multiple missiles at enemies within range."
+},
+"83": {
+"NAME": "Raptor Rider",
+"NATK": "Throws spears at enemies within range.",
+"SATK": "Throws multiple spears that have a chance to Freeze enemies within range."
+},
+"84": {
+"NAME": "Forest Guardian Ⅱ",
+"NATK": "Fires magic arrows at more enemies within range.",
+"SATK": "Attacks multiple enemies at once with a volley of arrows, and has a chance to grant itself an enhanced Speed buff."
+},
+"85": {
+"NAME": "Steam Punk Ⅱ",
+"NATK": "Fires a homing missile that has a chance to stun 3 enemies.",
+"SATK": "Fires multiple missiles at enemies within range, with a chance to fire additional missiles."
+},
+"86": {
+"NAME": "Raptor Rider Ⅱ",
+"NATK": "Throws a spear at more enemies within range.",
+"SATK": "Throws several spears that have a chance to Freeze enemies within range."
+},
+"87": {
+"NAME": "Dark Ninja",
+"NATK": "Teleports to an enemy at random and unleashes a series of close-range attacks, restoring a small amount of HP with each hit.",
+"SATK": "Fires a Dark Chain to pull in distant enemies (including airborne units), then attacks nearby enemies with a spinning attack."
+},
+"88": {
+"NAME": "Dark Ninja Ⅱ",
+"NATK": "Teleports to an enemy with a chance and unleashes enhanced consecutive melee attacks, restoring more HP with each hit.",
+"SATK": "Fires Dark Chain to pull in 2 distant enemies (including aerial units), then strikes nearby enemies with a spinning attack."
+},
+"89": {
+"NAME": "Winged Knight",
+"NATK": "Deals 3 consecutive hits to enemies and also damages nearby enemies. The final hit knocks enemies back.\nFlash: After defeating a set number of enemies, an Attack and Haste buff is triggered, and each kill instantly moves you to the next target.\nSurvival: When HP falls below a certain level, a shield is briefly formed and attack speed and attack power greatly increase.",
+"SATK": "Teleports to an enemy and deals area damage to nearby enemies."
+},
+"90": {
+"NAME": "Sylphid",
+"NATK": "Fires shurikens in rapid succession, and each hit gradually increases attack speed.\nRage: When attack speed reaches its maximum, additional shurikens are fired with each normal attack.",
+"SATK": "Fire tornados in succession to deal damage to enemies."
+},
+"91": {
+"NAME": "Abyss Mage",
+"NATK": "When you attack an enemy, chain lightning jumps to nearby enemies, dealing gradually reduced damage. Restore mana when defeating an enemy.",
+"SATK": "Strikes multiple enemies in range with lightning in succession, dealing AoE damage and briefly inflicting Shock, disabling their actions."
+},
+"92": {
+"NAME": "Wyvern Rider",
+"NATK": "Throws daggers at multiple enemies, dealing damage.\nDepending on the number of enemies defeated since the last skill, fires additional boomerang daggers on the next skill.",
+"SATK": "Fires daggers at multiple enemies.\nWhen a dagger hits, it freezes the target and spreads daggers outward in all directions from that spot, freezing enemies in their path before exploding after a short time."
+},
+"93": {
+"NAME": "Winged Knight Ⅱ",
+"NATK": "Deals 3 consecutive hits to enemies and also damages nearby enemies. The final hit knocks enemies back.\nFlash: After defeating a set number of enemies, an Attack and Haste buff is triggered, and each kill instantly moves you to the next target.\nSurvival: When HP falls below a certain level, a shield is briefly formed and attack speed and attack power greatly increase.",
+"SATK": "Teleports to an enemy and deals area damage to nearby enemies."
+},
+"94": {
+"NAME": "Sylphid Ⅱ",
+"NATK": "Fires shurikens in rapid succession, and each hit gradually increases attack speed.\nRage: When attack speed reaches its maximum, additional shurikens are fired with each normal attack.",
+"SATK": "Fire tornados in succession to deal damage to enemies."
+},
+"95": {
+"NAME": "Abyss Mage Ⅱ",
+"NATK": "When you attack an enemy, chain lightning jumps to nearby enemies, dealing gradually reduced damage. Restore mana when defeating an enemy.",
+"SATK": "Strikes multiple enemies in range with lightning in succession, dealing AoE damage and briefly inflicting Shock, disabling their actions."
+},
+"96": {
+"NAME": "Wyvern Rider Ⅱ",
+"NATK": "Throws daggers at multiple enemies, dealing damage.\nDepending on the number of enemies defeated since the last skill, fires additional boomerang daggers on the next skill.",
+"SATK": "Fires daggers at multiple enemies.\nWhen a dagger hits, it freezes the target and spreads daggers outward in all directions from that spot, freezing enemies in their path before exploding after a short time."
+},
+"1001": {
+"NAME": "Wolf",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"1002": {
+"NAME": "Graveyard Hero",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"1003": {
+"NAME": "Ice Wolf",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"10001": {
+"NAME": "Elf Castle",
+"NATK": "Knockback",
+"SATK": "Special Skill"
+},
+"20001": {
+"NAME": "King Slime",
+"NATK": "Knockback",
+"SATK": "Special Skill"
+},
+"20002": {
+"NAME": "Red Slime",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"20003": {
+"NAME": "Blue Slime",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"20004": {
+"NAME": "Yellow Slime",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"30001": {
+"NAME": "Orc Flower",
+"NATK": "Knockback",
+"SATK": "Special Skill"
+},
+"30002": {
+"NAME": "Flower Soldier 1",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"30003": {
+"NAME": "Flower Soldier 2",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"40001": {
+"NAME": "Hammer Mole",
+"NATK": "Knockback",
+"SATK": "Special Skill"
+},
+"40002": {
+"NAME": "Mole Soldier 1",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"40003": {
+"NAME": "Mole Soldier 2",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"50001": {
+"NAME": "Dark Hermit",
+"NATK": "Knockback",
+"SATK": "Special Skill"
+},
+"50002": {
+"NAME": "Starfish Soldier",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"50003": {
+"NAME": "Clam Soldier",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"1060": {
+"NAME": "Slime 1",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"1061": {
+"NAME": "Slime 2",
+"NATK": "None",
+"SATK": "Special Skill"
+},
+"1062": {
+"NAME": "Slime 3",
+"NATK": "None",
+"SATK": "Special Skill"
+}
+}

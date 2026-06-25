@@ -1,0 +1,105 @@
+# EF2 Unit Mechanics Codex
+
+A code-derived reference for **how every unit in Endless Frontier 2 works** — combat behaviour,
+hard-coded values, formulas, buffs/debuffs — paired with the in-game description and a **validated
+delta** wherever the two disagree. Reverse-engineered from the game bundle
+`runtime/bundles/mounted/1.11.42/assets/index.js` (read-only; no game state was modified).
+
+> **Scope & sourcing.** 96 unit *classes* (covering 116 described `kindNum`s) are documented. The
+> **mechanics, formulas, and hard values are exact from the code.** Two things are *not* in the bundle
+> and are therefore omitted/approximate: (1) the authoritative `kindNum → class → base-stat` table is
+> server-loaded (`/api/book/get`), so kindNum links here are matched by **behaviour** (the description
+> describes what the code does) and a few are flagged "no description"; (2) **base stats** (per-unit HP/ATK
+> scaling) live in that same server table — only units with *hard-coded* stat blocks (mostly summons/enemies)
+> show absolute HP/ATK here. Open the in-game Encyclopedia if you want to capture the book for exact base stats.
+
+## How the combat engine works (read this first)
+
+- **Time is in game ticks** (~60/sec at 1× speed). Every cooldown/duration below is a tick count; all of it
+  runs proportionally faster at higher game speed (speed buffs, Divine Blessing, etc.). `≈ s` values assume 1×.
+- **Units** extend base class `qQ`. Key members: `initializeData()` (animation frame ranges, `objAtk` =
+  `{frame: hitCount}` i.e. which attack-frame fires the hit, `hasSkill`), `setData()` (sets `evolStage`;
+  most do `evolved = evolStage >= 1`), `execute()` (per-tick; usually decrements a cooldown), `attackMain()`
+  (the attack/skill action), and often `skillMain()`, `onKillEnemy()`, `onDie()`, `generateWeapon()`.
+- **Attacking:** target the nearest enemy in range; attack interval `atkDuration = 1e4 / atkSpd`; projectiles
+  via `generateWeapon(target, WeaponType)`. Many skills are **mana-gated** (cast when `mana ≥ maxMana`).
+- **Cooldown desync:** units that pulse on a timer randomize the *first* cooldown (`skillCoolDown = N*random`)
+  so multiple copies don't fire in lockstep.
+
+### The buff system (this is what "buffs" means mechanically)
+Buffs are applied by calling, on a unit (self or an ally), one of:
+`addAttackSpeedBuff` · `addMoveSpeedBuff` · `addAttackDamageBuff` · `addDefenseBuff` · `addMaxHealthBuff` ·
+`addCritMultiplierBuff` · `addCritChanceBuff` · `addRangeEvadeChanceBuff`, each with signature
+**`(buffId, value, durationTicks [, refreshFlag])`**.
+
+**Stat formulas** (recomputed every tick):
+| stat | formula | combine |
+|---|---|---|
+| attack speed | `atkSpd = orgAtkSpd * (1 + atkSpdBuff.value)` | multiplicative |
+| move speed | `moveSpd = orgMoveSpd * (1 + moveSpdBuff.value)` | multiplicative |
+| attack damage | `* (1 + damageBuff.value)` | multiplicative |
+| defense / max-HP | `* (1 + buff.value)` | multiplicative |
+| crit damage | `critDmg = orgCritDmg + critMultBuff.value` | **additive** |
+| crit chance | `critChance = orgCritChance + critChanceBuff.value` | **additive** |
+| range-evade | `rangeEvade = orgRangeEvade + rangeEvadeBuff.value` | **additive** |
+| attack interval | `atkDuration = 1e4 / atkSpd` | derived |
+
+So a buff **`value` of `1.2` means +120%** for the multiplicative stats (×2.2), `0.5` ⇒ +50%, etc.
+`durationTicks` is the buff's `count`, decremented each tick, removed at `< 0`.
+
+**Stacking (class `WQ`):** the collection's `.value = Σ over DISTINCT buff-ids of the MAX value per id`
+(positive buffs). Consequences: **same id ⇒ no stacking** (only the max counts; the `refreshFlag`
+overwrites value+count); **different ids ⇒ summed**. Clamped to `[min,max]` (default `[-1, 10]`). This is
+why two copies of the same buffer don't stack magnitude (only uptime), but two *different* speed sources do.
+
+### Status effects (on enemies)
+`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, plus taunt/provoke, shields, poison/DoT,
+binding/root, and summons. **Bosses and the castle override these to no-ops** (full CC immunity).
+
+### Evolution
+A `kindNum` and its "Ⅱ" share one class; `evolStage ≥ 1` gates the stronger branch (bigger buff `value`,
+longer duration, extra hit-frames via `objAtk` swaps, more targets/projectiles). Both kindNums are listed per unit.
+
+---
+
+## Key findings & validated deltas
+
+**Description ↔ code mismatches (validated):**
+1. **Drums of the Battlefield (`BigDrumer1`, 69/78):** description says it buffs "**ATK**, attack speed, movement
+   speed" — code calls only `addAttackSpeedBuff` + `addMoveSpeedBuff` (id 8001). **No `addAttackDamageBuff` →
+   no raw-ATK buff.** Multiple drummers share id 8001 ⇒ don't stack (max), only improve uptime.
+2. **Priest (`Priest1`, 55):** `UNIT_NATK_55` claims a "chance to stun" — its `YellowEnergyBall` has no stun
+   hook anywhere. **Priest's basic attack does not stun.**
+3. **Gunner (`Gunner1`, 4):** **undocumented 20% stun** on its normal attack (`Bullet1 → chance(.2) && stun(50)`).
+4. **Green Eagle (`GreenEagle1`, 11):** **undocumented** `chance(0.5)` poison/slow on *every* projectile; the
+   text only mentions knockback.
+5. **Mounted Knight (`HorseKnight1`, 6):** +200% move-speed-on-kill (`addMoveSpeedBuff(value 2, 60t)`) lives in
+   **base** code but is only documented on the evolved tier — base unit gets an undescribed kill buff.
+6. **Succubus (`Succubus1`):** internal mislabel — `Succubus1_ATTACKSPEED_BUFF` is applied via
+   **`addMoveSpeedBuff`**, so male allies get **move** speed (+50%/+40% = +90%), not attack speed; "LoveShield"
+   grants no damage mitigation.
+7. **Evolved "increased fire rate"** on `BlackMage1` / `Ghost1` is a `numShot` multi-target *chance*
+   (1 → 1.3), **not** an `atkSpd` change. Same field drives literal projectile counts elsewhere
+   (`DarkMage1` 1.5→2.5, `Bomber1` 3→5).
+8. **Unicorn Archer (`Unicorn1`, 51/52):** evolved normal attack has a **dead branch** — bonus shot gated on
+   `numShot ≥ 1.5` but max `numShot = 1.2`, so it never fires; evolved normal attack ≈ base (only the skill improves).
+9. **Elf Castle (`ElfTown5`, 10001):** its "Knockback / Special Skill" text is a placeholder stub with no
+   matching code mechanic (it's a multishot arrow turret).
+10. **DarkNinja1:** auto-cast gated on `mana ≥ 500` while its own `maxMana = 250` — condition unreachable as written.
+
+**Internal class name ≠ display name:** `TigerRider1` = **Forest Guardian** (81/84) · `GreatMage1` = **Fire Mage**
+(66/75) · `Ant1` = **Ent** (65/74) · `OrcBlizzardMage1` = generic **Ice Mage** (67/76) · `OrcWolfRider1`'s
+summon is internally **Ice Wolf** (1003).
+
+**Cut / unreleased / unmapped (implemented but no localized `kindNum`):** `BladeMaster1` (most complex class —
+dual-mode, teleport-reap, 7 buff ids, maxMana 900), `CrowKnight1`, `Succubus1`, `GriffinRider1`, `Aladin1`
+(coin-throwing genie), `Druid1` (vine/root CC). **Stubs:** `Druid2` (`skillMain` is a no-op dead expression),
+`Artillery1` (empty `skillMain` — wastes the cast). **Unmapped enemy minions:** `Spider1/2`, `OrcSpearMan1`, `SkeletonMan2`.
+
+**Other notable mechanics:** stage & raid bosses + the castle are **fully CC-immune** (raid Kings stagger only via
+a separate weak-point "groggy" system); only **`SSlime2` (1061)** splits (→ 3× `SSlime1`, mines only); **RoboBombs**
+are suicide bombers with a "no kill ⇒ no explosion" rule; the **castle** self-heals 0.5% max-HP / 450 ticks and
+fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs power `CrowKnight` (crow swarm),
+`Sylphid` (rage stacks → +100% atkSpd), and `Bomber` (frenzy every 7 kills).
+
+---
