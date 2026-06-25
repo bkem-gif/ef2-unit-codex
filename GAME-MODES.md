@@ -316,8 +316,12 @@ are synonyms.) The guild collectively whittles a shared boss; each member contri
 ### Economy & ranking (server-authoritative)
 - **Endpoints** (`GuildRaidService`, 10): `getAllInfo, getMainInfo, getSubInfo, open, giveUp, claimReward, startBattle,
   endBattle, getRanking, getGuildAndUserRanking`.
-- **Opening** a raid costs **Guild Coins** (server returns the new balance). **Attack tickets** are per-user and
-  **server-gated** (the client only displays the server's `userTicket`). `claimReward(raidId, sub)` pays out when the
+- **Opening** a raid *stage* (a `main`'s difficulty tier) is a one-time unlock that consumes that stage's
+  **`openCost` in Guild Coins** (`GAME_812`; the confirm dialog reads "…{openCost} Guild Coins consumed"). The
+  `openCost` is server-provided per stage (defaults to `0` — there's no raid config book, so the live amount isn't
+  in the client); the server deducts it and returns the opening member's new personal Guild-Coin balance. This is
+  separate from **attack tickets** — the per-user, **server-gated** currency you spend to fight each battle
+  (`startBattle`); the client only displays the server's `userTicket`. `claimReward(raidId, sub)` pays out when the
   server returns a `CLEAR` status — **reward contents, boss HP, tickets, and difficulty tiers are all server-side**;
   there is **no Guild-Raid config book** in the client.
 - **Contribution ranking is entirely server-side**: `getRanking` / `getGuildAndUserRanking` exist, but the shipped UI
