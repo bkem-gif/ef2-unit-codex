@@ -52,12 +52,25 @@ So a buff **`value` of `1.2` means +120%** for the multiplicative stats (×2.2),
 overwrites value+count); **different ids ⇒ summed**. Clamped to `[min,max]` (default `[-1, 10]`). This is
 why two copies of the same buffer don't stack magnitude (only uptime), but two *different* speed sources do.
 
-### Status effects (on enemies)
-`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, `curse(ticks)` (the cursed unit has a
-**50% chance to miss** on each of its own attacks while active — shows a "Miss"), `silence(ticks)` (drains
-200 mana and blocks the skill), `binding/root`, poison/DoT, plus taunt/provoke, shields, and summons.
-Each is a tick-countdown (`numStun`, `numCurse`, … decremented per tick). **Bosses and the castle override
-these to no-ops** (full CC immunity).
+### Status effects (on a target unit)
+Each is a **tick countdown** (`numStun`, `numCurse`, … set by the call, decremented every tick), and most
+show a floating effect sprite. What each actually does:
+
+- **stun / freeze / shock** — **incapacitate**: the unit can neither attack nor move while active.
+- **knockBack / blow** — shoved back by a velocity impulse; can't act mid-knockback.
+- **binding** (root) — **can't move, but can still attack** (no effect on air units).
+- **slow** — reduced move speed. **The `poison()` call sets this slow** (`numSlow`, counts down 0.5/tick,
+  so its value lasts ~2× in ticks) — it is **not** damage-over-time.
+- **curse** — **50% chance to miss** on each of the cursed unit's own attacks (shows "Miss").
+- **silence** — can't cast its skill, and immediately drains **200 mana**.
+- **transparent** (stealth) — **untargetable**: incoming attacks miss; the unit fades to 50% alpha.
+- **love** (Succubus) — charm: incapacitates like a stun.
+- **DoT** — `addDotDamage` / `dotDamager`: periodic damage (separate from the "poison" slow above).
+- **taunt / provoke** — forces enemy units within range to **retarget onto** the taunter.
+- **shields** — `powerShield` cuts incoming damage to **~1%** for its duration; `priestShield` **negates
+  the next N incoming hits**.
+
+**Immunities:** `stunImmune` / `freezeImmune` skip those; **bosses and the castle no-op all CC** (full immunity).
 
 ### Evolution
 A `kindNum` and its "Ⅱ" share one class; `evolStage ≥ 1` gates the stronger branch (bigger buff `value`,

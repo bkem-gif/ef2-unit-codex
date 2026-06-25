@@ -72,7 +72,25 @@ details.panel>summary::before{content:"▸ ";color:var(--mut)}details.panel[open
 <table><thead><tr><th>stat</th><th>formula</th><th>combine</th></tr></thead><tbody><tr><td>attack speed</td><td><code>atkSpd = orgAtkSpd * (1 + atkSpdBuff.value)</code></td><td>multiplicative</td></tr><tr><td>move speed</td><td><code>moveSpd = orgMoveSpd * (1 + moveSpdBuff.value)</code></td><td>multiplicative</td></tr><tr><td>attack damage</td><td><code>* (1 + damageBuff.value)</code></td><td>multiplicative</td></tr><tr><td>defense / max-HP</td><td><code>* (1 + buff.value)</code></td><td>multiplicative</td></tr><tr><td>crit damage</td><td><code>critDmg = orgCritDmg + critMultBuff.value</code></td><td><strong>additive</strong></td></tr><tr><td>crit chance</td><td><code>critChance = orgCritChance + critChanceBuff.value</code></td><td><strong>additive</strong></td></tr><tr><td>range-evade</td><td><code>rangeEvade = orgRangeEvade + rangeEvadeBuff.value</code></td><td><strong>additive</strong></td></tr><tr><td>attack interval</td><td><code>atkDuration = 1e4 / atkSpd</code></td><td>derived</td></tr></tbody></table>
 <p>So a buff <strong><code>value</code> of <code>1.2</code> means +120%</strong> for the multiplicative stats (×2.2), <code>0.5</code> ⇒ +50%, etc. <code>durationTicks</code> is the buff&#x27;s <code>count</code>, decremented each tick, removed at <code>&lt; 0</code>.</p>
 <p><strong>Stacking (class <code>WQ</code>):</strong> the collection&#x27;s <code>.value = Σ over DISTINCT buff-ids of the MAX value per id</code> (positive buffs). Consequences: <strong>same id ⇒ no stacking</strong> (only the max counts; the <code>refreshFlag</code> overwrites value+count); <strong>different ids ⇒ summed</strong>. Clamped to <code>[min,max]</code> (default <code>[-1, 10]</code>). This is why two copies of the same buffer don&#x27;t stack magnitude (only uptime), but two *different* speed sources do.</p>
-<p>### Status effects (on enemies) <code>freeze(ticks)</code>, <code>stun(ticks)</code>, <code>stunAll(...)</code>, <code>knockBack(...)</code>, <code>curse(ticks)</code> (the cursed unit has a <strong>50% chance to miss</strong> on each of its own attacks while active — shows a &quot;Miss&quot;), <code>silence(ticks)</code> (drains 200 mana and blocks the skill), <code>binding/root</code>, poison/DoT, plus taunt/provoke, shields, and summons. Each is a tick-countdown (<code>numStun</code>, <code>numCurse</code>, … decremented per tick). <strong>Bosses and the castle override these to no-ops</strong> (full CC immunity).</p>
+<p>### Status effects (on a target unit) Each is a <strong>tick countdown</strong> (<code>numStun</code>, <code>numCurse</code>, … set by the call, decremented every tick), and most show a floating effect sprite. What each actually does:</p>
+<ul>
+<li><strong>stun / freeze / shock</strong> — <strong>incapacitate</strong>: the unit can neither attack nor move while active.</li>
+<li><strong>knockBack / blow</strong> — shoved back by a velocity impulse; can&#x27;t act mid-knockback.</li>
+<li><strong>binding</strong> (root) — <strong>can&#x27;t move, but can still attack</strong> (no effect on air units).</li>
+<li><strong>slow</strong> — reduced move speed. <strong>The <code>poison()</code> call sets this slow</strong> (<code>numSlow</code>, counts down 0.5/tick,</li>
+</ul>
+<p>  so its value lasts ~2× in ticks) — it is <strong>not</strong> damage-over-time.</p>
+<ul>
+<li><strong>curse</strong> — <strong>50% chance to miss</strong> on each of the cursed unit&#x27;s own attacks (shows &quot;Miss&quot;).</li>
+<li><strong>silence</strong> — can&#x27;t cast its skill, and immediately drains <strong>200 mana</strong>.</li>
+<li><strong>transparent</strong> (stealth) — <strong>untargetable</strong>: incoming attacks miss; the unit fades to 50% alpha.</li>
+<li><strong>love</strong> (Succubus) — charm: incapacitates like a stun.</li>
+<li><strong>DoT</strong> — <code>addDotDamage</code> / <code>dotDamager</code>: periodic damage (separate from the &quot;poison&quot; slow above).</li>
+<li><strong>taunt / provoke</strong> — forces enemy units within range to <strong>retarget onto</strong> the taunter.</li>
+<li><strong>shields</strong> — <code>powerShield</code> cuts incoming damage to <strong>~1%</strong> for its duration; <code>priestShield</code> **negates</li>
+</ul>
+<p>  the next N incoming hits**.</p>
+<p><strong>Immunities:</strong> <code>stunImmune</code> / <code>freezeImmune</code> skip those; <strong>bosses and the castle no-op all CC</strong> (full immunity).</p>
 <p>### Evolution A <code>kindNum</code> and its &quot;Ⅱ&quot; share one class; <code>evolStage ≥ 1</code> gates the stronger branch (bigger buff <code>value</code>, longer duration, extra hit-frames via <code>objAtk</code> swaps, more targets/projectiles). Both kindNums are listed per unit.</p>
 <p>---</p></div></details>
 <details class="panel"><summary>Key findings &amp; validated deltas</summary><div class="body"><p><strong>Description ↔ code mismatches (validated):</strong></p>
