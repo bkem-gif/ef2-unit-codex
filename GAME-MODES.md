@@ -61,22 +61,26 @@ knightLevel = Math.floor(wL.maxWave / 100)      // 1 level per 100 waves
 ```
 
 `maxWave` is **server-authoritative** (copied into the client from the server payload); the client
-only *derives* the level. When a ranking/guild/dungeon battle builds its sides, a unit's normal level
-is discarded and replaced:
+only *derives* the level. In **Infinite Ranking** a unit's normal level is discarded and the team is
+built directly at the plain knight level — yours from `wL.maxWave`, the opponent's from their `maxWave`:
 
 ```js
-setupCorp:  heroLevel    = knightLevel (+ enemyHeroLevelBonus for the opposing side)
-            soldierLevel = knightLevel (+ tier.plusLevel)
+// PvP / ranking team build (all 7 team-VO sites use the plain floor, no bonus):
+vo.level = Math.floor(wL.maxWave / 100)        // ally;  opponent: Math.floor(opInfo.maxWave / 100)
 spawnUnit(..., level) → u.level = level → applyRawBvoStats(unit, kind, trans, level)
 ```
 
-Three bonuses stack on top of the base level:
-- **+1 level** for units matching your own race — `getKnightLevel(tribe)` returns
-  `floor(maxWave/100)+1` on a tribe match, else `0` (this is the "(+@@)" the in-game text mentions).
-- A config-driven per-grade **`heroLevelBonus`** applied to the *opposing* side's heroes
-  (`getPlusLevel(grade)` → `plusS/plusA/plusB/plusC`).
-- A global **Knight Order Medal Buff** = **+3% per Knight Order Level** (`getGameplayBuffs()` returns
-  `{code:"medal", value: 3 * knightLevel}`).
+**No race/tribe bonus applies in ranking.** The *idle game* does grant a race bonus: when
+`battleContext === NN.Normal`, a unit's `totalLevelExp` adds `getKnightLevel(tribe)` =
+`floor(maxWave/100)+1` for units matching your own tribe (the "(+@@)" the in-game text shows). **That term
+is gated to the idle game only** — `totalLevelExp` early-returns `level + enhance + extraLevel − 1` whenever
+`battleContext !== NN.Normal` (and always for enemies). Infinite Ranking runs in `NN.Pvp`, so **every unit
+fights at the plain Knight Order Level with no own-race advantage**.
+
+> Two bonuses that belong to *other* modes, not ranking: the per-grade **`heroLevelBonus`**
+> (`getPlusLevel(grade)`) is set only by the **guild-war** corps path (`setTeams`/`setupCorp`); and the
+> +3%/level **medal** gameplay buff is an idle-game gameplay buff (a sibling of the `PlusLv` total that
+> `totalLevelExp` likewise gates to `NN.Normal`). Neither is confirmed in the PvP ranking path.
 
 ### The combat pipeline
 
