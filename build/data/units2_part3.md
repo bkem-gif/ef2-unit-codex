@@ -515,7 +515,7 @@ Constants below are quoted verbatim from the bundle (`zt(Class,"NAME",value)` st
 **Formulas**
 - `moveSpd = orgMoveSpd × (1 + value)` → +25% (base) / +35% (evolved). Buff id = `kindNum` (53 or 54), so base & evolved Fairy buffs use different ids and SUM; two Fairies of the same tier share an id and take max (no stack).
 
-**✓ Matches description** — "restores HP and mana + increases movement speed" maps exactly to `heal` + `mana +=` + `addMoveSpeedBuff`; evolved bumps all four (heal 6→12, mana 5→10, buff 0.25→0.35, dur 100→150). Castles get reduced heal and no mana/move buff (an undocumented nuance, not a contradiction).
+**✓ Matches description** — "restores HP and mana + increases movement speed" maps exactly to `heal` + `mana +=` + `addMoveSpeedBuff`; evolved bumps all four (heal 6→12, mana 5→10, buff 0.25→0.35, dur 100→150). Castles get reduced heal and no mana/move buff (undocumented).
 
 **Notes**
 - Buff-id = kindNum is unusual (most units use a named `fQ.*` enum). Heal/mana are applied directly, not via `addMaxHealthBuff`.

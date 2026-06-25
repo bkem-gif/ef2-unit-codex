@@ -56,13 +56,13 @@ Bundle: `runtime/bundles/mounted/1.11.42/assets/index.js` (v1.11.42). Tick rate 
 ---
 
 ### Ice Mage — `OrcBlizzardMage1` (kindNum: 67 · Ⅱ 76) — Orc-tribe variant
-**TL;DR.** A ranged caster that pelts enemies with ice shards and rains spread-damage ice on several targets at once as its skill — and each rain drop can also briefly freeze.
+**TL;DR.** A ranged ice caster: its shards and its ice-rain skill both deal damage and can freeze the enemies they hit; the skill spreads ×0.4 damage across several targets at once.
 
 **At a glance**
 - **Role:** Ranged mage (ice rain AoE)
 - **Attack:** fires `IceFlake` projectiles; Ⅱ fires twice per swing ("continuously")
 - **Skill:** rains projectiles on the nearest 3 (Ⅱ 4) enemies in a 220 (Ⅱ 260) radius at ×0.4 each
-- **Freeze:** each rain drop has a 20% chance to freeze its target for 60t (~1.0s)
+- **Freeze:** normal `IceFlake` hits freeze at 40% (Ⅱ 50%) for 75t (Ⅱ 90t); ice-rain drops freeze at 20% for 60t (~1.0s)
 
 **In-game text**
 - Normal: "Fires ice shards to attack enemies from range." (Ⅱ: "…continuously…")
@@ -70,6 +70,7 @@ Bundle: `runtime/bundles/mounted/1.11.42/assets/index.js` (v1.11.42). Tick rate 
 
 **Normal attack**
 - Fires `IceFlake`; base `objAtk={39:1}` (one hit), Ⅱ `objAtk={39:1,42:1}` (two hits/swing) → matches "continuously."
+- Each `IceFlake` on hit (`onHitMain`) rolls `chance(.4)` (Ⅱ `.5`) → `freeze(75)` (Ⅱ 90t) on its target.
 
 **Skill — ice rain (frames 49–79)**
 - Gathers enemies within radius 220 (Ⅱ 260), filters those already hit (`attackedSet`), takes the nearest 3 (Ⅱ 4), and rains `OrcBlizzardMageRain1` at ×0.4 each. Each raindrop's `onHitMain` rolls `chance(.2)` → `freeze(60)` (~1.0s) on its target.
@@ -84,6 +85,7 @@ Bundle: `runtime/bundles/mounted/1.11.42/assets/index.js` (v1.11.42). Tick rate 
 | skill radius (`i`) | 220 | 260 |
 | skill targets/batch (`s`) | 3 | 4 |
 | rain dmg mult | ×0.4 | ×0.4 |
+| normal freeze | 40% → `freeze(75)` | 50% → `freeze(90)` |
 | rain freeze | 20% → `freeze(60)` | same |
 | objAtk | {39:1} | {39:1,42:1} |
 | objSkill | {62:1,66:1,71:1,75:1} | same |
@@ -91,7 +93,7 @@ Bundle: `runtime/bundles/mounted/1.11.42/assets/index.js` (v1.11.42). Tick rate 
 
 **⚠️ Description vs code**
 - Behaviour matches the generic "Ice Mage" text, BUT this is a **naming/tribe mismatch**: the class is `OrcBlizzardMage1` (Orc tribe, own `sheetName`) yet reuses the generic Ice-Mage (67/76) description string — kindNum binding matched here by behaviour only; confirm in the data config.
-- It is NOT the in-game "Frost Mage" (kindNum 21, enhanced freezing projectiles): this unit's hits are mostly spread damage, but the **skill rain does apply a light freeze** — `OrcBlizzardMageRain1` rolls 20% → `freeze(60)` per drop (an earlier note here that said "no freeze" was wrong).
+- **Undocumented freeze:** the in-game text mentions only damage, but both attacks freeze — normal `IceFlake` at 40% (Ⅱ 50%) for 75t (Ⅱ 90t), and the skill rain at 20% for 60t. Despite sharing the "Ice Mage" name, this is a different class from the `kindNum 21` Frost Mage.
 
 ---
 
