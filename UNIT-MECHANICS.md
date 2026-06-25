@@ -2015,14 +2015,14 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 ---
 
 ### Steam Punk — `SteamPunk1` (kindNum: 82 · Ⅱ 85)
-**TL;DR.** Ranged gunner that fires homing missiles at the nearest 2 enemies (3 when evolved), each able to stun and splash, plus a multi-missile barrage skill.
+**TL;DR.** Ranged gunner whose homing **normal-attack** missiles (2, or 3 evolved) can stun + splash; its skill is a separate **damage-only** missile barrage (no stun).
 
 **At a glance**
 - **Role:** Ranged DPS (multi-target homing missiles + stun)
 - **Attack:** one homing `SteamFire1` per target across 2 hit-frames → 2 missiles (Ⅱ 3)
 - **Targets:** nearest 2 enemies in facing arc (Ⅱ 3)
 - **Per-missile:** 30% stun (Ⅱ 40%) + ≤3-enemy splash
-- **Skill:** barrage of missiles at all enemies within 220 (mana-gated)
+- **Skill:** damage-only barrage (`SteamMissile1`, 1.5×, **no stun**) at all enemies within 220 (mana-gated)
 
 **In-game text**
 - Normal: "Fires a homing missile that has a chance to stun 2 enemies." (Ⅱ: "…stun 3 enemies.")
@@ -2034,11 +2034,11 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Each missile on hit: 30% chance (Ⅱ 40%) to stun its primary target for 40t (Ⅱ 50t), and splashes ≤3 enemies within ~25px (`s²+e²<625`, `|Δ|≤35`) for 0.4× damage.
 
 **Skill — missile barrage (mana-gated)**
-- `onSkillStartFrame` gathers up to all enemies within 220, then `skillMain` fires a `SteamMissile1` (1.5× damage) at each in turn.
+- `onSkillStartFrame` gathers up to all enemies within 220, then `skillMain` fires a `SteamMissile1` at each in turn — `SteamMissile1.onHit` deals **1.5× physical damage only, with NO stun** (the stun lives in the normal-attack `SteamFire1.onHitMain`, not here).
 - Ⅱ: 20% chance to fire a second missile that cycle.
 
 **Buffs & debuffs**
-- Stun on missile hit: 40t (Ⅱ 50t), 30% chance (Ⅱ 40%), primary target only.
+- Stun on the **normal-attack** `SteamFire1` missile hit: 40t (Ⅱ 50t), 30% chance (Ⅱ 40%), primary target only. **The skill's `SteamMissile1` does not stun.**
 
 **Base → Ⅱ**
 - Basic targets 2 → 3 (extra hit-frame, 2 → 3 missiles); stun chance 0.3 → 0.4; stun dur 40t → 50t; skill gains a 20% double-missile roll.
