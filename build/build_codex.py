@@ -8,6 +8,7 @@ REPO  = os.path.dirname(HERE)                         # repo root
 PARTS = os.path.join(HERE, "data")
 INTRO = os.path.join(HERE, "intro.md")
 ICON  = os.path.join(HERE, "icon_map.json")
+BS    = os.path.join(HERE, "base_stats.json")
 OUT   = os.path.join(REPO, "unit-codex.html")
 MD    = os.path.join(REPO, "UNIT-MECHANICS.md")
 
@@ -55,6 +56,46 @@ def md2html(md):
         out.append(f'<p>{inline(" ".join(para))}</p>')
     return '\n'.join(out)
 def strip_md(s): return re.sub(r'[`*_|]', ' ', s or '').strip()
+
+# ---------- base stats (from the captured UNIT book) ----------
+BSTATS = json.load(open(BS, encoding='utf-8')) if os.path.exists(BS) else {}
+BS_DESC = "From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`)."
+def _yn(v): return 'Y' if str(v) in ('Y', '1', 'true', 'True') else '—'
+def _imm(d):
+    on = [lbl for k, lbl in (('stunImmune','stun'),('freezeImmune','freeze'),
+          ('blowImmune','blow'),('knockImmune','knockback')) if str((d or {}).get(k)) in ('Y','1')]
+    return ', '.join(on) if on else '—'
+def _spd(a):
+    try: t = round(1e4/float(a)); return f'{a} → ~{t}t (~{t/60:.1f}s)'
+    except Exception: return '—' if a is None else str(a)
+def _g(d, k):
+    x = (d or {}).get(k); return '—' if x is None else x
+def base_stats_table(cls):
+    e = BSTATS.get(cls)
+    if not e or not e.get('base'): return ''
+    b = e['base']; v = e.get('evol'); two = v is not None
+    def row(lbl, fb, fv): return f'| {lbl} | {fb} | {fv} |' if two else f'| {lbl} | {fb} |'
+    dt = {'P': 'Physical', 'M': 'Magic'}
+    L = (['| stat | base | Ⅱ |', '|---|---|---|'] if two else ['| stat | value |', '|---|---|'])
+    L.append(row('HP', _g(b,'hp'), _g(v,'hp')))
+    L.append(row('ATK (`atkDmg`)', _g(b,'atkDmg'), _g(v,'atkDmg')))
+    L.append(row('atk speed (`atkSpd`)', _spd(b.get('atkSpd')), _spd((v or {}).get('atkSpd'))))
+    L.append(row('move speed', _g(b,'moveSpd'), _g(v,'moveSpd')))
+    L.append(row('range (`atkRange`)', _g(b,'atkRange'), _g(v,'atkRange')))
+    L.append(row('defense (def/phy/mag)', f"{_g(b,'def')} / {_g(b,'phyDef')} / {_g(b,'magDef')}",
+                 f"{_g(v,'def')} / {_g(v,'phyDef')} / {_g(v,'magDef')}"))
+    L.append(row('recovery', _g(b,'recovery'), _g(v,'recovery')))
+    L.append(row('dmg type', dt.get(b.get('dmgType'), _g(b,'dmgType')), dt.get((v or {}).get('dmgType'), _g(v,'dmgType'))))
+    L.append(row('immunities', _imm(b), _imm(v)))
+    L.append(row('cloaking / detect', f"{_yn(b.get('cloaking'))} / {_yn(b.get('detect'))}",
+                 f"{_yn((v or {}).get('cloaking'))} / {_yn((v or {}).get('detect'))}"))
+    return '\n'.join(L)
+def base_stats_block(cls):
+    t = base_stats_table(cls)
+    return {'k': 'basestats', 'label': 'Base stats', 'html': md2html(BS_DESC + '\n' + t)} if t else None
+def base_stats_md(cls):
+    t = base_stats_table(cls)
+    return f"**Base stats** — {BS_DESC}\n{t}\n" if t else ''
 
 # ---------- categories ----------
 SUMMONS={'NWolf','SkeletonX1','IceWolf','OrcIcePhantom1'}
@@ -170,6 +211,10 @@ icon = json.load(open(ICON))   # {kindNum(str): image-code}
 for u in units:
     code = icon.get(str(u['primary']))
     u['img'] = ('EFUnits/' + code + '.png') if code else ''
+    bs = base_stats_block(u['cls'])          # inject "Base stats" right after the at-a-glance
+    if bs:
+        gi = next((i for i, b in enumerate(u['blocks']) if b['k'] == 'glance'), -1)
+        u['blocks'].insert(gi + 1, bs)
 
 # intro panels from prior codex md (reuse framework + findings text)
 codex = open(INTRO, encoding='utf-8').read()
@@ -212,7 +257,12 @@ def build_md():
         if not cu: continue
         out.append(f"\n# {cat}\n")
         for u in cu:
-            if u['cls'] in secs: out.append(secs[u['cls']]); out.append('')
+            if u['cls'] not in secs: continue
+            sec = secs[u['cls']]; bs = base_stats_md(u['cls'])
+            if bs:                                # splice the Base-stats block in before the trailing '---'
+                s2 = sec.rstrip(); idx = s2.rfind('\n---')
+                sec = (s2[:idx] + '\n\n' + bs + s2[idx:]) if (s2.endswith('---') and idx != -1) else (s2 + '\n\n' + bs)
+            out.append(sec); out.append('')
     return '\n'.join(out) + '\n'
 open(MD, 'w', encoding='utf-8').write(build_md())
 

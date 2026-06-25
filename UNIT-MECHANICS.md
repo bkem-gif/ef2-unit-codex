@@ -6,12 +6,13 @@ delta** wherever the two disagree. Reverse-engineered from the game bundle
 `runtime/bundles/mounted/1.11.42/assets/index.js` (read-only; no game state was modified).
 
 > **Scope & sourcing.** 96 unit *classes* (covering 116 described `kindNum`s) are documented. The
-> **mechanics, formulas, and hard values are exact from the code.** Two things are *not* in the bundle
-> and are therefore omitted/approximate: (1) the authoritative `kindNum → class → base-stat` table is
-> server-loaded (`/api/book/get`), so kindNum links here are matched by **behaviour** (the description
-> describes what the code does) and a few are flagged "no description"; (2) **base stats** (per-unit HP/ATK
-> scaling) live in that same server table — only units with *hard-coded* stat blocks (mostly summons/enemies)
-> show absolute HP/ATK here. Open the in-game Encyclopedia if you want to capture the book for exact base stats.
+> **mechanics, formulas, and hard values are exact from the code.** On the `kindNum → class` mapping: the
+> authoritative table is server-loaded (`/api/book/get`), so kindNum links here are matched by **behaviour**
+> (the description describes what the code does) and a few are flagged "no description". **Base stats**
+> (HP, ATK, def/phy/mag, attack & move speed, range, recovery, dmg type + the immunity flags) come from that
+> same server table — captured from the game's local cache (the decrypted `UNIT` book) and shown per unit as a
+> **Base stats** block, base vs Ⅱ. `atkSpd` there is the `orgAtkSpd` that drives `atkDuration = 1e4/atkSpd`.
+> The ~17 cut/unreleased/boss/summon classes have no `UNIT`-book row, so they show mechanics only.
 
 ## How the combat engine works (read this first)
 
@@ -173,6 +174,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — evolved scales damage, stun chance, and stun duration exactly as "greater damage / higher chance" implies.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 86 | 103.2 |
+| ATK (`atkDmg`) | 18 | 21.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.456 | 1.456 |
+| range (`atkRange`) | 25 | 25 |
+| defense (def/phy/mag) | 2 / 3.6 / 3.15 | 2 / 4.32 / 3.78 |
+| recovery | 8.4 | 8.4 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Heavy Armor / Heavy Armor Ⅱ — `HeavyWarrior1` (kindNum: 2 · Ⅱ 27)
@@ -220,6 +236,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Unlike Infantry/HammerKnight, HeavyWarrior shows NO base/evolved branch in `skillMain` — the shield value (150) is identical regardless of evolStage.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 140.4 | 168.48 |
+| ATK (`atkDmg`) | 10 | 12 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.456 | 1.456 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 5 / 4.5 | 2 / 6 / 5.4 |
+| recovery | 14.04 | 14.04 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Firebird / Firebird Ⅱ — `FireBird1` (kindNum: 3 · Ⅱ 28)
@@ -257,6 +288,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | airHeight | 75 | 75 |
 
 **✓ Matches description** — evolved: greater dmg (3.5 vs 2.5) and higher stun chance (0.5 vs 0.3); stun length 50 unchanged.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 48 | 57.6 |
+| ATK (`atkDmg`) | 16.5 | 19.8 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.56 | 1.56 |
+| range (`atkRange`) | 90 | 90 |
+| defense (def/phy/mag) | 1 / 1.8 / 2.2 | 1 / 2.16 / 2.64 |
+| recovery | 2.88 | 2.88 |
+| dmg type | Magic | Magic |
+| immunities | — | knockback |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -304,6 +350,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - Skill matches (guaranteed stun, evolved longer 50 vs 30, higher dmg). DELTA on normal: the description says only "precise shots" with no stun, but `Bullet1`'s `onHitMain` applies `stun(50)` at 20% on EVERY normal hit (`random.chance(.2)&&target.stun(50)`). The basic attack has an undocumented 20% stun.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 95 | 114 |
+| ATK (`atkDmg`) | 15 | 18 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) | 86 → ~116t (~1.9s) |
+| move speed | 1.1115 | 1.1115 |
+| range (`atkRange`) | 130 | 130 |
+| defense (def/phy/mag) | 1 / 1.6 / 1.6 | 1 / 1.92 / 1.92 |
+| recovery | 5.7 | 5.7 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -356,6 +417,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - Skill matches (wider AoE, higher dmg, higher stun chances, longer stuns at Ⅱ). DELTA: evolved gains an undocumented 10% physical-shield proc on its NORMAL attack, which the descriptions don't mention.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 180 | 216 |
+| ATK (`atkDmg`) | 23 | 27.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.391 | 1.391 |
+| range (`atkRange`) | 35 | 35 |
+| defense (def/phy/mag) | 2 / 3 / 3 | 2 / 3.6 / 3.6 |
+| recovery | 18 | 18 |
+| dmg type | Magic | Magic |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -410,6 +486,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - Combo alternation and "taunt after N uses" (every 3rd) both match. DELTA: the kill→move-speed buff is in the BASE class too (`onKillEnemy` is unconditional), but the locale documents it only on the evolved normal text (UNIT_NATK_31). So base Mounted Knight ALSO gets the +200% move-speed-on-kill its base description (UNIT_NATK_6) omits.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 230 | 276 |
+| ATK (`atkDmg`) | 19 | 22.8 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) | 86 → ~116t (~1.9s) |
+| move speed | 1.8083 | 1.8083 |
+| range (`atkRange`) | 35 | 35 |
+| defense (def/phy/mag) | 2 / 4 / 3 | 2 / 4.8 / 3.6 |
+| recovery | 23 | 23 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Elf Archer — `ElfArcher1` (kindNum: 7 · Ⅱ 32)
@@ -449,6 +540,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Same 8-direction frame/firepoint scaffold as the HighArcher1/PoisonArcher1 archer family. Basic `numShot` is always 1.3.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 75 | 90 |
+| ATK (`atkDmg`) | 19 | 22.8 |
+| atk speed (`atkSpd`) | 95 → ~105t (~1.8s) | 95 → ~105t (~1.8s) |
+| move speed | 1.17 | 1.17 |
+| range (`atkRange`) | 125 | 125 |
+| defense (def/phy/mag) | 1 / 1.6 / 1.6 | 1 / 1.92 / 1.92 |
+| recovery | 3.6 | 3.6 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Elf Warrior — `ElfWarrior1` (kindNum: 8 · Ⅱ 33)
@@ -481,6 +587,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - No `setData`/evolved branch — evolution (33) differs only via book stats.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 102 | 122.4 |
+| ATK (`atkDmg`) | 20 | 24 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.456 | 1.456 |
+| range (`atkRange`) | 20 | 20 |
+| defense (def/phy/mag) | 2 / 3.6 / 3.15 | 2 / 4.32 / 3.78 |
+| recovery | 10.2 | 10.2 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -528,6 +649,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - `objAtk={50:1}`, `objSkill={50:1}` (single hit each); `hitClassName="PhysicalHitEffect"`. "Reduces movement and attack speed" is the generic `poison()`/`numSlow` status, not a stat-buff call.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 75 | 90 |
+| ATK (`atkDmg`) | 15 | 18 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) | 86 → ~116t (~1.9s) |
+| move speed | 1.17 | 1.17 |
+| range (`atkRange`) | 130 | 130 |
+| defense (def/phy/mag) | 1 / 1.6 / 1.6 | 1 / 1.92 / 1.92 |
+| recovery | 4.5 | 4.5 |
+| dmg type | Magic | Magic |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### High Elf Archer — `HighArcher1` (kindNum: 10 · Ⅱ 35)
@@ -568,6 +704,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - The ONLY archer in this family with a real `evolved` code branch on numShot. `dieFrames=QK(190,221)`, directional firepoints `(30,-20)/(24,-37)/(0,-54)/(18,-3)/(6,12)`.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 130 | 156 |
+| ATK (`atkDmg`) | 28 | 33.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.04 | 1.04 |
+| range (`atkRange`) | 160 | 160 |
+| defense (def/phy/mag) | 1 / 1.9 / 2.9 | 1 / 2.28 / 3.48 |
+| recovery | 7.8 | 7.8 |
+| dmg type | Magic | Magic |
+| immunities | — | blow |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -616,6 +767,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - `weaponClass=GreenEagleBall1`; `objAtk=objSkill={50:1}` (skill reuses attack frames). No evolved code branch (36 differs via book stats).
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 60 | 72 |
+| ATK (`atkDmg`) | 17 | 20.4 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.482 | 1.482 |
+| range (`atkRange`) | 100 | 100 |
+| defense (def/phy/mag) | 1 / 1.5 / 1.8 | 1 / 1.8 / 2.16 |
+| recovery | 3.6 | 4.32 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Wind Mage — `WindMage1` (kindNum: 12 · Ⅱ 37)
@@ -659,6 +825,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - `weaponClass=GreenEnergyBall` (`MagicalHitEffect`, speed 9). Tornado is weapon class `Twist`, spawned procedurally; drifts toward target then whirls in place. **Twist is a hard root, not just DoT:** it re-binds the target (`binding(12)`) every 10t and drags it to the tornado's position, dealing 0.3× damage every 30t. (The in-game blurb only says "sustained damage" — the root is undocumented.)
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 155 | 186 |
+| ATK (`atkDmg`) | 35 | 42 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 0.988 | 0.988 |
+| range (`atkRange`) | 135 | 135 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 9.3 | 9.3 |
+| dmg type | Magic | Magic |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Skeleton Soldier / Skeleton Soldier Ⅱ — `SkeletonMan1` (kindNum: 13 · Ⅱ 38)
@@ -692,6 +873,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Skill damage = ATK × `2` / `3`.
 
 **✓ Matches description** — "massive damage" + "chance to stun"; evolve raises both damage (2→3) and stun chance (0.05→0.15), consistent with "high chance to stun."
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 84 | 100.8 |
+| ATK (`atkDmg`) | 18 | 21.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.456 | 1.456 |
+| range (`atkRange`) | 20 | 20 |
+| defense (def/phy/mag) | 2 / 3.6 / 3.15 | 2 / 4.32 / 3.78 |
+| recovery | 8.4 | 8.4 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -733,6 +929,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - The evolved "increased fire rate" wording is realized as a `numShot` multi-target bump (1→1.3), **not** an `atkSpd` change — flavor text ("fire rate") differs from the mechanism (extra-target chance).
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 63 | 75.6 |
+| ATK (`atkDmg`) | 24 | 28.8 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.04 | 1.04 |
+| range (`atkRange`) | 105 | 105 |
+| defense (def/phy/mag) | 1 / 1.6 / 2.6 | 1 / 1.92 / 3.12 |
+| recovery | 3.78 | 3.78 |
+| dmg type | Magic | Magic |
+| immunities | — | freeze |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Ghost / Ghost Ⅱ — `Ghost1` (kindNum: 15 · Ⅱ 40)
@@ -772,6 +983,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - The evolved "increased fire rate" normal is again implemented as `numShot` 1→1.3 (extra-target chance), **not** an `atkSpd` increase. (Skill deals no damage — invisibility is the entire skill.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 44 | 52.8 |
+| ATK (`atkDmg`) | 16.5 | 19.8 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.56 | 1.56 |
+| range (`atkRange`) | 95 | 95 |
+| defense (def/phy/mag) | 1 / 1.8 / 2.2 | 1 / 2.16 / 2.64 |
+| recovery | 2.64 | 2.64 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -814,6 +1040,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Skill damage = ATK × `0.9` / `1` **per hit**, ×6 hit frames ⇒ ~5.4× / 6× total if all land.
 
 **✓ Matches description** — double-hit normal, invisible multi-hit flurry skill. Note "massive damage" comes from the **6** stacked hits, not a high single multiplier (per-hit is below 1× at base).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 105 | 126 |
+| ATK (`atkDmg`) | 20 | 24 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.43 | 1.43 |
+| range (`atkRange`) | 25 | 25 |
+| defense (def/phy/mag) | 2 / 3.6 / 3.15 | 2 / 4.32 / 3.78 |
+| recovery | 10.5 | 16.15 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -861,6 +1102,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Main skill dmg = ATK × `1.5` / `2`; AoE dmg = ATK × `0.5` / `0.7` to ≤5 nearby enemies.
 
 **✓ Matches description** — but note "higher chance to stun" on evolve refers to the **normal-attack** stun (0.2→0.4); the skill's AoE stun (chance 0.6) is unchanged. Evolve scaling is on damage and the normal-hit stun, not the skill's AoE stun.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 200 | 240 |
+| ATK (`atkDmg`) | 23 | 27.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.326 | 1.326 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 3 / 3 | 2 / 3.6 / 3.6 |
+| recovery | 20 | 20 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -922,6 +1178,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Only grade≤2 (non-air, non-summoned) enemies can be revived. The skill curse hits the whole attackable list (3/4) but the skill **orb** only hits list[0]. Revived/summoned units share the orange tint `16746632` and `initDelay=8`.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 150 | 180 |
+| ATK (`atkDmg`) | 29 | 34.8 |
+| atk speed (`atkSpd`) | 95 → ~105t (~1.8s) | 95 → ~105t (~1.8s) |
+| move speed | 0.988 | 0.988 |
+| range (`atkRange`) | 125 | 125 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 9 | 9 |
+| dmg type | Magic | Magic |
+| immunities | — | freeze |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Orc Fighter — `OrcFighter1` (kindNum: 19 · Ⅱ 44)
@@ -963,6 +1234,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Skill dmg = atk × 2 (base) / × 2.5 (Ⅱ). Normal = 2× `objAtk` frames at 1× each.
 
 **✓ Matches description** — double-hit normal + heavy-damage knockback skill; evolved raises mult (2→2.5) and knockback (2→3).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 90 | 108 |
+| ATK (`atkDmg`) | 10.5 | 12.6 |
+| atk speed (`atkSpd`) | 100 → ~100t (~1.7s) | 104 → ~96t (~1.6s) |
+| move speed | 1.456 | 1.456 |
+| range (`atkRange`) | 20 | 20 |
+| defense (def/phy/mag) | 2 / 2.8 / 2.3 | 2 / 3.36 / 2.76 |
+| recovery | 8.4 | 8.4 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1008,6 +1294,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — evolved bumps dmg (2→3) and freeze (30→50). Note "farthest enemy" is implemented as farthest **in +x (forward) direction within a 200/√40000 box**, not globally farthest.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 130 | 156 |
+| ATK (`atkDmg`) | 23 | 27.6 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) | 86 → ~116t (~1.9s) |
+| move speed | 1.3104 | 1.3104 |
+| range (`atkRange`) | 25 | 25 |
+| defense (def/phy/mag) | 2 / 2.1 / 2.1 | 2 / 2.52 / 2.52 |
+| recovery | 13 | 9.5 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Frost Mage / Ice Mage Ⅱ — `OrcIceMage1` (kindNum: 21 · Ⅱ 46)
@@ -1051,6 +1352,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "increased fire rate / additional targets" = numShot 1→1.3; evolved skill's "additional" bolt = one 50%-chance second projectile at the nearest other enemy.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 76.5 | 91.8 |
+| ATK (`atkDmg`) | 18 | 21.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.04 | 1.04 |
+| range (`atkRange`) | 105 | 105 |
+| defense (def/phy/mag) | 1 / 1.6 / 2.6 | 1 / 1.92 / 3.12 |
+| recovery | 4.59 | 4.59 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Orc Wing — `OrcWing1` (kindNum: 22 · Ⅱ 47)
@@ -1089,6 +1405,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Skill projectile = normal `OrcWingBall1` at power level 2 (exact multiplier lives in the weapon class).
 
 **✓ Matches description** — skill is the same projectile at power 2; no mechanical base/evolved difference beyond size.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 90 | 108 |
+| ATK (`atkDmg`) | 16.5 | 19.8 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.482 | 1.482 |
+| range (`atkRange`) | 25 | 25 |
+| defense (def/phy/mag) | 1 / 2.4 / 2.4 | 1 / 2.88 / 2.88 |
+| recovery | 5.85 | 5.85 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -1130,6 +1461,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Normal forward AoE dmg = atk × 0.5 (base) / × 0.7 (Ⅱ), up to 2/3 extra ground targets. Skill = 1 melee + N thrown axes (3/5).
 
 **✓ Matches description** — "wider AoE" (Ⅱ) = range/radius 30→35, targets 2→3, mult 0.5→0.7. "Hit airborne enemies" = skill's `getAttackableEnemyList(...,false)` includes air units (normal AoE skips air).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 255 | 306 |
+| ATK (`atkDmg`) | 32.01 | 38.412 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.391 | 1.391 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 3.6 / 5.01 | 2 / 4.32 / 6.012 |
+| recovery | 25.5 | 25.5 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1176,6 +1522,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Evolved secondary hit dmg = atk × 0.7.
 
 **✓ Matches description** — evolved "AoE normal" = exactly one extra forward ground hit at 0.7×; evolved decoy lasts longer (180→220t). The decoy only soaks aggro then expires; it never attacks.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 180 | 216 |
+| ATK (`atkDmg`) | 23 | 27.6 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.326 | 1.326 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 3.8 / 3.4 | 2 / 4.56 / 4.08 |
+| recovery | 18 | 18 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1235,6 +1596,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "increases number of wolves" = MAX_WOLVES 2→3 + longer duration; "strengthens buffs" = value/radius/duration up plus stronger wolves (level +6→+10, scale 1.05→1.15). Summoned "wolf" is internally kindNum 1003 = "Ice Wolf".
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 370 | 444 |
+| ATK (`atkDmg`) | 44 | 52.8 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.7238 | 1.7238 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 6 / 3 | 2 / 7.2 / 3.6 |
+| recovery | 37 | 37 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Unicorn Archer — `Unicorn1` (kindNum: 51 · Ⅱ 52)
@@ -1292,6 +1668,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Player-side hero (UNIT_NAME 51/52), unlike the rest of this batch (enemy/reward units). The "1.2 vs 1.5" gap is the only genuine code-vs-intent oddity — looks like the threshold was meant to be ≤1.2 (or NUM_SHOT_2 meant to be ≥1.5) so evolved would actually double-fire.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 230 | 276 |
+| ATK (`atkDmg`) | 44 | 52.8 |
+| atk speed (`atkSpd`) | 110 → ~91t (~1.5s) | 110 → ~91t (~1.5s) |
+| move speed | 1.69 | 1.69 |
+| range (`atkRange`) | 150 | 150 |
+| defense (def/phy/mag) | 1 / 2.8 / 4.5 | 1 / 3.36 / 5.4 |
+| recovery | 15.6 | 15.6 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Fairy — `Fairy1` (kindNum: 53 · Ⅱ 54)
@@ -1341,6 +1732,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Buff-id = kindNum is unusual (most units use a named `fQ.*` enum). Heal/mana are applied directly, not via `addMaxHealthBuff`.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 190 | 228 |
+| ATK (`atkDmg`) | 32 | 38.4 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.56 | 1.56 |
+| range (`atkRange`) | 150 | 150 |
+| defense (def/phy/mag) | 1 / 2.8 / 4.5 | 1 / 3.36 / 5.4 |
+| recovery | 11.4 | 11.4 |
+| dmg type | Magic | Magic |
+| immunities | — | blow |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -1396,6 +1802,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Heal targets the LOWEST-HP% allies first; shields target the NEAREST allies first — two different sort orders, both capped at 20. Castle heal % is ~10× smaller than ally heal %.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 220 | 264 |
+| ATK (`atkDmg`) | 29.7 | 35.64 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.43 | 1.43 |
+| range (`atkRange`) | 150 | 150 |
+| defense (def/phy/mag) | 1 / 2.8 / 5.5 | 1 / 3.36 / 6.6 |
+| recovery | 13.2 | 13.2 |
+| dmg type | Magic | Magic |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Dark Archer / Dark Archer Ⅱ — `DarkArcher1` (kindNum: 57 · Ⅱ 58)
@@ -1448,6 +1869,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Revive grade gate (≤3) is **looser** than DarkMage1's (≤2). Both use the same orange tint `16746632` and `initDelay=8`.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 230 | 276 |
+| ATK (`atkDmg`) | 45 | 54 |
+| atk speed (`atkSpd`) | 121 → ~83t (~1.4s) | 121 → ~83t (~1.4s) |
+| move speed | 1.56 | 1.56 |
+| range (`atkRange`) | 160 | 160 |
+| defense (def/phy/mag) | 1 / 3 / 4.5 | 1 / 3.6 / 5.4 |
+| recovery | 16.2 | 16.2 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1511,6 +1947,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - The skeleton kind genuinely switches (14→39), a different unit and not just a stat bump.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 320 | 384 |
+| ATK (`atkDmg`) | 52 | 62.4 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.703 | 1.703 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 1 / 3 / 6 | 1 / 3.6 / 7.2 |
+| recovery | 32 | 32 |
+| dmg type | Magic | Magic |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Bigfoot — `OrcBigFoot1` (kindNum: 61 · Ⅱ 70)
@@ -1561,6 +2012,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Freeze applies via `target.freeze(durTicks)` only if `!freezeImmune` and the new duration exceeds the current `numFreeze`.
 
 **✓ Matches description** — body sweep + per-target freeze = NATK; forward box at ×1.0 freezing up to `s`/8 = SATK; Ⅱ "wider area" = box 55→70 and caps 4→8.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 504 | 604.8 |
+| ATK (`atkDmg`) | 40 | 48 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.0088 | 1.0088 |
+| range (`atkRange`) | 35 | 35 |
+| defense (def/phy/mag) | 2 / 9 / 4.8 | 2 / 10.8 / 5.76 |
+| recovery | 50.4 | 50.4 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1615,6 +2081,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | skill max 2ndary stuns (n) | 6 | 10 |
 
 **✓ Matches description** — "more enemies / higher chance" is realized as larger stun caps (4→6, 6→10) and chances (.3→.4, .5→1). Two unstated details: both attacks **ignore airborne enemies**, and the skill **always** stuns the main target (the chance only governs the AoE splash).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 483 | 579.6 |
+| ATK (`atkDmg`) | 46 | 55.2 |
+| atk speed (`atkSpd`) | 120 → ~83t (~1.4s) | 120 → ~83t (~1.4s) |
+| move speed | 1.0088 | 1.0088 |
+| range (`atkRange`) | 40 | 40 |
+| defense (def/phy/mag) | 2 / 11 / 5 | 2 / 13.2 / 6 |
+| recovery | 48.3 | 48.3 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1675,6 +2156,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - **Revive/summon passives** (DarkMage1, DarkArcher1) are energy-gated on-kill mechanics with a grade filter (≤2 for DarkMage1, ≤3 for DarkArcher1), shared orange tint `16746632`, `initDelay=8`.
 - **No mismatches like the drummer's missing ATK buff** were found in this set — every description clause is backed by a code call. The only "extra" mechanics beyond literal skill text are the DarkMage1/DarkArcher1 kill-revive passives (which the normal-attack text does mention).
 
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 475 | 570 |
+| ATK (`atkDmg`) | 40 | 48 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.0088 | 1.0088 |
+| range (`atkRange`) | 35 | 35 |
+| defense (def/phy/mag) | 2 / 9 / 4.8 | 2 / 10.8 / 5.76 |
+| recovery | 47.5 | 48 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / — | — / — |
+
+
 ### Wolf Warrior / Wolf Warrior Ⅱ — `WolfWarrior1` (kindNum: 64 · Ⅱ 73)
 **TL;DR.** Teleporting assassin that blinks to enemies for combo strikes, and on its skill chains up to 10 teleport hits before returning home and taunting.
 
@@ -1720,6 +2216,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "up to 10 teleports" is exact (skillCallIndex 2–10). The evolved-only "teleport chain during normal attacks" is the 2nd/3rd normal hits retargeting+teleporting; base normal hits 2 & 3 are evolStage-gated and do not teleport.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 320 | 384 |
+| ATK (`atkDmg`) | 49.5 | 59.4 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 1.7238 | 1.7238 |
+| range (`atkRange`) | 25 | 25 |
+| defense (def/phy/mag) | 2 / 4.8 / 2.4 | 2 / 5.76 / 2.88 |
+| recovery | 32 | 32 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Ent / Ent Ⅱ — `Ant1` (kindNum: 65 · Ⅱ 74)
@@ -1758,6 +2269,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "drops more boulders" = 3→4; the wider-area normal = radius/cap bumps. Two notes: the class name `Ant1` is a misnomer for the **Ent** (the `AntRock1` projectile is the boulder), and both attacks ignore airborne enemies.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 450 | 540 |
+| ATK (`atkDmg`) | 44 | 52.8 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.0608 | 1.0608 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 10.5 / 6 | 2 / 12.6 / 7.2 |
+| recovery | 45 | 45 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Fire Mage / Fire Mage Ⅱ — `GreatMage1` (kindNum: 66 · Ⅱ 75)
@@ -1795,6 +2321,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Class is named `GreatMage1` but is the **Fire Mage** (66/75), not a "Great Mage" — identified by `FireMagicBall1`/`FireMageBird1` and the fire-bird skill.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 202.5 | 243 |
+| ATK (`atkDmg`) | 40 | 48 |
+| atk speed (`atkSpd`) | 95 → ~105t (~1.8s) | 95 → ~105t (~1.8s) |
+| move speed | 0.936 | 0.936 |
+| range (`atkRange`) | 140 | 140 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 12.15 | 12.15 |
+| dmg type | Magic | Magic |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1835,6 +2376,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - Behaviour matches the generic "Ice Mage" text, BUT this is a **naming/tribe mismatch**: the class is `OrcBlizzardMage1` (Orc tribe, own `sheetName`) yet reuses the generic Ice-Mage (67/76) description string — kindNum binding matched here by behaviour only; confirm in the data config.
 - It is NOT the in-game "Frost Mage" (kindNum 21, enhanced freezing projectiles): this unit's hits are mostly spread damage, but the **skill rain does apply a light freeze** — `OrcBlizzardMageRain1` rolls 20% → `freeze(60)` per drop (an earlier note here that said "no freeze" was wrong).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 200 | 240 |
+| ATK (`atkDmg`) | 55 | 66 |
+| atk speed (`atkSpd`) | 120 → ~83t (~1.4s) | 120 → ~83t (~1.4s) |
+| move speed | 0.988 | 0.988 |
+| range (`atkRange`) | 140 | 140 |
+| defense (def/phy/mag) | 1 / 2.1 / 2.6 | 1 / 2.52 / 3.12 |
+| recovery | 12 | 12 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1890,6 +2446,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - The two frenzy buffs use **distinct ids** (200, 201) so they don't collide; same-id buffs from multiple Bombers wouldn't stack (max kept).
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 210 | 252 |
+| ATK (`atkDmg`) | 40 | 48 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) | 112 → ~89t (~1.5s) |
+| move speed | 1.1115 | 1.1115 |
+| range (`atkRange`) | 130 | 130 |
+| defense (def/phy/mag) | 1 / 2.1 / 2.1 | 1 / 2.52 / 2.52 |
+| recovery | 12.6 | 12.6 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Drums of the Battlefield — `BigDrumer1` (kindNum: 69 · Ⅱ 78)
@@ -1935,6 +2506,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Multiple drummers share id 8001 ⇒ per the max-per-id aggregation rule they don't stack strength, only extend uptime via the `refresh` flag. Static fields verified in bundle: `zt(u0,"BUFF_ID",8001), zt(u0,"SKILL_MAX_TARGETS",30)`.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 230 | 276 |
+| ATK (`atkDmg`) | 0 | 0 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) | 104 → ~96t (~1.6s) |
+| move speed | 0.8645 | 0.8645 |
+| range (`atkRange`) | 120 | 120 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 13.8 | 13.8 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -1988,6 +2574,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "fires more missiles" = 3→5; "more enemies" = maxAttackTargets 4→7 plus the evolved burst-firing. Note: the "taunt 1 enemy" is a direct single-target retarget (`s.target=this; break`), not an AoE taunt.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 180 | 216 |
+| ATK (`atkDmg`) | 35 | 42 |
+| atk speed (`atkSpd`) | 72 → ~139t (~2.3s) | 72 → ~139t (~2.3s) |
+| move speed | 1.5444 | 1.5444 |
+| range (`atkRange`) | 182 | 182 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 10.8 | 10.8 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Forest Guardian — `TigerRider1` (kindNum: 81 · Ⅱ 84)
@@ -2038,6 +2639,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Structurally near-identical to `Unicorn1`/Unicorn Archer, but Unicorn1 has NO self-buff — that self-buff is the distinguishing Forest-Guardian trait.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 230 | 276 |
+| ATK (`atkDmg`) | 55 | 66 |
+| atk speed (`atkSpd`) | 130 → ~77t (~1.3s) | 130 → ~77t (~1.3s) |
+| move speed | 1.6 | 1.6 |
+| range (`atkRange`) | 150 | 150 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 13.8 | 13.8 |
+| dmg type | Magic | Magic |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -2090,6 +2706,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - First skill missile always fires at the locked `target`, then nearest others. `weaponClass=SteamFire1`, skill weapon `SteamMissile1`. `maxMana` not set on basic (skill mana-gated via base class).
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 260 | 312 |
+| ATK (`atkDmg`) | 41 | 49.2 |
+| atk speed (`atkSpd`) | 80 → ~125t (~2.1s) | 80 → ~125t (~2.1s) |
+| move speed | 1.1 | 1.1 |
+| range (`atkRange`) | 180 | 180 |
+| defense (def/phy/mag) | 2 / 2.8 / 3.6 | 2 / 3.36 / 4.32 |
+| recovery | 15.6 | 16.5 |
+| dmg type | Magic | Magic |
+| immunities | — | knockback |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Raptor Rider — `OrcRapterRider1` (kindNum: 83 · Ⅱ 86)
@@ -2129,6 +2760,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | firePoint | (30, −57) | same |
 
 **✓ Matches description** — round-robin `doRangeAttack` over `targetList` = NATK; Ⅱ "more enemies" = cap 3→4 + extra hit frame; SATK = 5 skill spears (freeze handled by the weapon).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 245 | 294 |
+| ATK (`atkDmg`) | 52 | 62.4 |
+| atk speed (`atkSpd`) | 115 → ~87t (~1.4s) | 115 → ~87t (~1.4s) |
+| move speed | 1.65 | 1.65 |
+| range (`atkRange`) | 140 | 140 |
+| defense (def/phy/mag) | 1 / 2.5 / 4 | 1 / 3 / 4.8 |
+| recovery | 14.7 | 14.7 |
+| dmg type | Physical | Physical |
+| immunities | — | stun |
+| cloaking / detect | — / — | — / — |
 
 ---
 
@@ -2191,6 +2837,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - `maxMana=250` but the auto-cast gate is `mana>=500`, so the threshold can never be reached from `maxMana` alone — the skill must rely on external mana grants/over-cap; the description mentions no mana cost.
 - Low per-hit damage (0.8×) but rapid multi-hit + lifesteal makes it a sustain bruiser.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 330 | 396 |
+| ATK (`atkDmg`) | 35 | 42 |
+| atk speed (`atkSpd`) | 90 → ~111t (~1.9s) | 90 → ~111t (~1.9s) |
+| move speed | 1.65 | 1.65 |
+| range (`atkRange`) | 30 | 30 |
+| defense (def/phy/mag) | 2 / 3 / 3.9 | 2 / 3.6 / 4.68 |
+| recovery | 33 | 33 |
+| dmg type | Physical | Physical |
+| immunities | — | freeze |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -2267,6 +2928,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Flash and Survival are passive (NATK), not the mana skill. `normalSize=.8`, `evolSize=.85`.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 340 | 408 |
+| ATK (`atkDmg`) | 45 | 54 |
+| atk speed (`atkSpd`) | 110 → ~91t (~1.5s) | 110 → ~91t (~1.5s) |
+| move speed | 1.7 | 1.7 |
+| range (`atkRange`) | 45 | 45 |
+| defense (def/phy/mag) | 2 / 4 / 4 | 2 / 4.8 / 4.8 |
+| recovery | 17 | 17 |
+| dmg type | Physical | Physical |
+| immunities | — | knockback |
+| cloaking / detect | — / Y | — / Y |
+
 ---
 
 ### Sylphid — `Sylphid1` (kindNum: 90 · Ⅱ 94)
@@ -2328,6 +3004,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **✓ Matches description** — "each hit increases attack speed" = +0.04/stack (`onShurikenHit`); "max attack speed → additional shurikens" = at 25 stacks rage triggers and normals fire the extra `doRangeAttack(target,4)`. Skill = tornados, evolved fires one more (3 vs 2). ⚠️ The blurb ("deal damage") omits the tornado's **root / vacuum / knockBack**, and the Ⅱ `1.2` "power" arg doesn't actually raise damage (per-tick is the fixed `DMG_PER_TICK=0.6`) — only the tornado count changes.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 260 | 312 |
+| ATK (`atkDmg`) | 36 | 43.2 |
+| atk speed (`atkSpd`) | 115 → ~87t (~1.4s) | 115 → ~87t (~1.4s) |
+| move speed | 1.3 | 1.3 |
+| range (`atkRange`) | 150 | 150 |
+| defense (def/phy/mag) | 1 / 2.4 / 4.2 | 1 / 2.88 / 5.04 |
+| recovery | 13 | 14 |
+| dmg type | Physical | Physical |
+| immunities | — | blow |
+| cloaking / detect | — / — | — / — |
+
 ---
 
 ### Abyss Mage / Abyss Mage Ⅱ — `Abyss1` (kindNum: 91 · Ⅱ 95)
@@ -2378,6 +3069,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Skill targets are pre-collected on the start frame, then consumed one-per-frame, so all collected enemies are hit in sequence.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 240 | 288 |
+| ATK (`atkDmg`) | 45 | 54 |
+| atk speed (`atkSpd`) | 110 → ~91t (~1.5s) | 110 → ~91t (~1.5s) |
+| move speed | 1.4 | 1.4 |
+| range (`atkRange`) | 160 | 160 |
+| defense (def/phy/mag) | 1 / 2.8 / 2.8 | 1 / 3.36 / 3.36 |
+| recovery | 12 | 12 |
+| dmg type | Magic | Magic |
+| immunities | — | freeze |
+| cloaking / detect | — / Y | — / Y |
 
 ---
 
@@ -2432,6 +3138,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Tendril tier: `count = prepCount>=8 ? 4 : >=5 ? 3 : >=2 ? 2 : 1`.
 
 **✓ Matches description** — "additional boomerang daggers depending on enemies defeated since last skill" = the `prepCount`→`calcTendrilCount` mechanic (2/5/8 thresholds → up to 4 `…KnifeS1` knives); "freezes + spreads radially + explodes" = the `…KnifeS1` weapon. Ⅱ raises skill dmg and gather box despite identical text.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | base | Ⅱ |
+|---|---|---|
+| HP | 240 | 288 |
+| ATK (`atkDmg`) | 48 | 57.6 |
+| atk speed (`atkSpd`) | 100 → ~100t (~1.7s) | 100 → ~100t (~1.7s) |
+| move speed | 1.6 | 1.6 |
+| range (`atkRange`) | 140 | 140 |
+| defense (def/phy/mag) | 1 / 2.4 / 3.9 | 1 / 2.88 / 4.68 |
+| recovery | 12 | 12 |
+| dmg type | Magic | Magic |
+| immunities | — | stun |
+| cloaking / detect | Y / Y | Y / Y |
 
 ---
 
@@ -2493,6 +3214,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - No real description to compare (placeholder text only). No skill and no evolStage handling; pure stat-block unit.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 30 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Graveyard Hero — `SkeletonX1` (kindNum: 1002)
@@ -2527,6 +3263,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - Placeholder description only — nothing to compare. No evolStage handling.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 150 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.274 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -2575,6 +3326,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - The wolf summoned by Wolf-Rider type units (kindNum 1003 in the 100x summon block, alongside Wolf=1001, Graveyard Hero=1002). Carries its own fixed stats rather than scaling off a summoner, except whatever the summon code applies. No evolStage branch.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 70 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -2662,6 +3428,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - The "Knockback" / "Special Skill" stub massively understates it: no knockback — a CC-immune boss raining `Rock` (60%/enemy within 300) and periodically summoning 5 mixed-color slimes (20002/20003/20004).
 - **Boss check:** no per-HP phase transitions or enrage in the class; behaviour is constant, scaling only via the kindNum data config (level) and summon pressure.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 800 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 0 |
+| range (`atkRange`) | 250 |
+| defense (def/phy/mag) | 0 / 1 / 0.5 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / Y |
+
 ---
 
 ### Orc Flower — `OrcFlower` (kindNum: 30001)
@@ -2709,6 +3490,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Summons `FlowerSoldier2` (30003), NOT `FlowerSoldier1` (30002) — only the ranged soldier variant is summoned.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 800 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) |
+| move speed | 0 |
+| range (`atkRange`) | 250 |
+| defense (def/phy/mag) | 0 / 1 / 0.5 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
 
 ---
 
@@ -2759,6 +3555,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Projectile spawn jitter: `x = this.x + firePoint.x + 15 − 30·rand`, `y = this.y + firePoint.y + 10·rand`; aim `rotation = atan2(dy,dx)`.
 
 **✓ Matches description** — "Knockback" = the directional `blow` on melee hits; "Special Skill" = the `MoleFire` barrage. Both present; descriptions are the generic boss placeholders.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 800 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 0 |
+| range (`atkRange`) | 250 |
+| defense (def/phy/mag) | 0 / 1 / 0.5 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / Y |
 
 ---
 
@@ -2814,6 +3625,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Same immobile/status-immune archetype as Hammer Mole, but the skill is deterministic (always 10 missiles) and mana-gated (≥400), vs Hammer Mole's probabilistic per-enemy roll.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 800 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 0 |
+| range (`atkRange`) | 120 |
+| defense (def/phy/mag) | 0 / 1 / 0.5 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
+
 ---
 
 
@@ -2839,6 +3665,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | dieIncFrame | .4 | death-anim speed (slow) |
 
 **✓ Matches description** — "None" / "Special Skill" matches; a trivial melee enemy with no skill and no split (terminal slime).
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 30 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.3 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -2875,6 +3716,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - No localized description to compare ("None" / "Special Skill"). The real "special" behavior is the split into 3 smaller slimes, which **fires only inside a mine/`mii` battle** — elsewhere it dies without splitting.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 100 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.3 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Slime 3 — `SSlime3` (kindNum: 1062)
@@ -2902,6 +3758,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - No localized description to compare. **Notable:** only **SSlime2** splits; SSlime3 (largest) and SSlime1 (smallest) have no `onDie` split. The death chain is one-step: SSlime2 → 3× SSlime1. SSlime3 is a standalone tankier slime, not the top of a split ladder.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.3 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -2934,6 +3805,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - `skillFrames` aliased to `attackFrames` (31-41), confirming no distinct skill animation. Identical structure to SlimeBlue/SlimeYellow/KingSlime base.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 129 → ~78t (~1.3s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Blue Slime — `SlimeBlue` (kindNum: 20003)
@@ -2960,6 +3846,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | radius / hitHeight | 7 / 15 | collision (tiny) |
 
 **✓ Matches description** — trivially: "None"/"Special Skill" placeholders for a plain summoned add with no skill. Stats from the kindNum 20003 data config.
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 50 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 
 ### Yellow Slime — `SlimeYellow` (kindNum: 20004)
 **TL;DR.** A trivial melee minion identical to Red Slime apart from palette and id.
@@ -2990,6 +3891,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Slime variants (Red/Blue/Yellow) are summoned/spawned by the Dark Hermit boss (its `kindNums:[20002,20003,20004]`).
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 80 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Flower Soldier 1 — `FlowerSoldier1` (kindNum: 30002)
@@ -3015,6 +3931,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | radius / hitHeight | 7 / 22 | collision |
 
 **✓ Matches description** — trivially: "None"/"Special Skill" placeholders for a plain melee add with no skill. (atkDmg/hp come from the kindNum data config.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3043,6 +3974,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 | radius / hitHeight | 7 / 27 | collision |
 
 **✓ Matches description** — trivially: placeholders for a plain ranged add firing `FlowerBullet`, no skill.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 150 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3075,6 +4021,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Differs from MoleSoldier2 only in `hitHeight` (27 vs 33); MoleSoldier2 is the slightly taller variant. Same frames and `objAtk`.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 12 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Mole Soldier 2 — `MoleSoldier2` (kindNum: 40003)
@@ -3106,6 +4067,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - Only delta vs MoleSoldier1 is `hitHeight`. No `evolStage` gating in either.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 160 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 18 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Starfish Soldier — `StarFish` (kindNum: 50002)
@@ -3136,6 +4112,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Melee counterpart to the ranged Crab/Clam on the same DarkHermit spritesheet.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 120 |
+| ATK (`atkDmg`) | 12 |
+| atk speed (`atkSpd`) | 86 → ~116t (~1.9s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3169,6 +4160,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Notes**
 - Internal class name is "Crab" but the in-game name is "Clam Soldier". Only ranged one of the three Dark-Hermit map adds (StarFish is melee). `weaponClass` + `firePoint` are the sole behavioral difference from a stock melee minion.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 150 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3224,6 +4230,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Description vs code**
 - No in-game description exists for this class (see scope note), so there is nothing to compare against.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 60 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Boar2 — `Boar2` (kindNum: none — enemy wave unit, not in unit_desc)
@@ -3255,6 +4276,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Description vs code**
 - No in-game description exists; nothing to compare. (vs Boar1: +knockback, +size, and the on-hit 3%-max-HP self-heal.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 230 |
+| ATK (`atkDmg`) | 15 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 3.25 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 3 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3294,6 +4330,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Description vs code**
 - No in-game description exists; nothing to compare. (Only ranged/AoE that registers `onHitted` twice can drop it before it reaches the castle.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 70 |
+| ATK (`atkDmg`) | 10 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.69 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3335,6 +4386,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Description vs code**
 - No in-game description exists; nothing to compare. (vs Frog1: higher spawn, +1 hit to knock down, and a 5-target/35-radius AoE swipe with knockback — Frog1 is single-target.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 280 |
+| ATK (`atkDmg`) | 15 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 1.69 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 3 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Physical |
+| immunities | — |
+| cloaking / detect | — / — |
 
 ---
 
@@ -3399,6 +4465,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Description vs code**
 - No in-game description exists; nothing to compare. (Killing it before the fuse fills cancels the blast entirely — `onDie` early-returns when `!selfDestruct`.)
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 50 |
+| ATK (`atkDmg`) | 150 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 2.73 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | Y / — |
+
 ---
 
 ### RoboBomb2 — `RoboBomb2` (kindNum: none — enemy wave unit, not in unit_desc)
@@ -3436,6 +4517,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Description vs code**
 - No in-game description exists; nothing to compare. (Same "no kill ⇒ no boom" rule — `onDie` returns unless `selfDestruct`.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 800 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 2.73 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | Y / — |
 
 ---
 
@@ -3477,6 +4573,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **⚠️ Description vs code**
 - No localized description to compare. Behavior: poison-on-hit melee enemy with a death-burst that poisons + damages nearby units.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 50 |
+| ATK (`atkDmg`) | 12 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 2.34 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 2 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
+
 ---
 
 ### Spider (Ⅱ) — `Spider2` (no kindNum)
@@ -3516,6 +4627,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **⚠️ Description vs code**
 - No localized description to compare. **Note:** Spider2 is Spider1 with bumped numbers (size .9→1.1, poison chance .1→.15 / .4→.5, duration 40→60, onDie radius 40→55) — a difficulty-tier variant, not an evolStage of Spider1.
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 17 |
+| atk speed (`atkSpd`) | 104 → ~96t (~1.6s) |
+| move speed | 2.34 |
+| range (`atkRange`) | 15 |
+| defense (def/phy/mag) | 3 / 1 / 1 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / — |
+
 
 
 # Raid bosses
@@ -3734,6 +4860,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Notes**
 - The "5" in `ElfTown5` is a tier/skin index; all castle setups in the bundle use this same class for kindNum 10001.
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 1 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) |
+| move speed | 0 |
+| range (`atkRange`) | 160 |
+| defense (def/phy/mag) | 0 / 0 / 0 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
+
 ---
 
 ### Castle (base) — `BaseCastle` (`QQ`) — the player's structure
@@ -3808,6 +4949,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 **Description vs code**
 - No unit description exists; nothing to compare. (Identical body to Castle1/Castle2 except for the `numShot=3` literal in `initializeData`.)
 
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 1 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) |
+| move speed | 0 |
+| range (`atkRange`) | 160 |
+| defense (def/phy/mag) | 0 / 0 / 0 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
+
 ---
 
 ### Castle1 — `Castle1` (kindNum: none — player castle, not in unit_desc)
@@ -3838,6 +4994,21 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 
 **Description vs code**
 - No unit description exists; nothing to compare. (Only delta vs Castle0 is the absence of the `numShot=3` literal.)
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 1 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) |
+| move speed | 0 |
+| range (`atkRange`) | 160 |
+| defense (def/phy/mag) | 0 / 0 / 0 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
 
 ---
 
@@ -3880,6 +5051,21 @@ The three "King" bosses below all extend `BaseRaidUnit`. Shared framework (verif
 - **Skill selection** (`pickSkill`): if a queued `arrAttackTypeList` exists it shifts from that; else it walks a per-battle random **`attackOrderList`** sequence; else the first `numForSkillAttack (=2)` attacks are forced to the normal attack (skill 0), after which it rolls against the descending **`skillRatio`** thresholds to pick a skill index. `skill0` = normal attack; `skillN(i)` = skill `i`.
 - **Wander AI** between attacks (`wanderEnabled`, `wanderInterval`, bounded by `wanderMin/MaxX/Y` = 100–540 / 200–950), plus `targetSwapChance` (re-roll target on each attack) and `wanderAfterAttackChance`.
 - **Outgoing damage** is multiplied by `getRaidBossDamageMultiplier()` from the battle controller (a raid-difficulty scalar). `radialBlow/radialKnockback` push enemies away from an impact point, scaled by per-boss `BLOW_SCALE`.
+
+
+**Base stats** — From the game's `UNIT` book (server base values; `atkSpd` drives `atkDuration = 1e4/atkSpd`).
+| stat | value |
+|---|---|
+| HP | 200 |
+| ATK (`atkDmg`) | 1 |
+| atk speed (`atkSpd`) | 112 → ~89t (~1.5s) |
+| move speed | 0 |
+| range (`atkRange`) | 160 |
+| defense (def/phy/mag) | 0 / 0 / 0 |
+| recovery | 1 |
+| dmg type | Magic |
+| immunities | — |
+| cloaking / detect | — / Y |
 
 ---
 

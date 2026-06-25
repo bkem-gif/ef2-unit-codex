@@ -6,12 +6,13 @@ delta** wherever the two disagree. Reverse-engineered from the game bundle
 `runtime/bundles/mounted/1.11.42/assets/index.js` (read-only; no game state was modified).
 
 > **Scope & sourcing.** 96 unit *classes* (covering 116 described `kindNum`s) are documented. The
-> **mechanics, formulas, and hard values are exact from the code.** Two things are *not* in the bundle
-> and are therefore omitted/approximate: (1) the authoritative `kindNum → class → base-stat` table is
-> server-loaded (`/api/book/get`), so kindNum links here are matched by **behaviour** (the description
-> describes what the code does) and a few are flagged "no description"; (2) **base stats** (per-unit HP/ATK
-> scaling) live in that same server table — only units with *hard-coded* stat blocks (mostly summons/enemies)
-> show absolute HP/ATK here. Open the in-game Encyclopedia if you want to capture the book for exact base stats.
+> **mechanics, formulas, and hard values are exact from the code.** On the `kindNum → class` mapping: the
+> authoritative table is server-loaded (`/api/book/get`), so kindNum links here are matched by **behaviour**
+> (the description describes what the code does) and a few are flagged "no description". **Base stats**
+> (HP, ATK, def/phy/mag, attack & move speed, range, recovery, dmg type + the immunity flags) come from that
+> same server table — captured from the game's local cache (the decrypted `UNIT` book) and shown per unit as a
+> **Base stats** block, base vs Ⅱ. `atkSpd` there is the `orgAtkSpd` that drives `atkDuration = 1e4/atkSpd`.
+> The ~17 cut/unreleased/boss/summon classes have no `UNIT`-book row, so they show mechanics only.
 
 ## How the combat engine works (read this first)
 
