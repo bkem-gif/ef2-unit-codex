@@ -1,8 +1,8 @@
 # EF2 Game Modes & Battle Architecture
 
 A companion to the **Unit Mechanics Codex**. Where the codex documents *units* (how each one
-fights), this documents the *battle modes* that wrap them — focused on **Infinite Ranking**, the
-competitive PvP ladder, and the shared battle-controller architecture behind every game mode.
+fights), this documents the *battle modes* that wrap them — the shared battle-controller architecture
+and the competitive modes that ride on it: **Infinite Ranking**, **Guild War**, and **Guild Raid**.
 
 > **Sourcing.** Reverse-engineered read-only from the **live game bundle `1.11.52`**
 > (`runtime/bundles/mounted/1.11.52/assets/index.js`). Note: the Unit Codex was built on `1.11.42`,
@@ -209,6 +209,119 @@ endpoints build an actual fight.
 | You fight | other players' defense snapshots | nobody (your own run) |
 | Ranked by | win/loss → server point delta | highest rebirth floor in 24h |
 | Combat | full client-side simulation | none |
+
+---
+
+## Part 5 — Guild War ("Guild PvP")
+
+A scheduled guild-vs-guild **castle siege**. (The feature is "Guild War"; each scheduled match is a "Guild
+Battle".) The war state — matchmaking, scoring, eligibility, rewards — is **server-authoritative**; the client
+only simulates individual attack battles and renders server data.
+
+### Format (locale-stated, enforced server-side)
+- **Auto-matched every 12 h; each war lasts 23 h** (the last 1 h is settlement + prep) — `GAME_988`.
+- **17+ members** required to participate — `GAME_989`. **ELO matchmaking** vs similar guilds — `GAME_990`.
+  (None of these — cadence, member floor, ELO — exist as constants in any client book; all server-enforced.)
+- Win = *"defend your own castles while taking down the enemy castles; the guild with the higher score wins"* — `GAME_991`.
+
+### The map: 17 castles, 4 grades
+A fixed graph of **17 castles** (`GAME_998`–`GAME_1002`): **1 S** (center) · **4 A** (inner) · **4 B** (middle) ·
+**8 C** (outer), with a fixed adjacency graph (`s` borders the four `a`s; each `c` borders one `b`; …). A castle
+opens for attack by **accumulated score** in grade order **C → B → A → S** (`GAME_1005/1006`), or by capturing an
+**adjacent** castle. Capturing the **S castle advances the war Stage** (up to 3).
+
+### Defense (set in advance)
+- The **Guild Master / Vice-Master** assign members to defend a castle **grade**; unassigned members auto-place —
+  one per castle first, then extras in order **S→A→B→C** (`GAME_996`, `GAME_1095`).
+- A member's **defense team persists** to the next war unless changed (`GAME_997`); a slot that **successfully
+  defends is protected** for a while (`GAME_1010`); a member who leaves mid-war keeps the slot + rewards (`GAME_1018`).
+- Stored via `/guildDefense/{getCastleDefense,getMyTeams,setTeam}`; grade assignment via
+  `/guildWar/{get,set}TierAssignments` — two separate server subsystems.
+
+### Attack & the actual combat
+- **2 attack attempts per member** per war (`GAME_1004`); one attacker per slot at a time; new joiners can't act
+  in an ongoing war.
+- Each attack is **one elimination battle** run by **`GuildWarBattleController`** in **`NN.GuildPvp`** context:
+  ```js
+  checkVictory = initialEnemyCount !== 0 && countAlive(enemyList) === 0          // wipe the defenders → capture
+  checkDefeat  = initialAllyCount  !== 0 && (countAlive(friendList) === 0 || battleTime >= 7200)  // 7200f ≈ 120s
+  ```
+  It reports a **binary WIN/LOSE** (`fireOnComplete`) — no in-battle score. Capturing a castle = defeating **all**
+  its defending squads (`GAME_1009`).
+- **Asymmetric leveling.** The **attacker's** knight level is `Math.floor(wL.maxWave/100)` (your own progression);
+  the **defender's** knight level is **supplied by the server** in the attack response (`enemyKnightLevel`), *not*
+  derived from your wave. On top of that the **defending hero** gets `enemyHeroLevelBonus = getPlusLevel(grade)` —
+  the `plusS/A/B/C` from the config book — added to its level (soldiers don't get it; they spawn at
+  `knightLevel + their tier's plusLevel`).
+- **GAME_979 "all soldiers of the same type join regardless of Evolved/Elite":** `squadsToCorpsRich` sends *every*
+  stored soldier tier (each barrack tier with count > 0 as its own corp), not a single evolved/elite tier; tiers
+  shift up one when the tribe's barracks are "awakened" (`getShiftedSoldierTier`). Both sides' squads come from the
+  server attack-start body. Two attack protocols exist — `attackStart/End` (V1) and `attackV3Start/End` + `attackV3Mock`
+  (V3); resolution is server-side (`attackV3End` returns the gems/honor).
+
+### Config book — `GUILD_WAR_CONFIG` (3 rows = Stages 1–3)
+| Stage | req to open C/B/A/S | clear (squads) C/B/A/S | defender lvl bonus +C/B/A/S | win/lose pts |
+|---|---|---|---|---|
+| 1 | 0 / 36 / 56 / 80 | 5 / 7 / 9 / 12 | 0 / 1 / 2 / 3 | +3 / +1 |
+| 2 | 0 / 150 / 180 / 220 | 9 / 12 / 16 / 20 | 3 / 4 / 5 / 7 | +4 / +1 |
+| 3 | 0 / 340 / 380 / 450 | 16 / 20 / 24 / 30 | 7 / 9 / 11 / 13 | +5 / +1 |
+
+`reqX` = accumulated score to open that grade · `clearX` = squads to clear (and capture points) by grade · `plusX` =
+the **defender hero level bonus** (feeds `enemyHeroLevelBonus`) · `win/lose` = points per attack. **Live war scores
+(`myScore`/`oppScore`) are read from the server**, not computed by the client.
+
+### Rewards (mailed after the war)
+- **Per attack:** win **100 Gems + 40 Honor Coins**; loss **50 Gems + 20 Honor Coins**.
+- **Per successful defense:** **20 Gems + 10 Honor Coins** (≤ 10× per war).
+- **Guild outcome:** win → **200 Guild Coins + 100 Guild Points + 2 Pet Fragments** each; loss → 100 / 50 / 1.
+- **After 30+ wars:** a rebirth **Medal Buff by guild rank** — a hardcoded client table (rank 1 = +300%, 2 = +280%,
+  3 = +260%, … 101+ = +70%); the value actually applied is fetched from the server (`getGuildWarBuff`).
+
+### Feeder systems
+- **Guild Barracks** (`GUILD_BARRACK`, 16 rows = 4 tribes × 4 barracks; `/guildBarracks/{getAll,unlockKind,boost}`):
+  trains the **shared soldiers** that fill war squads — 5 soldier tiers per barrack (`unitKindNums` + `plusLevel`
+  `[0,0,6,12,18]`), `maxNum` 30, `openCost` ∈ {0 (first free), 500, 700, 1000}, instructor heroes (grade ≥ 5 only),
+  and per-stat combat buffs (att/hp/def/move/range) that are **applied server-side** (the client only sends
+  kind/count/plusLevel into the sim).
+- **Pets:** `PET_94`–`PET_133` are Guild-PvP-only hero buffs — 94–101 buff all heroes across 8 stats
+  (HP/ATK/DEF/atk-spd/move-spd/crit-rate/crit-dmg/range); 102–133 repeat those per race.
+
+---
+
+## Part 6 — Guild Raid (Guild Subjugation Battle)
+
+A **co-op PvE boss kill** — *not* guild-vs-guild. (`GAME_630` "Guild Raid" and `GAME_631` "Guild Subjugation Battle"
+are synonyms.) The guild collectively whittles a shared boss; each member contributes damage.
+
+### Combat
+- Run by **`RaidBattleController`**. **Win = the boss is dead** (a boss-kill objective). **Lose = the time limit**
+  (`TIME_LIMIT_FRAMES = 10800` ≈ 180 s at 60 fps) **or all your units dead**.
+- You field **multiple corps** (a `"kind-kind|…"` squads string across `CORP_COUNT` corps; saved per-user in
+  `localStorage` under `ef2.guildRaid.attackSquads.<userId>`).
+- **Player damage ramps up as the clock runs down** — a comeback mechanic: ×1.5 at frame 1800, ×2 at 3600, ×2.5 at
+  5400, ×3 at 7200, ×4 at 9000 (`getRaidBossDamageMultiplier`).
+- It's a **cumulative-damage** objective: even a non-kill run records damage. On end the client posts
+  `endBattle{battleId, damage, elapsedTime}` — **no win flag**; `damage = clamp(0, bossStartHp, bossStartHp − bossHp)`,
+  `time = clamp(3, 300, battleTime/60)s`. Whether the boss was *defeated* vs merely *damaged* comes back as the
+  server's `isClear`.
+
+### Structure & the boss
+- Hierarchy **main → difficulty → sub**, each sub → a boss `kindNum`. **Only main 1 is live** (`LIVE_MAINS = [1]`);
+  the data manager hardcodes 5 main names as Korean literals (`고대유적지`, `불타는 대지`, `죽음의 늪지`, `지옥군주의 성채`,
+  `얼어붙은 고대 문명` — English glosses would be a translation, not present in the data) and fallback boss kinds
+  `{1:100000, 2:100001, 3:100002}`.
+- The boss is one of three reused raid-boss Kings — **Scorpion King** (`100000`, default), **Harpy King** (`100001`),
+  **Golem King** (`100002`) — selected by kindNum. **Boss HP comes from the server** (`battle.startHp`), not a book.
+
+### Economy & ranking (server-authoritative)
+- **Endpoints** (`GuildRaidService`, 10): `getAllInfo, getMainInfo, getSubInfo, open, giveUp, claimReward, startBattle,
+  endBattle, getRanking, getGuildAndUserRanking`.
+- **Opening** a raid costs **Guild Coins** (server returns the new balance). **Attack tickets** are per-user and
+  **server-gated** (the client only displays the server's `userTicket`). `claimReward(raidId, sub)` pays out when the
+  server returns a `CLEAR` status — **reward contents, boss HP, tickets, and difficulty tiers are all server-side**;
+  there is **no Guild-Raid config book** in the client.
+- **Contribution ranking is entirely server-side**: `getRanking` / `getGuildAndUserRanking` exist, but the shipped UI
+  has **no caller** that computes contribution — the client only renders what the server returns.
 
 ---
 
