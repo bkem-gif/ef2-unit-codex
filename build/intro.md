@@ -53,8 +53,11 @@ overwrites value+count); **different ids ⇒ summed**. Clamped to `[min,max]` (d
 why two copies of the same buffer don't stack magnitude (only uptime), but two *different* speed sources do.
 
 ### Status effects (on enemies)
-`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, plus taunt/provoke, shields, poison/DoT,
-binding/root, and summons. **Bosses and the castle override these to no-ops** (full CC immunity).
+`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, `curse(ticks)` (the cursed unit has a
+**50% chance to miss** on each of its own attacks while active — shows a "Miss"), `silence(ticks)` (drains
+200 mana and blocks the skill), `binding/root`, poison/DoT, plus taunt/provoke, shields, and summons.
+Each is a tick-countdown (`numStun`, `numCurse`, … decremented per tick). **Bosses and the castle override
+these to no-ops** (full CC immunity).
 
 ### Evolution
 A `kindNum` and its "Ⅱ" share one class; `evolStage ≥ 1` gates the stronger branch (bigger buff `value`,

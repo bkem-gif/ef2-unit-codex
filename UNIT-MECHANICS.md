@@ -53,8 +53,11 @@ overwrites value+count); **different ids ⇒ summed**. Clamped to `[min,max]` (d
 why two copies of the same buffer don't stack magnitude (only uptime), but two *different* speed sources do.
 
 ### Status effects (on enemies)
-`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, plus taunt/provoke, shields, poison/DoT,
-binding/root, and summons. **Bosses and the castle override these to no-ops** (full CC immunity).
+`freeze(ticks)`, `stun(ticks)`, `stunAll(...)`, `knockBack(...)`, `curse(ticks)` (the cursed unit has a
+**50% chance to miss** on each of its own attacks while active — shows a "Miss"), `silence(ticks)` (drains
+200 mana and blocks the skill), `binding/root`, poison/DoT, plus taunt/provoke, shields, and summons.
+Each is a tick-countdown (`numStun`, `numCurse`, … decremented per tick). **Bosses and the castle override
+these to no-ops** (full CC immunity).
 
 ### Evolution
 A `kindNum` and its "Ⅱ" share one class; `evolStage ≥ 1` gates the stronger branch (bigger buff `value`,
@@ -826,12 +829,12 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 ---
 
 ### Dark Sorcerer / Dark Sorcerer Ⅱ — `DarkMage1` (kindNum: 18 · Ⅱ 43)
-**TL;DR.** A multi-role caster that fires dark projectiles, periodically summons skeletons, and on cast curses enemies + shields allies — and can resurrect slain low-grade enemies to fight for you.
+**TL;DR.** A multi-role caster that fires dark projectiles, periodically summons skeletons, and on cast curses enemies (50% to miss their own attacks) + shields allies — and can resurrect slain low-grade enemies to fight for you.
 
 **At a glance**
 - **Role:** Ranged DPS + summoner / support
 - **Attack:** fires `DarkMageBall1`; numShot 1.5 → **2.5** at Ⅱ
-- **Skill:** curse ≤3 (Ⅱ ≤4) enemies + shield 1 (Ⅱ 2) allies + summon a skeleton
+- **Skill:** curse ≤3 (Ⅱ ≤4) enemies (each then has a **50% chance to miss every attack** for ~3s) + shield 1 (Ⅱ 2) allies + summon a skeleton
 - **Passive summon:** a Skeleton Soldier (kind 13) every 1000t
 - **Revive passive:** on kill of a grade≤2 enemy, energy-gated chance to resurrect it as an ally
 
@@ -843,7 +846,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - Fires `DarkMageBall1`; `numShot = 1.5` base (1 guaranteed extra + 50% for a 2nd) / **2.5** evolved (2 extra + 50% for a 3rd).
 
 **Skill — curse + shield + summon (`skillMain`)**
-- (1) `getAttackableEnemyList(i)` with `i=3` base / **4** evolved; fires `DarkMageSkillBall1` (mult 1.5) at the **first** enemy, and `curse(180)` on **every** enemy in the list.
+- (1) `getAttackableEnemyList(i)` with `i=3` base / **4** evolved; fires `DarkMageSkillBall1` (mult 1.5) at the **first** enemy, and `curse(180)` on **every** enemy in the list. **Curse = a 50% chance to miss on each of the cursed unit's own attacks** (shows a "Miss"), for 180 ticks (~3s) — effectively halving the cursed enemies' damage output.
 - (2) Shields `s` random alive allies (`s=1` base / **2** evolved) via `showPowerShield(120)`.
 - (3) Calls `trySummonSkeleton()`.
 
@@ -852,7 +855,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 - **Revive on kill** (`onKillEnemy`): if the killed enemy is `grade≤2`, not air, not summoned, and `reviveEnergy ≥ REVIVE_ENERGY` (350 base / **220** evolved), then with chance 0.1 base / **0.2** evolved, resurrects a copy as an ally (`summonUnitSync(reviveVO, REVIVE_DURATION=600, 0)`, at the corpse, `revive()`, `initDelay=8`). `reviveEnergy` increments +1/tick and resets to 0 on a successful revive.
 
 **Buffs & debuffs**
-- Curse: 180t, on ≤3 (Ⅱ ≤4) enemies (the whole attackable list) — skill.
+- Curse (**50% chance to miss each attack** while active): 180t (~3s), on ≤3 (Ⅱ ≤4) enemies (the whole attackable list) — skill.
 - Shield: `showPowerShield`, 120t, on 1 (Ⅱ 2) random allies — skill.
 
 **Base → Ⅱ**
@@ -863,7 +866,7 @@ fires fractional multi-shot (`chance(numShot − floor)`); kill-stacking buffs p
 |---|---|---|
 | numShot | 1.5 | 2.5 |
 | skill curse targets | 3 | 4 |
-| curse duration | 180t | 180t |
+| curse — 50% attack-miss | 180t (~3s) | 180t |
 | skill shield count | 1 | 2 |
 | showPowerShield (ally) | 120t | 120t |
 | SUMMON_COOLDOWN | 1000t | 1000t |
