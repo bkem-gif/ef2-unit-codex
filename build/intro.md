@@ -59,7 +59,7 @@ show a floating effect sprite. What each actually does:
 - **stun / freeze / shock** — **incapacitate**: the unit can neither attack nor move while active.
 - **knockBack / blow** — shoved back by a velocity impulse; can't act mid-knockback.
 - **binding** (root) — **can't move, but can still attack** (no effect on air units).
-- **slow** — reduced move speed. **The `poison()` call sets this slow** (`numSlow`, counts down 0.5/tick,
+- **slow** — reduced move **and attack** speed. **The `poison()` call sets this slow** (`numSlow`, counts down 0.5/tick,
   so its value lasts ~2× in ticks) — it is **not** damage-over-time.
 - **curse** — **50% chance to miss** on each of the cursed unit's own attacks (shows "Miss").
 - **silence** — can't cast its skill, and immediately drains **200 mana**.

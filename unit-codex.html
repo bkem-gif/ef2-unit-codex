@@ -77,7 +77,7 @@ details.panel>summary::before{content:"▸ ";color:var(--mut)}details.panel[open
 <li><strong>stun / freeze / shock</strong> — <strong>incapacitate</strong>: the unit can neither attack nor move while active.</li>
 <li><strong>knockBack / blow</strong> — shoved back by a velocity impulse; can&#x27;t act mid-knockback.</li>
 <li><strong>binding</strong> (root) — <strong>can&#x27;t move, but can still attack</strong> (no effect on air units).</li>
-<li><strong>slow</strong> — reduced move speed. <strong>The <code>poison()</code> call sets this slow</strong> (<code>numSlow</code>, counts down 0.5/tick,</li>
+<li><strong>slow</strong> — reduced move <strong>and attack</strong> speed. <strong>The <code>poison()</code> call sets this slow</strong> (<code>numSlow</code>, counts down 0.5/tick,</li>
 </ul>
 <p>  so its value lasts ~2× in ticks) — it is <strong>not</strong> damage-over-time.</p>
 <ul>
