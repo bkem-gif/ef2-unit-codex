@@ -17,6 +17,7 @@ so the icons load.
 |---|---|
 | `unit-codex.html` | the interactive browser (search / filter / expand) |
 | `UNIT-MECHANICS.md` | the same content as Markdown — the readable source |
+| [`GAME-MODES.md`](GAME-MODES.md) | companion doc — **Infinite Ranking** PvP and the shared battle-mode / controller architecture (from the current bundle `1.11.52`) |
 | `EFUnits/` | unit icons + [`ICON-MAP.md`](EFUnits/ICON-MAP.md) (which icon is which unit) |
 
 ## What each unit card shows
