@@ -141,8 +141,11 @@ Only **three families** carry a wave-call unique skill:
 | **Bigfoot** (OrcBigFoot) | g5 / g6 | Regen | waveCall **4% / 7%** per copy |
 | **Raptor Rider** (OrcRapterRider) | g5 / g6 | Double | doubleWave **2% / 4%** per copy |
 
-Each owned copy contributes once, plus once per transcend stage (`trans[0..2]`). **[INFERRED]** the
-*applied* value is the unit's own `getSkill1Value(...)` `Bx` lookup, which may differ from the raw buff-def %.
+Each owned copy contributes once; a transcend stage selects *which* skill row (`trans[0..2]`), with no
+arithmetic multiplier. The contributed number is the **raw buff-def %** (4/7) summed directly —
+`HeroUniqueSkill.recalculate` does `totals.set(code, n + vo.value)`, with **no enhance scaling and no
+cap**. (Confirmed by follow-up trace: the `getSkill1Value`/`Bx` table drives a unit's *combat* skills, not
+this gameplay buff — so the regen % is exactly the table value, never a `Bx`-resolved or enhance-scaled one.)
 
 ### Pets
 
@@ -152,6 +155,11 @@ Each owned copy contributes once, plus once per transcend stage (`trans[0..2]`).
 | **Woola** (11) | Regen | waveCall 0.5 / 0.7 / 0.9 / 1.2 / 1.5 % |
 | **Rapty** (20, awakened) | Double | +1%(5★)/+2%(6★) per owned Raptor Rider — **capped +70%** (see Part 5) |
 | GameSpeed pets (9,10,13,21,22,23,1002,1003) | Speed (indirect) | 0.4–8% per tier |
+
+A pet's tier is **`value1[grade − 1]`**, indexed by its **grade (1–5 star/upgrade level — *not* pet level
+or awakening)**; for Piggy/Woola `value1 = [0.5, 0.7, 0.9, 1.2, 1.5]`. The **represent (active) pet doubles**
+its skill value (`×2`) — e.g. Piggy at grade 5 set as represent contributes **3.0%** wavecall. No cap on
+the pet path.
 
 ### Castle (`CASTLE_SPECIAL` book)
 
@@ -201,7 +209,9 @@ and therefore not awakening-capped.**
 
 - **Regen rate — uncapped (ownership-gated).** The ceiling on `i` is purely how many **Wolf Rider +
   Bigfoot** copies/transcends you own (each +7% at g6, additive), plus Piggy/Woola (+1.5% each) and hero
-  unique skills. No code cap, no awakening, no clamp. **[INFERRED]** reaching +100% total → `i = 2.0` →
+  unique skills. No code cap, no awakening, no clamp — the full path (`HeroUniqueSkill.recalculate` →
+  additive `h` → `(1 + h/100)`) was traced end-to-end with **no `Math.min`/max anywhere** (the only clamps
+  live in the combat-stat path, never `getGameplayMultiplier`). Reaching +100% total → `i = 2.0` →
   **1 call / 50 s**, and nothing in the client stops it climbing further.
 - **Bank cap — server-gated.** `maxCall` is read back from `getWaveCallInfo`; the orc-art-level → cap
   table lives server-side, and `increaseMaxWaveCall` has no in-bundle caller. The numeric ceiling is
@@ -239,10 +249,12 @@ actual wave/reward resolution is server-side — the client can't fabricate prog
 1. The `maxWaveCall` integer ceiling (the orc-art-level → cap table; `increaseMaxWaveCall`'s increment/cost/cap).
 2. What one call actually yields in waves advanced + loot.
 
-**Inferred (not byte-traced):**
-3. The per-copy *applied* value vs the buff-def % — the `getSkill1Value(...)` `Bx` table wasn't dumped, so
-   the max-power regen/throughput figures are **illustrative ceilings, not exact**.
-4. The pet 5-tier value indexing (which tier is active per star/transcend).
+**Resolved by follow-up trace (was inferred):**
+3. The unit per-copy value is the **raw buff-def %** (4/7) summed directly — no `Bx`/`getSkill1Value`
+   lookup, no enhance scaling, and **no cap anywhere** in the `getGameplayMultiplier("wavecall")` path.
+   The only residual inference is the exact per-grade `uniqueSkill`-id binding (g5→kindNum 37, g6→60): the
+   value table and aggregation are confirmed, the precise id→grade map wasn't byte-traced.
+4. The pet tier = **`value1[grade-1]`** by grade (1–5), **×2 for the represent pet** — confirmed.
 
 **Corrected false-positives (flagged for the record):**
 5. An early pass claimed ~49 unit families grant wave-call via **gold** buffs — **refuted**. A unit's
@@ -260,6 +272,7 @@ actual wave/reward resolution is server-side — the client can't fabricate prog
 |---|---|
 | Regen + double-wave + anchor bookkeeping | `callWave` ; bar widget `this.cnt=10` |
 | Multiplier engine (additive, no clamp) | `getGameplayMultiplier(t){` · `resolveGameplayMergeMode` · `heroIsolatedCodes` · `OWNERSHIP_BASED_CODES` |
+| Buff aggregation (unit/pet → totals) | `HeroUniqueSkill.recalculate` (`totals.set(code, n+vo.value)`) · `PetBuffSource.collectActiveSkills` (`value1[grade-1] × (represent?2:1)`) |
 | Wall-clock anchor | `ix.time=this.serverTime` (`updateTime` / `setTime`) |
 | Bank cap | castle `5===i.kindNum` → `maxCall=i.level+1` ; `getWaveCallInfo` → `maxCall=body.maxWaveCall` |
 | Awakening contributions + caps | `sumAwakenedCoupleContribution` · `computeRaptiOwnedDoubleWave` · `getMoonOwnedStartWaveContribution` · `*_CAP_PCT` |
