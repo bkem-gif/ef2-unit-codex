@@ -20,6 +20,7 @@ so the icons load.
 | [`GAME-MODES.md`](GAME-MODES.md) | companion doc — **Infinite Ranking** PvP and the shared battle-mode / controller architecture (from the current bundle `1.11.52`) |
 | [`WAVE-CALL.md`](WAVE-CALL.md) | companion doc — the **Wave Call** "Rage gauge": regen formula, every buff source, the awakening caps, and max-power analysis (from bundle `1.11.55`) |
 | [`CASTLE.md`](CASTLE.md) | companion doc — the **player castle** ("Valkion Castle"): its three upgrade tracks (gold / medal-enhance / gem specials), buffs, combat behaviour, and the 8 "Arcane" special books (from bundle `1.11.55`) |
+| [`EF1-TIMELINE.md`](EF1-TIMELINE.md) | **EF1 context** — the update timeline of the *predecessor* game (Endless Frontier, 2016→2025): version-by-version dates, the Honor-Unit / Guild-Raid content cadence, and the 2025 maintenance pivot to EF2 (pieced together from store archives + the dev's patch posts) |
 | `EFUnits/` | unit icons + [`ICON-MAP.md`](EFUnits/ICON-MAP.md) (which icon is which unit) |
 
 ## What each unit card shows
