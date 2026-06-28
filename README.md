@@ -19,6 +19,7 @@ so the icons load.
 | `UNIT-MECHANICS.md` | the same content as Markdown — the readable source |
 | [`GAME-MODES.md`](GAME-MODES.md) | companion doc — **Infinite Ranking** PvP and the shared battle-mode / controller architecture (from the current bundle `1.11.52`) |
 | [`WAVE-CALL.md`](WAVE-CALL.md) | companion doc — the **Wave Call** "Rage gauge": regen formula, every buff source, the awakening caps, and max-power analysis (from bundle `1.11.55`) |
+| [`CASTLE.md`](CASTLE.md) | companion doc — the **player castle** ("Valkion Castle"): its three upgrade tracks (gold / medal-enhance / gem specials), buffs, combat behaviour, and the 8 "Arcane" special books (from bundle `1.11.55`) |
 | `EFUnits/` | unit icons + [`ICON-MAP.md`](EFUnits/ICON-MAP.md) (which icon is which unit) |
 
 ## What each unit card shows
