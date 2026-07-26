@@ -1,0 +1,360 @@
+<title>Sand Resistance &mdash; Guild Raid Damage Matrix</title>
+<style>
+  :root{
+    --ground:#12131A; --panel:#1B1D27; --panel-2:#22242F; --line:#2E3040;
+    --ink:#E8E4DC; --ink-dim:#A9A5B5; --muted:#7E7B8D;
+    --deal:#E8B44A; --taken:#C9503C; --ok:#5FB08C; --teal:#4FA9C4;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --r:3px;
+  }
+  @media (prefers-color-scheme: light){
+    :root{--ground:#ECEDF2;--panel:#FFF;--panel-2:#F4F5F9;--line:#D8DAE4;
+          --ink:#1A1B23;--ink-dim:#4C4E5C;--muted:#6E7080;
+          --deal:#A9741A;--taken:#B4402C;--ok:#2F7D5C;--teal:#2C7A96}
+  }
+  :root[data-theme="dark"]{--ground:#12131A;--panel:#1B1D27;--panel-2:#22242F;--line:#2E3040;
+    --ink:#E8E4DC;--ink-dim:#A9A5B5;--muted:#7E7B8D;--deal:#E8B44A;--taken:#C9503C;--ok:#5FB08C;--teal:#4FA9C4}
+  :root[data-theme="light"]{--ground:#ECEDF2;--panel:#FFF;--panel-2:#F4F5F9;--line:#D8DAE4;
+    --ink:#1A1B23;--ink-dim:#4C4E5C;--muted:#6E7080;--deal:#A9741A;--taken:#B4402C;--ok:#2F7D5C;--teal:#2C7A96}
+
+  *{box-sizing:border-box}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);margin:0;
+       padding:32px 20px 64px;line-height:1.5;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+  h1{font-family:var(--mono);font-size:clamp(21px,3.4vw,29px);font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+  .lede{color:var(--ink-dim);font-size:14.5px;max-width:68ch;margin:10px 0 0}
+
+  /* --- cursor-tracking tooltip --- */
+  .tip{position:fixed;z-index:20;pointer-events:none;opacity:0;
+       background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+       box-shadow:0 6px 22px rgba(0,0,0,.35);padding:11px 13px;min-width:186px}
+  .tip[data-on="1"]{opacity:1}
+  @media (prefers-reduced-motion:no-preference){.tip{transition:opacity .1s ease}}
+  .tip .t-r{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1.15}
+  .tip .t-r em{font-style:normal;font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+               color:var(--muted);margin-left:6px}
+  .tip .t-enc{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);
+              margin:2px 0 9px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+  .tip dl{display:grid;grid-template-columns:auto auto;gap:4px 14px;margin:0;align-items:baseline}
+  .tip dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+  .tip dd{margin:0;font-family:var(--mono);font-size:14px;font-weight:600;text-align:right}
+  .tip .t-rel{margin-top:9px;padding-top:8px;border-top:1px solid var(--line);
+              display:flex;flex-direction:column;gap:3px}
+  .tip .t-rel span{font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+  .tip .t-rel b{font-weight:600}
+  .hint{color:var(--muted);font-size:13px;font-style:italic;margin:0}
+
+  section > h2{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.11em;
+               text-transform:uppercase;margin:0 0 3px}
+  section > h2.d{color:var(--deal)} section > h2.t{color:var(--taken)}
+  .sub{font-size:12.5px;color:var(--muted);margin:0 0 11px;max-width:72ch}
+
+  .plot{display:grid;grid-template-columns:22px 126px 1fr;gap:0;border:1px solid var(--line);
+        border-radius:var(--r);overflow:hidden;background:var(--panel)}
+  .labels{background:var(--panel-2);border-right:1px solid var(--line);display:flex;flex-direction:column}
+  .labels div{flex:1;display:flex;align-items:center;padding:0 11px;font-family:var(--mono);
+              font-size:10.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .labels div.hot{background:var(--panel);color:var(--ink);box-shadow:inset 2px 0 0 var(--deal)}
+  .labels div.stagetop{border-top:2px solid var(--ink-dim)}
+  .labels em{font-style:normal;color:var(--muted)}
+  .stagecol{background:var(--panel-2);border-right:1px solid var(--line);display:flex;flex-direction:column}
+  .stagecol div{flex:1;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;
+                transform:rotate(180deg);font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;
+                text-transform:uppercase;color:var(--muted);border-top:2px solid var(--ink-dim)}
+  .stagecol div:first-child{border-top:0}
+  .canvas-host{position:relative;cursor:crosshair}
+  canvas{display:block;width:100%}
+  .axis{position:relative;height:15px;margin-top:5px;font-family:var(--mono);
+        font-size:10px;color:var(--muted)}
+  .axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .axis span.edge0{transform:none;left:0}
+  .axis span.edgeN{transform:translateX(-100%)}
+  .axis-wrap{display:grid;grid-template-columns:148px 1fr}
+  .axis.top{margin:0 0 5px}
+  .axis-wrap .sp{}
+
+  .legend{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:9px;
+          font-family:var(--mono);font-size:11px;color:var(--ink-dim)}
+  .ramp{display:flex;height:9px;width:140px;border-radius:2px;overflow:hidden}
+  .ramp i{flex:1}
+  .key{display:inline-flex;align-items:center;gap:7px}
+
+  .flag{background:var(--panel);border:1px solid var(--taken);border-left-width:3px;border-radius:var(--r);
+        padding:16px 19px;display:flex;flex-direction:column;gap:8px}
+  .flag h3{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--taken);margin:0}
+  .flag p{margin:0;font-size:13.5px;color:var(--ink-dim);max-width:74ch}
+  code{font-family:var(--mono);font-size:.9em;color:var(--ink);background:var(--panel-2);padding:1px 5px;border-radius:2px}
+  footer{border-top:1px solid var(--line);padding-top:16px;font-size:12px;color:var(--muted)}
+  @media (max-width:620px){
+    body{padding:22px 12px 48px}
+    .plot{grid-template-columns:18px 92px 1fr} .axis-wrap{grid-template-columns:110px 1fr}
+    .labels div{font-size:9.5px;padding:0 7px}
+  }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Guild Raid &middot; Desert</p>
+    <h1>Sand Resistance Damage Matrix</h1>
+    <p class="lede">Sand resistance scales the damage you <strong>deal</strong> to each boss and the damage your corps <strong>take</strong>. Every encounter interpolates between its own floor and ceiling. Sweep across either heatmap to read exact multipliers &mdash; resolved every 10 resistance. The axis is <strong>logarithmic</strong>, because full-damage thresholds run 160, 320, 640 &hellip; 9,600 and a linear axis crushes every stage-1 row into the leftmost sliver.</p>
+  </header>
+
+  <p class="hint">Sweep either heatmap &mdash; exact values follow the cursor.</p>
+  <div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+  <section>
+    <h2 class="d">Damage dealt</h2>
+    <p class="sub">Your output multiplier, in eight bands so equal values line up across rows and can be counted off without a legend. Darker amber means you are under-resisted. Past &times;1.00 there is nothing further to gain, so the row fills green &mdash; on a log axis that staircase of edges is close to a straight diagonal, one step per tier.</p>
+    <div class="axis-wrap"><div class="sp"></div><div class="axis top" id="axTD"></div></div>
+    <div class="plot">
+      <div class="stagecol" id="stgD"></div>
+      <div class="labels" id="labD"></div>
+      <div class="canvas-host"><canvas id="cvD"></canvas></div>
+    </div>
+    <div class="axis-wrap"><div class="sp"></div><div class="axis" id="axD"></div></div>
+    <div class="legend">
+      <span class="key">&times;0<span class="ramp" id="rampD"></span>&times;1.00 &middot; 8 bands</span>
+      <span class="key"><span style="display:inline-block;width:26px;height:9px;border-radius:2px;background:var(--ok);opacity:.62"></span>full damage &mdash; nothing more to gain</span>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="t">Damage taken</h2>
+    <p class="sub">Incoming damage, diverging around <strong>&times;1.00</strong>: <span style="color:var(--taken)">rust</span> is worse than baseline, <span style="color:var(--teal)">blue</span> is better. The eight mis-authored rows sit entirely below baseline, so they read blue on sight &mdash; no marker needed, though they stay tagged &uarr; to tie them to the note.</p>
+    <div class="axis-wrap"><div class="sp"></div><div class="axis top" id="axTT"></div></div>
+    <div class="plot">
+      <div class="stagecol" id="stgT"></div>
+      <div class="labels" id="labT"></div>
+      <div class="canvas-host"><canvas id="cvT"></canvas></div>
+    </div>
+    <div class="axis-wrap"><div class="sp"></div><div class="axis" id="axT"></div></div>
+    <div class="legend"><span class="key">&times;0.2<span class="ramp" id="rampT"></span>&times;5+</span>
+      <span class="key" style="color:var(--muted)">midpoint = &times;1.00 baseline</span></div>
+  </section>
+
+  <section class="flag">
+    <h3>Eight of these fifteen rows have an inverted damage-taken curve</h3>
+    <p>The game normalises the taken multiplier with <code>t &gt; 10 ? t / 100 : t</code>, treating values above ten as percentages. Stage&nbsp;1 rows are authored small &mdash; Dragon Knight is <code>6</code>, so it stays &times;6 and behaves correctly: more resistance, less damage taken. Stage&nbsp;2 and&nbsp;3 rows are authored large &mdash; Dragon Knight stage&nbsp;2 is <code>20</code>, which becomes <code>0.20</code> &mdash; so those curves run backwards, rising from &times;0.20 toward &times;1.00 as resistance climbs.</p>
+    <p>Affected rows are marked <strong>&uarr;</strong>. These are the values the engine actually computes, so they are correct for planning, but the underlying rows look mis-authored.</p>
+  </section>
+
+  <footer>Read from the live <code>GUILD_RAID</code> table &middot; 5 bosses &times; 3 stages &middot; formulas transcribed from <code>setupResistMults</code> &middot; 0&ndash;10,000 resistance at 10-point resolution, log axis</footer>
+</div>
+
+<script>
+const RAID=[{"kindNum":1,"boss":"Scorpion King","stage":1,"dealResistMin":20,"dealResistMax":160,"dealMultMin":0.6,"dealMultMax":1,"takenResistMin":20,"takenResistMax":120,"takenMultMin":1,"takenMultMax":2},{"kindNum":2,"boss":"Harpy Queen","stage":1,"dealResistMin":40,"dealResistMax":320,"dealMultMin":0.5,"dealMultMax":1,"takenResistMin":40,"takenResistMax":240,"takenMultMin":1,"takenMultMax":2},{"kindNum":3,"boss":"Golem Titan","stage":1,"dealResistMin":80,"dealResistMax":640,"dealMultMin":0.4,"dealMultMax":1,"takenResistMin":80,"takenResistMax":480,"takenMultMin":1,"takenMultMax":3},{"kindNum":4,"boss":"Belial","stage":1,"dealResistMin":100,"dealResistMax":800,"dealMultMin":0.3,"dealMultMax":1,"takenResistMin":100,"takenResistMax":600,"takenMultMin":1,"takenMultMax":5},{"kindNum":5,"boss":"Dragon Knight","stage":1,"dealResistMin":150,"dealResistMax":1200,"dealMultMin":0.2,"dealMultMax":1,"takenResistMin":150,"takenResistMax":900,"takenMultMin":1,"takenMultMax":6},{"kindNum":6,"boss":"Scorpion King","stage":2,"dealResistMin":200,"dealResistMax":1600,"dealMultMin":0.1,"dealMultMax":1,"takenResistMin":200,"takenResistMax":1200,"takenMultMin":1,"takenMultMax":8},{"kindNum":7,"boss":"Harpy Queen","stage":2,"dealResistMin":250,"dealResistMax":2000,"dealMultMin":0.09,"dealMultMax":1,"takenResistMin":250,"takenResistMax":1500,"takenMultMin":1,"takenMultMax":10},{"kindNum":8,"boss":"Golem Titan","stage":2,"dealResistMin":300,"dealResistMax":2400,"dealMultMin":0.08,"dealMultMax":1,"takenResistMin":300,"takenResistMax":1800,"takenMultMin":1,"takenMultMax":13},{"kindNum":9,"boss":"Belial","stage":2,"dealResistMin":500,"dealResistMax":4000,"dealMultMin":0.07,"dealMultMax":1,"takenResistMin":500,"takenResistMax":3000,"takenMultMin":1,"takenMultMax":16},{"kindNum":10,"boss":"Dragon Knight","stage":2,"dealResistMin":600,"dealResistMax":4800,"dealMultMin":0.06,"dealMultMax":1,"takenResistMin":600,"takenResistMax":3600,"takenMultMin":1,"takenMultMax":20},{"kindNum":11,"boss":"Scorpion King","stage":3,"dealResistMin":700,"dealResistMax":5600,"dealMultMin":0.05,"dealMultMax":1,"takenResistMin":700,"takenResistMax":4200,"takenMultMin":1,"takenMultMax":24},{"kindNum":12,"boss":"Harpy Queen","stage":3,"dealResistMin":800,"dealResistMax":6400,"dealMultMin":0.045,"dealMultMax":1,"takenResistMin":800,"takenResistMax":4800,"takenMultMin":1,"takenMultMax":30},{"kindNum":13,"boss":"Golem Titan","stage":3,"dealResistMin":1000,"dealResistMax":8000,"dealMultMin":0.04,"dealMultMax":1,"takenResistMin":1000,"takenResistMax":6000,"takenMultMin":1,"takenMultMax":36},{"kindNum":14,"boss":"Belial","stage":3,"dealResistMin":1100,"dealResistMax":8800,"dealMultMin":0.035,"dealMultMax":1,"takenResistMin":1100,"takenResistMax":6600,"takenMultMin":1,"takenMultMax":42},{"kindNum":15,"boss":"Dragon Knight","stage":3,"dealResistMin":1200,"dealResistMax":9600,"dealMultMin":0.03,"dealMultMax":1,"takenResistMin":1200,"takenResistMax":7200,"takenMultMin":1,"takenMultMax":50}];
+
+/* Transcribed from RaidBattleController.setupResistMults. The taken axis is fed (max, min) \u2014
+   reversed on purpose \u2014 so higher resistance interpolates toward takenMultMin. */
+const norm=t=>(!isFinite(t)||t<=0)?1:(t>10?t/100:t);
+const lerpAxis=(t,i,s,e,n)=>s<=i?1:e+(n-e)*Math.max(0,Math.min(1,(t-i)/(s-i)));
+const dealMult =(r,d)=>lerpAxis(r,d.dealResistMin ,d.dealResistMax ,norm(d.dealMultMin ),norm(d.dealMultMax));
+const takenMult=(r,d)=>lerpAxis(r,d.takenResistMin,d.takenResistMax,norm(d.takenMultMax),norm(d.takenMultMin));
+
+const STEP=10, R_MAX=10000, N=R_MAX/STEP+1;        // 1001 nodes, one every 10 resistance
+// Full-damage thresholds run 160, 320, 640 ... 9,600 - geometric, so a linear axis crushes every
+// stage-1 row into the leftmost sliver. Log spacing gives each tier comparable width.
+// Anchor the log scale at R_MIN rather than 0: log10(1+R) would spend its first two decades on
+// 0-100, which is dead space (the lowest floor in the data is 20). From 10 the decades land on
+// clean thirds - 10 / 100 / 1,000 / 10,000 at 0, 1/3, 2/3, 1.
+const R_MIN=10;
+const LSPAN=Math.log10(R_MAX/R_MIN);
+const XS  =R=>R<=R_MIN?0:Math.log10(R/R_MIN)/LSPAN;
+const XINV=f=>R_MIN*Math.pow(10,f*LSPAN);
+const TICKS=[10,20,30,50,70,100,200,300,500,700,1000,2000,3000,5000,7000,10000];
+const MAJOR=t=>[10,20,50,100,200,500,1000,2000,5000,10000].includes(t);
+// Eight discrete bands: equal values line up across rows and a value can be read by counting.
+const BANDS=8;
+const band=v=>Math.round(Math.pow(Math.max(0,Math.min(1,v)),0.62)*(BANDS-1))/(BANDS-1);
+const ROWS=[...RAID].sort((a,b)=>a.stage-b.stage||a.kindNum-b.kindNum);
+const ROW_H=21, H=ROW_H*ROWS.length;
+const $=id=>document.getElementById(id);
+
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function hex(c){ // accepts #rgb/#rrggbb
+  c=c.replace("#","");
+  if(c.length===3)c=c.split("").map(x=>x+x).join("");
+  return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];
+}
+const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+const rgbs=c=>`rgb(${c.map(x=>Math.round(Math.max(0,Math.min(255,x)))).join(",")})`;
+
+let PAL={};
+function palette(){
+  PAL={panel:hex(css("--panel")),deal:hex(css("--deal")),taken:hex(css("--taken")),
+       okrgb:hex(css("--ok")),tealrgb:hex(css("--teal")),ok:css("--ok"),ink:css("--ink"),
+       inkdim:css("--ink-dim"),muted:css("--muted"),line:css("--line")};
+}
+// The amber ramp now only has to cover v < 1 (full damage is drawn green), so the useful range is
+// compressed. A gamma < 1 spends more of the ramp on low values, where rows actually differ.
+const ramp=(c,v)=>mix(PAL.panel,c,band(v)*0.9);
+const dealCol =v=>ramp(PAL.deal ,v);
+const takenCol=v=>ramp(PAL.taken,v);
+const fullCol =()=>mix(PAL.panel,PAL.okrgb,0.5);
+/* Damage taken diverges around x1.00: below baseline is teal, above is rust. Rows whose
+   takenMultMax was divided by 100 sit entirely below 1, so they render teal with no annotation. */
+function divCol(v){
+  if(Math.abs(v-1)<1e-6) return mix(PAL.panel,PAL.panel,0);
+  return v>1 ? mix(PAL.panel,PAL.taken,band(Math.min(1,(v-1)/5))*0.9)
+             : mix(PAL.panel,PAL.tealrgb,band(Math.min(1,(1-v)/0.8))*0.9);
+}
+
+/* taken values are normalised per row: 0 = the least incoming damage that row reaches */
+function takenNorm(d){const tv=norm(d.takenMultMax);return{lo:Math.min(1,tv),hi:Math.max(1,tv),inv:tv<1};}
+
+const caches={};
+function renderBase(key,cv,valFn,colFn,markCap){
+  const dpr=window.devicePixelRatio||1, W=cv.clientWidth||900;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+"px";
+  const off=document.createElement("canvas"); off.width=W*dpr; off.height=H*dpr;
+  const g=off.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
+  ROWS.forEach((d,ri)=>{
+    const y=ri*ROW_H;
+    for(let px=0;px<W;px++){                       // per-pixel: the log scale is non-uniform
+      const R=XINV(px/W);
+      g.fillStyle=(markCap&&R>=d.dealResistMax)?rgbs(fullCol()):rgbs(colFn(valFn(R,d),d));
+      g.fillRect(px,y,1,ROW_H);
+    }
+    if(markCap&&d.dealResistMax<=R_MAX){
+      g.strokeStyle=PAL.ok;g.lineWidth=1.5;g.beginPath();
+      g.moveTo(XS(d.dealResistMax)*W,y);g.lineTo(XS(d.dealResistMax)*W,y+ROW_H);g.stroke();
+    }
+    g.strokeStyle=PAL.line;g.lineWidth=1;g.beginPath();
+    g.moveTo(0,y+ROW_H-.5);g.lineTo(W,y+ROW_H-.5);g.stroke();
+  });
+  TICKS.forEach(t=>{
+    if(t===0)return;
+    const gx=XS(t)*W;
+    g.strokeStyle=MAJOR(t)?PAL.inkdim:PAL.line;
+    g.globalAlpha=MAJOR(t)?.34:.22; g.lineWidth=1;
+    g.beginPath(); g.moveTo(gx,0); g.lineTo(gx,H); g.stroke(); g.globalAlpha=1;
+  });
+  ROWS.forEach((d,ri)=>{
+    if(ri===0||d.stage===ROWS[ri-1].stage)return;
+    g.strokeStyle=PAL.inkdim;g.lineWidth=2;g.beginPath();
+    g.moveTo(0,ri*ROW_H);g.lineTo(W,ri*ROW_H);g.stroke();
+  });
+  caches[key]={off,W,dpr};
+  blit(key,cv,null);
+}
+function blit(key,cv,hoverX){
+  const c=caches[key]; if(!c)return;
+  const ctx=cv.getContext("2d");
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.drawImage(c.off,0,0);
+  if(hoverX!=null){
+    ctx.setTransform(c.dpr,0,0,c.dpr,0,0);
+    ctx.strokeStyle=PAL.ink;ctx.lineWidth=1;ctx.globalAlpha=.85;
+    ctx.beginPath();ctx.moveTo(hoverX,0);ctx.lineTo(hoverX,H);ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+}
+
+function buildLabels(el,taken){
+  el.innerHTML=ROWS.map((d,i)=>{
+    const t=taken?takenNorm(d):null;
+    const top=i>0&&ROWS[i-1].stage!==d.stage?" class=\"stagetop\"":"";
+    return `<div${top}><span>${d.boss} <em>s${d.stage}${t&&t.inv?" \u2191":""}</em></span></div>`;
+  }).join("");
+  el.style.height=H+"px";
+}
+function buildAxis(el){
+  el.innerHTML=TICKS.filter(MAJOR).map((v,i,a)=>{
+    const cls=i===0?"edge0":i===a.length-1?"edgeN":"";
+    return `<span class="${cls}" style="left:${(XS(v)*100).toFixed(3)}%;color:var(--ink-dim)">${v.toLocaleString()}</span>`;
+  }).join("");
+}
+function buildStages(el){
+  const groups=[];
+  ROWS.forEach(d=>{const g=groups[groups.length-1];
+    if(g&&g.stage===d.stage)g.n++; else groups.push({stage:d.stage,n:1});});
+  el.innerHTML=groups.map(g=>`<div style="flex:${g.n}">Stage ${g.stage}</div>`).join("");
+  el.style.height=H+"px";
+}
+function ramps(){
+  $("rampD").innerHTML=Array.from({length:BANDS},(_,i)=>
+    `<i style="background:${rgbs(dealCol(i/(BANDS-1)))}"></i>`).join("");
+  // diverging key: most-below-baseline -> x1.00 -> most-above
+  const stopsT=[0.2,0.4,0.6,0.8,1.0,1.8,2.6,3.4,4.2,5.0];
+  $("rampT").innerHTML=stopsT.map(v=>`<i style="background:${rgbs(divCol(v))}"></i>`).join("");
+}
+
+/* Multipliers are hard to feel. Restate them as "how much worse than ideal is this" —
+   ideal being x1.00 dealt (nothing lost) and the lowest incoming damage the row reaches. */
+function relDeal(dm){
+  if(dm>=0.999) return `<span><b style="color:var(--ok)">Full damage</b> \u2014 nothing lost here</span>`;
+  const f=1/dm;
+  return `<span>You deal <b style="color:var(--taken)">${f.toFixed(2)}\u00d7 less</b> damage `+
+         `(${Math.round((1-dm)*100)}% lost)</span>`;
+}
+function relTaken(tm){
+  if(Math.abs(tm-1)<0.005) return `<span>Corps take <b>baseline</b> damage</span>`;
+  if(tm>1) return `<span>Corps take <b style="color:var(--taken)">${tm.toFixed(2)}\u00d7 more</b> damage</span>`;
+  return `<span>Corps take <b style="color:var(--ok)">${(1/tm).toFixed(2)}\u00d7 less</b> damage</span>`;
+}
+
+function showTip(R,rowIdx,cx,cy){
+  const d=ROWS[rowIdx];
+  const dm=dealMult(R,d), tm=takenMult(R,d);
+  const need=Math.max(0,d.dealResistMax-R);
+  const tip=$("tip");
+  tip.innerHTML=
+    `<div class="t-r">${R.toLocaleString()}<em>resist</em></div>
+     <div class="t-enc">${d.boss} \u00b7 Stage ${d.stage}</div>
+     <dl>
+       <dt>Dealt</dt><dd style="color:var(--deal)">\u00d7${dm.toFixed(3)}</dd>
+       <dt>Taken</dt><dd style="color:var(--taken)">\u00d7${tm.toFixed(3)}</dd>
+       <dt>To full</dt><dd style="color:${need?"var(--taken)":"var(--ok)"}">${need?"+"+need.toLocaleString():"reached"}</dd>
+     </dl>
+     <div class="t-rel">${relDeal(dm)}${relTaken(tm)}</div>`;
+  tip.dataset.on="1";
+  // Place beside the cursor, flipping before it would leave the viewport.
+  const PAD=14, w=tip.offsetWidth, h=tip.offsetHeight;
+  let x=cx+PAD, y=cy+PAD;
+  if(x+w>window.innerWidth-8)  x=cx-PAD-w;
+  if(y+h>window.innerHeight-8) y=cy-PAD-h;
+  tip.style.left=Math.max(8,x)+"px";
+  tip.style.top =Math.max(8,y)+"px";
+}
+function clearReadout(){
+  $("tip").dataset.on="0";
+  [["labD"],["labT"]].forEach(([id])=>
+    [...$(id).children].forEach(c=>c.classList.remove("hot")));
+  blit("D",$("cvD"),null); blit("T",$("cvT"),null);
+}
+
+function wire(cv,key,labId){
+  cv.addEventListener("pointermove",e=>{
+    const r=cv.getBoundingClientRect();
+    const x=Math.max(0,Math.min(r.width,e.clientX-r.left));
+    const R=Math.max(0,Math.min(R_MAX,Math.round(XINV(x/r.width)/STEP)*STEP));
+    const ri=Math.max(0,Math.min(ROWS.length-1,Math.floor((e.clientY-r.top)/ROW_H)));
+    showTip(R,ri,e.clientX,e.clientY);
+    blit("D",$("cvD"),XS(R)*$("cvD").clientWidth);
+    blit("T",$("cvT"),XS(R)*$("cvT").clientWidth);
+    [["labD"],["labT"]].forEach(([id])=>{
+      [...$(id).children].forEach((c,i)=>c.classList.toggle("hot",i===ri&&id===labId));
+    });
+  });
+  cv.addEventListener("pointerleave",clearReadout);
+}
+
+function renderAll(){
+  palette();
+  renderBase("D",$("cvD"),dealMult,v=>dealCol(v),true);
+  renderBase("T",$("cvT"),(r,d)=>takenMult(r,d),v=>divCol(v),false);
+  ramps();
+}
+
+buildLabels($("labD"),false); buildLabels($("labT"),true);
+buildStages($("stgD")); buildStages($("stgT"));
+["axD","axT","axTD","axTT"].forEach(id=>buildAxis($(id)));
+renderAll();
+wire($("cvD"),"D","labD"); wire($("cvT"),"T","labT");
+let rt; window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(renderAll,120);});
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+</script>
