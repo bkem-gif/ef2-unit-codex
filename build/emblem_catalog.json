@@ -1,0 +1,6630 @@
+{
+ "_meta": {
+  "captured_at": "2026-07-27T20:55:42.104Z",
+  "bundle": "1.12.80 (mounted)",
+  "grade_source": "engine-resolved from the bundle's baked-in tables — the server ships no RUNE_GRADE/RUNE_SUB (verified by sentinel-book control)",
+  "engine_constants": {
+   "FPS": 60,
+   "COOL_CUT_MAX": 0.8
+  },
+  "resolver_facts": [
+   "RuneLoadout.resolve() dedupes by rune kindNum — duplicate copies of the same rune do not stack",
+   "the ONLY equip gate is rune.type !== emblem.runeType; EMBLEM_SKILL.emblems is never checked at apply time",
+   "a grade whose value is 0 is a hard skip, which also suppresses that rune's sub-option",
+   "EMBLEM_SKILL.minGrade is never read by any code; availability is isRuneAvailableAtGrade = (value !== 0)",
+   "activeCool/activeDur/activePower (target SELF) are siphoned out before routing and never appear as effects"
+  ]
+ },
+ "grades": [
+  {
+   "grade": 1,
+   "name": "Common",
+   "mergeCount": 5,
+   "mergeCoin": 100,
+   "subOption": false
+  },
+  {
+   "grade": 2,
+   "name": "Uncommon",
+   "mergeCount": 5,
+   "mergeCoin": 300,
+   "subOption": false
+  },
+  {
+   "grade": 3,
+   "name": "Rare",
+   "mergeCount": 5,
+   "mergeCoin": 900,
+   "subOption": false
+  },
+  {
+   "grade": 4,
+   "name": "Epic",
+   "mergeCount": 5,
+   "mergeCoin": 2500,
+   "subOption": false
+  },
+  {
+   "grade": 5,
+   "name": "Legendary",
+   "mergeCount": 5,
+   "mergeCoin": 7000,
+   "subOption": true
+  },
+  {
+   "grade": 6,
+   "name": "Mythic",
+   "mergeCount": 0,
+   "mergeCoin": 0,
+   "subOption": true
+  }
+ ],
+ "subs": [
+  {
+   "subId": 1,
+   "skillRef": 1,
+   "emblems": [
+    2,
+    5
+   ],
+   "value5": 4,
+   "value6": 7,
+   "mech_id": "atkDmg",
+   "desc_en": "ATK +{v}%"
+  },
+  {
+   "subId": 2,
+   "skillRef": 2,
+   "emblems": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "value5": 5,
+   "value6": 8,
+   "mech_id": "maxHp",
+   "desc_en": "Max HP +{v}%"
+  },
+  {
+   "subId": 3,
+   "skillRef": 3,
+   "emblems": [
+    1,
+    3,
+    4
+   ],
+   "value5": 4,
+   "value6": 7,
+   "mech_id": "defense",
+   "desc_en": "DEF +{v}%"
+  },
+  {
+   "subId": 4,
+   "skillRef": 4,
+   "emblems": [
+    2,
+    4,
+    5
+   ],
+   "value5": 3,
+   "value6": 5,
+   "mech_id": "atkSpd",
+   "desc_en": "Attack Speed +{v}%"
+  },
+  {
+   "subId": 5,
+   "skillRef": 9,
+   "emblems": [
+    1,
+    3
+   ],
+   "value5": -3,
+   "value6": -5,
+   "mech_id": "dmgTaken",
+   "desc_en": "Damage Taken -{v}%"
+  },
+  {
+   "subId": 6,
+   "skillRef": 35,
+   "emblems": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "value5": 3,
+   "value6": 5,
+   "mech_id": "activeCool",
+   "desc_en": "Cooldown -{v}%"
+  },
+  {
+   "subId": 7,
+   "skillRef": 13,
+   "emblems": [
+    1,
+    3
+   ],
+   "value5": 2,
+   "value6": 4,
+   "mech_id": "healCycle",
+   "desc_en": "Restores {v}% HP every 5s"
+  },
+  {
+   "subId": 8,
+   "skillRef": 31,
+   "emblems": [
+    4,
+    5
+   ],
+   "value5": 0.0025,
+   "value6": 0.005,
+   "mech_id": "staminaHit",
+   "desc_en": "Depletes an additional {v}% Stamina"
+  },
+  {
+   "subId": 9,
+   "skillRef": 41,
+   "emblems": [
+    6
+   ],
+   "value5": 4,
+   "value6": 7,
+   "mech_id": "crossbowDmg",
+   "desc_en": "Damage +{v}%"
+  },
+  {
+   "subId": 10,
+   "skillRef": 43,
+   "emblems": [
+    6
+   ],
+   "value5": 3,
+   "value6": 5,
+   "mech_id": "reloadSpd",
+   "desc_en": "Energy Charge Speed +{v}%"
+  }
+ ],
+ "emblems": [
+  {
+   "kindNum": 1,
+   "name_en": "Guardian Emblem",
+   "className": "Guardian",
+   "name_ko": "수호의 휘장",
+   "role": "TANK",
+   "slot": "corp1",
+   "runeType": "A",
+   "passive": {
+    "skillRef": 7,
+    "id": "aggroGen",
+    "value": 30,
+    "desc_en": "Aggro Generation +{v}%",
+    "category": "STAT",
+    "target": "CORP"
+   },
+   "active": {
+    "skillRef": 61,
+    "id": "taunt",
+    "value": 60,
+    "cooldown_s": 28,
+    "duration_s": 5,
+    "desc_en": "Taunt — Forces Boss Targeting + Aggro Generation +{v}%",
+    "target": "BOSS"
+   }
+  },
+  {
+   "kindNum": 2,
+   "name_en": "Onslaught Emblem",
+   "className": "Assault",
+   "name_ko": "맹공의 휘장",
+   "role": "DEALER",
+   "slot": "corp2",
+   "runeType": "B",
+   "passive": {
+    "skillRef": 1,
+    "id": "atkDmg",
+    "value": 8,
+    "desc_en": "ATK +{v}%",
+    "category": "STAT",
+    "target": "CORP"
+   },
+   "active": {
+    "skillRef": 62,
+    "id": "frenzy",
+    "value": 20,
+    "cooldown_s": 32,
+    "duration_s": 10,
+    "desc_en": "Burst — ATK/Attack Speed +{v}% + Aggro -20%",
+    "target": "CORP"
+   }
+  },
+  {
+   "kindNum": 3,
+   "name_en": "Healing Emblem",
+   "className": "Mercy",
+   "name_ko": "치유의 휘장",
+   "role": "HEALER",
+   "slot": "corp3",
+   "runeType": "C",
+   "passive": {
+    "skillRef": 2,
+    "id": "maxHp",
+    "value": 10,
+    "desc_en": "Max HP +{v}%",
+    "category": "STAT",
+    "target": "CORP"
+   },
+   "active": {
+    "skillRef": 63,
+    "id": "massHeal",
+    "value": 4,
+    "cooldown_s": 34,
+    "duration_s": 10,
+    "desc_en": "All Legions Restore {v}% HP per Second",
+    "target": "RAID"
+   }
+  },
+  {
+   "kindNum": 4,
+   "name_en": "Arcane Emblem",
+   "className": "Hex",
+   "name_ko": "마력의 휘장",
+   "role": "SUPPORT",
+   "slot": "corp4",
+   "runeType": "D",
+   "passive": {
+    "skillRef": 15,
+    "id": "manaGain",
+    "value": 8,
+    "desc_en": "Mana Regen Speed +{v}%",
+    "category": "STAT",
+    "target": "CORP"
+   },
+   "active": {
+    "skillRef": 64,
+    "id": "weakenBoss",
+    "value": 18,
+    "cooldown_s": 38,
+    "duration_s": 12,
+    "desc_en": "Boss DEF -{v}%",
+    "target": "BOSS"
+   }
+  },
+  {
+   "kindNum": 5,
+   "name_en": "Assault Emblem",
+   "className": "Rally",
+   "name_ko": "돌격의 휘장",
+   "role": "BREAKER",
+   "slot": "corp5",
+   "runeType": "E",
+   "passive": {
+    "skillRef": 31,
+    "id": "staminaHit",
+    "value": 0.01,
+    "desc_en": "Depletes an additional {v}% Stamina",
+    "category": "GIMMICK",
+    "target": "BOSS"
+   },
+   "active": {
+    "skillRef": 65,
+    "id": "allOutAttack",
+    "value": 20,
+    "cooldown_s": 40,
+    "duration_s": 8,
+    "desc_en": "All-Out Attack — All Legions' ATK +{v}%",
+    "target": "RAID"
+   }
+  },
+  {
+   "kindNum": 6,
+   "name_en": "Sniper Emblem",
+   "className": "Snipe",
+   "name_ko": "저격의 휘장",
+   "role": "CROSSBOW",
+   "slot": "crossbow",
+   "runeType": "F",
+   "passive": {
+    "skillRef": 45,
+    "id": "weakWindow",
+    "value": 10,
+    "desc_en": "Weak Point Exposure Window +{v}%",
+    "category": "CROSSBOW",
+    "target": "CROSSBOW"
+   },
+   "active": {
+    "skillRef": 66,
+    "id": "harpoonWound",
+    "value": 15,
+    "cooldown_s": 45,
+    "duration_s": 8,
+    "desc_en": "Wound Rend on Weak Point Hit — Damage Taken +{v}%",
+    "target": "BOSS"
+   }
+  }
+ ],
+ "runes": [
+  {
+   "kindNum": 101,
+   "className": "RuneRock",
+   "name_ko": "체력의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 102,
+   "className": "RuneIron",
+   "name_ko": "방어의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 3,
+   "mech_id": "defense",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "DEF +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 103,
+   "className": "RuneStride",
+   "name_ko": "이동의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 5,
+   "mech_id": "moveSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Movement Speed +{v}%",
+   "allowlist": [
+    1,
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 104,
+   "className": "RuneMenace",
+   "name_ko": "어그로 증가의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 7,
+   "mech_id": "aggroGen",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    7.0,
+    15.0,
+    25.0,
+    30.0,
+    40.0,
+    50.0
+   ],
+   "desc_en": "Aggro Generation +{v}%",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 105,
+   "className": "RuneWall",
+   "name_ko": "보호의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 9,
+   "mech_id": "dmgTaken",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -3.0,
+    -5.0,
+    -7.0,
+    -12.0,
+    -18.0,
+    -25.0
+   ],
+   "desc_en": "Damage Taken -{v}%",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 106,
+   "className": "RuneMend",
+   "name_ko": "재생의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 13,
+   "mech_id": "healCycle",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    6.0,
+    8.0,
+    10.0,
+    12.0
+   ],
+   "desc_en": "Restores {v}% HP every 5s",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 107,
+   "className": "RuneThorn",
+   "name_ko": "반격의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 17,
+   "mech_id": "thorns",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_DAMAGED",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    6.0,
+    10.0,
+    15.0,
+    20.0
+   ],
+   "desc_en": "Counterattacks for {v}% of ATK",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 112,
+   "className": "RuneRockHuman",
+   "name_ko": "체력의 룬(인간)",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "HUMAN",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 113,
+   "className": "RuneRockElf",
+   "name_ko": "체력의 룬(엘프)",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ELF",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 114,
+   "className": "RuneRockUndead",
+   "name_ko": "체력의 룬(언데드)",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "UNDEAD",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 115,
+   "className": "RuneRockOrc",
+   "name_ko": "체력의 룬(오크)",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ORC",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 116,
+   "className": "RuneResolveA",
+   "name_ko": "쿨타임의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 117,
+   "className": "RuneEndureA",
+   "name_ko": "지속시간의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 36,
+   "mech_id": "activeDur",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0
+   ],
+   "desc_en": "Duration +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 118,
+   "className": "RuneClarityA",
+   "name_ko": "기절 저항의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 22,
+   "mech_id": "resStun",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Stun Duration -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 119,
+   "className": "RuneAnchorA",
+   "name_ko": "넉백 저항의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 23,
+   "mech_id": "resKnockback",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Knockback -{v}%",
+   "allowlist": [
+    1,
+    2
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 120,
+   "className": "RuneGravityA",
+   "name_ko": "블로우 저항의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 24,
+   "mech_id": "resBlow",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Blow -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 121,
+   "className": "RuneTauntBreak",
+   "name_ko": "제압의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 71,
+   "mech_id": "tauntArmorBreak",
+   "category": "ACTIVE_MOD",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    15.0,
+    30.0,
+    50.0
+   ],
+   "desc_en": "DEF -{v}% (10s)",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 122,
+   "className": "RuneTauntShield",
+   "name_ko": "수호 함성의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 72,
+   "mech_id": "tauntShield",
+   "category": "ACTIVE_MOD",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    8.0,
+    12.0,
+    16.0
+   ],
+   "desc_en": "Damage Taken -{v}%",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 123,
+   "className": "RuneTauntMend",
+   "name_ko": "불굴의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 73,
+   "mech_id": "tauntRecover",
+   "category": "ACTIVE_MOD",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_ACTIVE_END",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    20.0,
+    40.0
+   ],
+   "desc_en": "Restores {v}% HP",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 124,
+   "className": "RuneLastStand",
+   "name_ko": "사수의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 95,
+   "mech_id": "onHpLow",
+   "category": "PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_HP_LOW",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    35.0,
+    50.0
+   ],
+   "desc_en": "Damage Taken -{v}% (8s, Once Only)",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 126,
+   "className": "RuneAegisPulse",
+   "name_ko": "순환 방벽의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 109,
+   "mech_id": "pulseShield",
+   "category": "PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    6.0,
+    9.0,
+    13.0
+   ],
+   "desc_en": "3 Allies' Damage Taken -{v}% Every 5s (5s)",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 127,
+   "className": "RuneRampart",
+   "name_ko": "보루의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 110,
+   "mech_id": "pulseFortify",
+   "category": "PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    20.0,
+    27.0
+   ],
+   "desc_en": "8 Soldiers' DEF +{v}% Every 4s (4s)",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 128,
+   "className": "RuneDash",
+   "name_ko": "대시의 룬",
+   "type": "A",
+   "emblem": 1,
+   "emblem_name": "Guardian",
+   "skillRef": 38,
+   "mech_id": "dashSpeed",
+   "category": "GIMMICK",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    15.0,
+    30.0
+   ],
+   "desc_en": "Dash Speed +{v}%",
+   "allowlist": [
+    1
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 201,
+   "className": "RuneFury",
+   "name_ko": "공격의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 202,
+   "className": "RuneVigor",
+   "name_ko": "체력의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 203,
+   "className": "RuneSwift",
+   "name_ko": "공속의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 204,
+   "className": "RuneChase",
+   "name_ko": "이동의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 5,
+   "mech_id": "moveSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Movement Speed +{v}%",
+   "allowlist": [
+    1,
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 205,
+   "className": "RuneFar",
+   "name_ko": "사거리의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 6,
+   "mech_id": "atkRange",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    7.0,
+    12.0,
+    20.0,
+    28.0,
+    40.0
+   ],
+   "desc_en": "Attack Range +{v}%",
+   "allowlist": [
+    2,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 206,
+   "className": "RuneShadow",
+   "name_ko": "어그로 감소의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 8,
+   "mech_id": "aggroDown",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -7.0,
+    -15.0,
+    -25.0,
+    -30.0,
+    -40.0,
+    -50.0
+   ],
+   "desc_en": "Aggro Generation -{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 207,
+   "className": "RuneKeen",
+   "name_ko": "치명타 확률의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 10,
+   "mech_id": "critRate",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Crit Rate +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 208,
+   "className": "RuneSlayer",
+   "name_ko": "치명타 피해의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 11,
+   "mech_id": "critDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Crit Damage +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 209,
+   "className": "RuneLeech",
+   "name_ko": "흡혈의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 12,
+   "mech_id": "lifeSteal",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    5.0,
+    7.0,
+    10.0,
+    14.0
+   ],
+   "desc_en": "Absorbs {v}% of damage dealt as HP",
+   "allowlist": [
+    2
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 214,
+   "className": "RuneFuryHuman",
+   "name_ko": "공격의 룬(인간)",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "HUMAN",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 215,
+   "className": "RuneFuryElf",
+   "name_ko": "공격의 룬(엘프)",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ELF",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 216,
+   "className": "RuneFuryUndead",
+   "name_ko": "공격의 룬(언데드)",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "UNDEAD",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 217,
+   "className": "RuneFuryOrc",
+   "name_ko": "공격의 룬(오크)",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ORC",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    36.0,
+    53.0,
+    90.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 218,
+   "className": "RuneReaperB",
+   "name_ko": "그로기 딜의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 32,
+   "mech_id": "exhaustDmg",
+   "category": "GIMMICK",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    14.0,
+    20.0,
+    28.0,
+    38.0
+   ],
+   "desc_en": "Damage While Groggy +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 219,
+   "className": "RuneExploitB",
+   "name_ko": "약점 딜의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 34,
+   "mech_id": "weakBonus",
+   "category": "GIMMICK",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    14.0,
+    20.0,
+    28.0,
+    38.0
+   ],
+   "desc_en": "Damage While Weak Point Is Exposed +{v}%",
+   "allowlist": [
+    2,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 220,
+   "className": "RuneResolveB",
+   "name_ko": "쿨타임의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 221,
+   "className": "RuneAmplifyB",
+   "name_ko": "액티브 강화의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 37,
+   "mech_id": "activePower",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Power +{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 222,
+   "className": "RuneAnchorB",
+   "name_ko": "넉백 저항의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 23,
+   "mech_id": "resKnockback",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Knockback -{v}%",
+   "allowlist": [
+    1,
+    2
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 223,
+   "className": "RuneGravityB",
+   "name_ko": "블로우 저항의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 24,
+   "mech_id": "resBlow",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Blow -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 224,
+   "className": "RuneStunResistB",
+   "name_ko": "기절 저항의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 22,
+   "mech_id": "resStun",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Stun Duration -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 226,
+   "className": "RuneDeadlyFrenzy",
+   "name_ko": "필살의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 75,
+   "mech_id": "frenzyCrit",
+   "category": "ACTIVE_MOD",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    15.0,
+    21.0
+   ],
+   "desc_en": "Crit Rate +{v}%",
+   "allowlist": [
+    2
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 228,
+   "className": "RuneBloodlustB",
+   "name_ko": "전의의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 94,
+   "mech_id": "onExhaust",
+   "category": "PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_GROGGY_START",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    25.0,
+    35.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 229,
+   "className": "RuneWarband",
+   "name_ko": "군단 사기의 룬",
+   "type": "B",
+   "emblem": 2,
+   "emblem_name": "Assault",
+   "skillRef": 111,
+   "mech_id": "pulseRage",
+   "category": "PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    8.0,
+    11.0,
+    16.0,
+    22.0
+   ],
+   "desc_en": "5 Soldiers' ATK +{v}% Every 4s (8s)",
+   "allowlist": [
+    2
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 301,
+   "className": "RuneLifeC",
+   "name_ko": "체력의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 302,
+   "className": "RuneOakC",
+   "name_ko": "방어의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 3,
+   "mech_id": "defense",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "DEF +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 303,
+   "className": "RuneShadowC",
+   "name_ko": "어그로 감소의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 8,
+   "mech_id": "aggroDown",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -7.0,
+    -15.0,
+    -25.0,
+    -30.0,
+    -40.0,
+    -50.0
+   ],
+   "desc_en": "Aggro Generation -{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 304,
+   "className": "RuneAegisC",
+   "name_ko": "보호의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 9,
+   "mech_id": "dmgTaken",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -3.0,
+    -5.0,
+    -7.0,
+    -12.0,
+    -18.0,
+    -25.0
+   ],
+   "desc_en": "Damage Taken -{v}%",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 305,
+   "className": "RuneMendC",
+   "name_ko": "재생의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 13,
+   "mech_id": "healCycle",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    6.0,
+    8.0,
+    10.0,
+    12.0
+   ],
+   "desc_en": "Restores {v}% HP every 5s",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 306,
+   "className": "RuneGrace",
+   "name_ko": "회복 증폭의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 14,
+   "mech_id": "healPower",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    5.0,
+    9.0,
+    14.0,
+    20.0,
+    28.0,
+    38.0
+   ],
+   "desc_en": "Healing +{v}%",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 307,
+   "className": "RuneMeditateC",
+   "name_ko": "마나 회복의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 15,
+   "mech_id": "manaGain",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    5.0,
+    8.0,
+    13.0,
+    19.0,
+    26.0,
+    35.0
+   ],
+   "desc_en": "Mana Regen Speed +{v}%",
+   "allowlist": [
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 312,
+   "className": "RuneGraceHuman",
+   "name_ko": "회복 증폭의 룬(인간)",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 14,
+   "mech_id": "healPower",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "HUMAN",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    30.0,
+    42.0,
+    57.0
+   ],
+   "desc_en": "Healing +{v}%",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 313,
+   "className": "RuneGraceElf",
+   "name_ko": "회복 증폭의 룬(엘프)",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 14,
+   "mech_id": "healPower",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ELF",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    30.0,
+    42.0,
+    57.0
+   ],
+   "desc_en": "Healing +{v}%",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 314,
+   "className": "RuneGraceUndead",
+   "name_ko": "회복 증폭의 룬(언데드)",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 14,
+   "mech_id": "healPower",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "UNDEAD",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    30.0,
+    42.0,
+    57.0
+   ],
+   "desc_en": "Healing +{v}%",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 315,
+   "className": "RuneGraceOrc",
+   "name_ko": "회복 증폭의 룬(오크)",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 14,
+   "mech_id": "healPower",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ORC",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    30.0,
+    42.0,
+    57.0
+   ],
+   "desc_en": "Healing +{v}%",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 316,
+   "className": "RuneResolveC",
+   "name_ko": "쿨타임의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 317,
+   "className": "RuneBlessC",
+   "name_ko": "지속시간의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 36,
+   "mech_id": "activeDur",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0
+   ],
+   "desc_en": "Duration +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 318,
+   "className": "RuneAmplifyC",
+   "name_ko": "액티브 강화의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 37,
+   "mech_id": "activePower",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Power +{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 319,
+   "className": "RuneWarmthC",
+   "name_ko": "빙결 저항의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 21,
+   "mech_id": "resFreeze",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Freeze Duration -{v}%",
+   "allowlist": [
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 320,
+   "className": "RuneClarityC",
+   "name_ko": "기절 저항의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 22,
+   "mech_id": "resStun",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Stun Duration -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 321,
+   "className": "RuneGravityC",
+   "name_ko": "블로우 면역의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 24,
+   "mech_id": "resBlow",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    100.0,
+    100.0,
+    100.0
+   ],
+   "desc_en": "Blow -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 322,
+   "className": "RuneCleanseLight",
+   "name_ko": "성광의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 76,
+   "mech_id": "healCleanse",
+   "category": "ACTIVE_MOD",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    2.0
+   ],
+   "desc_en": "Cleanses {v} Debuffs",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 323,
+   "className": "RuneSanctuary",
+   "name_ko": "성역의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 77,
+   "mech_id": "healShield",
+   "category": "ACTIVE_MOD",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_END",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    15.0
+   ],
+   "desc_en": "Damage Taken -{v}% (4s)",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 324,
+   "className": "RuneMiracle",
+   "name_ko": "기적의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 95,
+   "mech_id": "onHpLow",
+   "category": "PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_HP_LOW",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    35.0,
+    50.0
+   ],
+   "desc_en": "Damage Taken -{v}% (8s, Once Only)",
+   "allowlist": [
+    1,
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 325,
+   "className": "RuneDrip",
+   "name_ko": "성수의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 101,
+   "mech_id": "pulseHealOne",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    2.0,
+    3.0,
+    4.5,
+    6.5,
+    9.0
+   ],
+   "desc_en": "Restores {v}% HP to 1 Allied Hero Every 1s",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 326,
+   "className": "RuneShower",
+   "name_ko": "은총의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 102,
+   "mech_id": "pulseHealWide",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    4.0,
+    6.0,
+    8.5,
+    12.0
+   ],
+   "desc_en": "Restores {v}% HP to 4 Allied Heroes Every 3s",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 327,
+   "className": "RuneFieldMedic",
+   "name_ko": "야전의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 103,
+   "mech_id": "pulseSoldierHeal",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    3.0,
+    4.5,
+    6.5,
+    9.0
+   ],
+   "desc_en": "Restores {v}% HP to 8 Allied Soldiers Every 2s",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 328,
+   "className": "RuneAbsolve",
+   "name_ko": "정화의 룬",
+   "type": "C",
+   "emblem": 3,
+   "emblem_name": "Mercy",
+   "skillRef": 104,
+   "mech_id": "pulseCleanse",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    2.0
+   ],
+   "desc_en": "Cleanses Debuffs from {v} Allies Every 5s",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 401,
+   "className": "RuneVigorD",
+   "name_ko": "체력의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 402,
+   "className": "RuneOakD",
+   "name_ko": "방어의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 3,
+   "mech_id": "defense",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "DEF +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 403,
+   "className": "RuneTempo",
+   "name_ko": "공속의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 404,
+   "className": "RuneFarD",
+   "name_ko": "사거리의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 6,
+   "mech_id": "atkRange",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    7.0,
+    12.0,
+    20.0,
+    28.0,
+    40.0
+   ],
+   "desc_en": "Attack Range +{v}%",
+   "allowlist": [
+    2,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 405,
+   "className": "RuneShadowD",
+   "name_ko": "어그로 감소의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 8,
+   "mech_id": "aggroDown",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -7.0,
+    -15.0,
+    -25.0,
+    -30.0,
+    -40.0,
+    -50.0
+   ],
+   "desc_en": "Aggro Generation -{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 406,
+   "className": "RuneChantD",
+   "name_ko": "마나 회복의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 15,
+   "mech_id": "manaGain",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    5.0,
+    8.0,
+    13.0,
+    19.0,
+    26.0,
+    35.0
+   ],
+   "desc_en": "Mana Regen Speed +{v}%",
+   "allowlist": [
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 407,
+   "className": "RuneCorrode",
+   "name_ko": "디버프 연장의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 16,
+   "mech_id": "debuffTime",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    5.0,
+    8.0,
+    13.0,
+    19.0,
+    26.0,
+    35.0
+   ],
+   "desc_en": "Applied Debuff Duration +{v}%",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 412,
+   "className": "RuneTempoHuman",
+   "name_ko": "공속의 룬(인간)",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "HUMAN",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    23.0,
+    30.0,
+    45.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 413,
+   "className": "RuneTempoElf",
+   "name_ko": "공속의 룬(엘프)",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ELF",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    23.0,
+    30.0,
+    45.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 414,
+   "className": "RuneTempoUndead",
+   "name_ko": "공속의 룬(언데드)",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "UNDEAD",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    23.0,
+    30.0,
+    45.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 415,
+   "className": "RuneTempoOrc",
+   "name_ko": "공속의 룬(오크)",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ORC",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    23.0,
+    30.0,
+    45.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 416,
+   "className": "RuneSapD",
+   "name_ko": "기력 타격의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 31,
+   "mech_id": "staminaHit",
+   "category": "GIMMICK",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_HIT",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.007,
+    0.01,
+    0.014,
+    0.019
+   ],
+   "desc_en": "Depletes an additional {v}% Stamina",
+   "allowlist": [
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 417,
+   "className": "RuneLingerD",
+   "name_ko": "그로기 연장의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 33,
+   "mech_id": "exhaustTime",
+   "category": "GIMMICK",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    19.0
+   ],
+   "desc_en": "Groggy Duration +{v}%",
+   "allowlist": [
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 418,
+   "className": "RuneExploitD",
+   "name_ko": "약점 딜의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 34,
+   "mech_id": "weakBonus",
+   "category": "GIMMICK",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    14.0,
+    20.0,
+    28.0,
+    38.0
+   ],
+   "desc_en": "Damage While Weak Point Is Exposed +{v}%",
+   "allowlist": [
+    2,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 419,
+   "className": "RuneResolveD",
+   "name_ko": "쿨타임의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 420,
+   "className": "RuneEndureD",
+   "name_ko": "지속시간의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 36,
+   "mech_id": "activeDur",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    2.0,
+    4.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0
+   ],
+   "desc_en": "Duration +{v}%",
+   "allowlist": [
+    1,
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 421,
+   "className": "RuneAmplifyD",
+   "name_ko": "액티브 강화의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 37,
+   "mech_id": "activePower",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Power +{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 422,
+   "className": "RuneWarmthD",
+   "name_ko": "빙결 저항의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 21,
+   "mech_id": "resFreeze",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Freeze Duration -{v}%",
+   "allowlist": [
+    3,
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 425,
+   "className": "RuneUnravel",
+   "name_ko": "붕괴의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 78,
+   "mech_id": "weakenAmplify",
+   "category": "ACTIVE_MOD",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    8.0,
+    12.0,
+    16.0
+   ],
+   "desc_en": "Additional Damage Taken +{v}%",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 426,
+   "className": "RuneSiphon",
+   "name_ko": "착취의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 79,
+   "mech_id": "weakenMana",
+   "category": "ACTIVE_MOD",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    15.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Mana Recovery +{v}%",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 427,
+   "className": "RuneWarSong",
+   "name_ko": "진군가의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 105,
+   "mech_id": "pulseAtkBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    20.0,
+    27.0
+   ],
+   "desc_en": "4 Allies' ATK +{v}% Every 3s (6s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 428,
+   "className": "RuneWarDrum",
+   "name_ko": "전고의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 106,
+   "mech_id": "pulseSpdBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    8.0,
+    11.0,
+    16.0,
+    22.0
+   ],
+   "desc_en": "4 Allies' Attack Speed +{v}% Every 3s (6s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 429,
+   "className": "RuneOmen",
+   "name_ko": "징조의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 107,
+   "mech_id": "pulseCritBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    8.0,
+    12.0,
+    16.0
+   ],
+   "desc_en": "4 Allies' Crit Rate +{v}% Every 4s (7s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 430,
+   "className": "RuneWellspring",
+   "name_ko": "샘솟음의 룬",
+   "type": "D",
+   "emblem": 4,
+   "emblem_name": "Hex",
+   "skillRef": 108,
+   "mech_id": "pulseManaPulse",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    5.0,
+    7.0,
+    10.0,
+    14.0
+   ],
+   "desc_en": "Restores {v}% Mana to 4 Allies Every 4s",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 501,
+   "className": "RuneFuryE",
+   "name_ko": "공격의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 1,
+   "mech_id": "atkDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 502,
+   "className": "RuneVigorE",
+   "name_ko": "체력의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 2,
+   "mech_id": "maxHp",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Max HP +{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 503,
+   "className": "RuneSwiftE",
+   "name_ko": "공속의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 4,
+   "mech_id": "atkSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 504,
+   "className": "RuneChaseE",
+   "name_ko": "이동의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 5,
+   "mech_id": "moveSpd",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Movement Speed +{v}%",
+   "allowlist": [
+    1,
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 505,
+   "className": "RuneShadowE",
+   "name_ko": "어그로 감소의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 8,
+   "mech_id": "aggroDown",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    -7.0,
+    -15.0,
+    -25.0,
+    -30.0,
+    -40.0,
+    -50.0
+   ],
+   "desc_en": "Aggro Generation -{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 506,
+   "className": "RuneKeenE",
+   "name_ko": "치명타 확률의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 10,
+   "mech_id": "critRate",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    7.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Crit Rate +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 507,
+   "className": "RuneSlayerE",
+   "name_ko": "치명타 피해의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 11,
+   "mech_id": "critDmg",
+   "category": "STAT",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    6.0,
+    12.0,
+    24.0,
+    35.0,
+    60.0
+   ],
+   "desc_en": "Crit Damage +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 508,
+   "className": "RuneCrush",
+   "name_ko": "기력 타격의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 31,
+   "mech_id": "staminaHit",
+   "category": "GIMMICK",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_HIT",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.01,
+    0.015,
+    0.022,
+    0.03
+   ],
+   "desc_en": "Depletes an additional {v}% Stamina",
+   "allowlist": [
+    4,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 517,
+   "className": "RuneReaperE",
+   "name_ko": "그로기 딜의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 32,
+   "mech_id": "exhaustDmg",
+   "category": "GIMMICK",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    14.0,
+    20.0,
+    28.0,
+    38.0
+   ],
+   "desc_en": "Damage While Groggy +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 518,
+   "className": "RuneLingerE",
+   "name_ko": "그로기 연장의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 33,
+   "mech_id": "exhaustTime",
+   "category": "GIMMICK",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    19.0
+   ],
+   "desc_en": "Groggy Duration +{v}%",
+   "allowlist": [
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 519,
+   "className": "RuneResolveE",
+   "name_ko": "쿨타임의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 520,
+   "className": "RuneAmplifyE",
+   "name_ko": "액티브 강화의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 37,
+   "mech_id": "activePower",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Power +{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 521,
+   "className": "RuneClarityE",
+   "name_ko": "기절 저항의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 22,
+   "mech_id": "resStun",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Stun Duration -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 522,
+   "className": "RuneGravityE",
+   "name_ko": "블로우 저항의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 24,
+   "mech_id": "resBlow",
+   "category": "RESIST",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    60.0,
+    100.0
+   ],
+   "desc_en": "Blow -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 524,
+   "className": "RuneOnslaught",
+   "name_ko": "몰아치기의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 80,
+   "mech_id": "allOutHaste",
+   "category": "ACTIVE_MOD",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    15.0,
+    20.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 525,
+   "className": "RunePincer",
+   "name_ko": "협공의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 84,
+   "mech_id": "allOutExpose",
+   "category": "ACTIVE_MOD",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    7.0,
+    15.0
+   ],
+   "desc_en": "Damage Taken +{v}%",
+   "allowlist": [
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 526,
+   "className": "RuneChainE",
+   "name_ko": "연타의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 91,
+   "mech_id": "comboBleed",
+   "category": "PROC",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_STACK",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 100,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.5,
+    0.75
+   ],
+   "desc_en": "Damage Taken +{v}% per Stack (10s)",
+   "allowlist": [
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 527,
+   "className": "RuneShatter",
+   "name_ko": "분쇄의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 92,
+   "mech_id": "comboBreak",
+   "category": "PROC",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_STACK",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 100,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.5,
+    2.5
+   ],
+   "desc_en": "DEF -{v}% per Stack",
+   "allowlist": [
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 528,
+   "className": "RuneBloodlustE",
+   "name_ko": "전의의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 94,
+   "mech_id": "onExhaust",
+   "category": "PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_GROGGY_START",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    25.0,
+    35.0
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "allowlist": [
+    2,
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 530,
+   "className": "RuneRift",
+   "name_ko": "균열의 룬",
+   "type": "E",
+   "emblem": 5,
+   "emblem_name": "Rally",
+   "skillRef": 113,
+   "mech_id": "pulseExpose",
+   "category": "PULSE",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    6.0,
+    9.0
+   ],
+   "desc_en": "Damage Taken +{v}% Every 8s (3s)",
+   "allowlist": [
+    5
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 601,
+   "className": "RuneAim",
+   "name_ko": "명중의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 41,
+   "mech_id": "crossbowDmg",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    4.0,
+    7.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Damage +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 602,
+   "className": "RuneWound",
+   "name_ko": "상처의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 42,
+   "mech_id": "weakpointWound",
+   "category": "CROSSBOW",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    4.0,
+    7.0,
+    10.0,
+    14.0,
+    19.0,
+    25.0
+   ],
+   "desc_en": "Enhanced Wound Rend — Damage Taken +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 603,
+   "className": "RuneReload",
+   "name_ko": "신속장전의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 43,
+   "mech_id": "reloadSpd",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    8.0,
+    12.0,
+    16.0,
+    22.0
+   ],
+   "desc_en": "Energy Charge Speed +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 604,
+   "className": "RuneMarksman",
+   "name_ko": "명사수의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 47,
+   "mech_id": "critArrow",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    3.0,
+    5.0,
+    8.0,
+    11.0,
+    15.0
+   ],
+   "desc_en": "Harpoon Crit Rate +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 606,
+   "className": "RuneExecution",
+   "name_ko": "처형의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 49,
+   "mech_id": "exhaustArrow",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    7.0,
+    11.0,
+    16.0,
+    23.0,
+    32.0
+   ],
+   "desc_en": "Damage to Groggy Bosses +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 608,
+   "className": "RuneInsight",
+   "name_ko": "약점 창의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 45,
+   "mech_id": "weakWindow",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    12.0,
+    17.0,
+    23.0,
+    30.0
+   ],
+   "desc_en": "Weak Point Exposure Window +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 613,
+   "className": "RuneSunder",
+   "name_ko": "갑옷 파괴의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 56,
+   "mech_id": "sunderArrow",
+   "category": "CROSSBOW",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_WEAKPOINT_HIT",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    20.0,
+    27.0
+   ],
+   "desc_en": "DEF -{v}% (5s)",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 614,
+   "className": "RuneLingerF",
+   "name_ko": "그로기 연장의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 33,
+   "mech_id": "exhaustTime",
+   "category": "GIMMICK",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    14.0,
+    19.0
+   ],
+   "desc_en": "Groggy Duration +{v}%",
+   "allowlist": [
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 615,
+   "className": "RuneResolveF",
+   "name_ko": "쿨타임의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 35,
+   "mech_id": "activeCool",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    3.0,
+    5.0,
+    7.0,
+    10.0,
+    13.0,
+    16.0
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "allowlist": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 616,
+   "className": "RuneAmplifyF",
+   "name_ko": "액티브 강화의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 37,
+   "mech_id": "activePower",
+   "category": "GIMMICK",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    11.0,
+    16.0,
+    22.0,
+    30.0
+   ],
+   "desc_en": "Power +{v}%",
+   "allowlist": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 617,
+   "className": "RuneSiege",
+   "name_ko": "공성의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 51,
+   "mech_id": "tankReload",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    2.0
+   ],
+   "desc_en": "Stage {v} — Harpoon Cart No. 2 firing interval reduced (60s → 45s)",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 618,
+   "className": "RuneTwinbolt",
+   "name_ko": "쌍발의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 52,
+   "mech_id": "multiShot",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    50.0,
+    70.0
+   ],
+   "desc_en": "Double Shot — Automatically fires a second harpoon (Power {v}%)",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 619,
+   "className": "RuneDoubleCurse",
+   "name_ko": "이중고의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 53,
+   "mech_id": "interruptExtra",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_INTERRUPT",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    1.0
+   ],
+   "desc_en": "Applies {v} Additional Debuffs",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 620,
+   "className": "RuneBonecrush",
+   "name_ko": "기절 연장의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 82,
+   "mech_id": "weakpointStun",
+   "category": "CROSSBOW",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.5,
+    2.0
+   ],
+   "desc_en": "Groggy Duration +{v}s",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 621,
+   "className": "RuneMarkF",
+   "name_ko": "깊은 상처의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 83,
+   "mech_id": "woundLinger",
+   "category": "CROSSBOW",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    2.0,
+    3.0
+   ],
+   "desc_en": "Wound Rend Duration +{v}s",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 622,
+   "className": "RuneRally",
+   "name_ko": "함성의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 93,
+   "mech_id": "onInterrupt",
+   "category": "PROC",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_INTERRUPT",
+   "minGrade": 5,
+   "filter": "ALL",
+   "param": 8,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    10.0,
+    15.0
+   ],
+   "desc_en": "ATK +{v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1,
+    2,
+    3,
+    4
+   ]
+  },
+  {
+   "kindNum": 623,
+   "className": "RuneCharge",
+   "name_ko": "충전의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 44,
+   "mech_id": "chargeBonus",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_FIRE",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    30.0
+   ],
+   "desc_en": "Energy +{v}%p (including battle start)",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": [
+    1
+   ]
+  },
+  {
+   "kindNum": 624,
+   "className": "RuneRecoup",
+   "name_ko": "만회의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 46,
+   "mech_id": "missRefund",
+   "category": "CROSSBOW",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_INTERRUPT_FAIL",
+   "minGrade": 1,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    10.0,
+    20.0,
+    30.0,
+    40.0,
+    50.0,
+    70.0
+   ],
+   "desc_en": "Charges Energy to {v}%",
+   "allowlist": [
+    6
+   ],
+   "allowlist_violation": false,
+   "dead_grades": []
+  },
+  {
+   "kindNum": 625,
+   "className": "RuneWarSongF",
+   "name_ko": "진군가의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 105,
+   "mech_id": "pulseAtkBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    8.0,
+    11.0,
+    16.0,
+    22.0
+   ],
+   "desc_en": "4 Allies' ATK +{v}% Every 3s (6s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": true,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 626,
+   "className": "RuneWarDrumF",
+   "name_ko": "전고의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 106,
+   "mech_id": "pulseSpdBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    6.0,
+    9.0,
+    13.0,
+    18.0
+   ],
+   "desc_en": "4 Allies' Attack Speed +{v}% Every 3s (6s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": true,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 627,
+   "className": "RuneOmenF",
+   "name_ko": "징조의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 107,
+   "mech_id": "pulseCritBuff",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    0.0,
+    6.0,
+    9.0,
+    13.0
+   ],
+   "desc_en": "4 Allies' Crit Rate +{v}% Every 4s (7s)",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": true,
+   "dead_grades": [
+    1,
+    2,
+    3
+   ]
+  },
+  {
+   "kindNum": 628,
+   "className": "RuneWellspringF",
+   "name_ko": "샘솟음의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 108,
+   "mech_id": "pulseManaPulse",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    0.0,
+    4.0,
+    6.0,
+    8.0,
+    11.0
+   ],
+   "desc_en": "Restores {v}% Mana to 4 Allies Every 4s",
+   "allowlist": [
+    4
+   ],
+   "allowlist_violation": true,
+   "dead_grades": [
+    1,
+    2
+   ]
+  },
+  {
+   "kindNum": 629,
+   "className": "RuneDripF",
+   "name_ko": "성수의 룬",
+   "type": "F",
+   "emblem": 6,
+   "emblem_name": "Snipe",
+   "skillRef": 101,
+   "mech_id": "pulseHealOne",
+   "category": "PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 2,
+   "filter": "ALL",
+   "param": 0,
+   "values": [
+    0.0,
+    1.5,
+    2.5,
+    3.5,
+    5.0,
+    7.0
+   ],
+   "desc_en": "Restores {v}% HP to 1 Allied Hero Every 1s",
+   "allowlist": [
+    3
+   ],
+   "allowlist_violation": true,
+   "dead_grades": [
+    1
+   ]
+  }
+ ],
+ "mechanics": [
+  {
+   "skillRef": 1,
+   "id": "atkDmg",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 2,
+   "emblems": [
+    2,
+    5
+   ],
+   "desc_en": "ATK +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    201,
+    214,
+    215,
+    216,
+    217,
+    501
+   ]
+  },
+  {
+   "skillRef": 2,
+   "id": "maxHp",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 1,
+   "emblems": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "desc_en": "Max HP +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    101,
+    112,
+    113,
+    114,
+    115,
+    202,
+    301,
+    401,
+    502
+   ]
+  },
+  {
+   "skillRef": 3,
+   "id": "defense",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    3,
+    4
+   ],
+   "desc_en": "DEF +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    102,
+    302,
+    402
+   ]
+  },
+  {
+   "skillRef": 4,
+   "id": "atkSpd",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 4,
+   "emblems": [
+    2,
+    4,
+    5
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    203,
+    403,
+    412,
+    413,
+    414,
+    415,
+    503
+   ]
+  },
+  {
+   "skillRef": 5,
+   "id": "moveSpd",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    2,
+    5
+   ],
+   "desc_en": "Movement Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    103,
+    204,
+    504
+   ]
+  },
+  {
+   "skillRef": 6,
+   "id": "atkRange",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    4
+   ],
+   "desc_en": "Attack Range +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    205,
+    404
+   ]
+  },
+  {
+   "skillRef": 7,
+   "id": "aggroGen",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Aggro Generation +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    104
+   ]
+  },
+  {
+   "skillRef": 8,
+   "id": "aggroDown",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    3,
+    4,
+    5
+   ],
+   "desc_en": "Aggro Generation -{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    206,
+    303,
+    405,
+    505
+   ]
+  },
+  {
+   "skillRef": 9,
+   "id": "dmgTaken",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    3
+   ],
+   "desc_en": "Damage Taken -{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    105,
+    304
+   ]
+  },
+  {
+   "skillRef": 10,
+   "id": "critRate",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    5
+   ],
+   "desc_en": "Crit Rate +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    207,
+    506
+   ]
+  },
+  {
+   "skillRef": 11,
+   "id": "critDmg",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    5
+   ],
+   "desc_en": "Crit Damage +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    208,
+    507
+   ]
+  },
+  {
+   "skillRef": 12,
+   "id": "lifeSteal",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    2
+   ],
+   "desc_en": "Absorbs {v}% of damage dealt as HP",
+   "desc6_ko": "",
+   "carrier_runes": [
+    209
+   ]
+  },
+  {
+   "skillRef": 13,
+   "id": "healCycle",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    3
+   ],
+   "desc_en": "Restores {v}% HP every 5s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    106,
+    305
+   ]
+  },
+  {
+   "skillRef": 14,
+   "id": "healPower",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 3,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Healing +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    306,
+    312,
+    313,
+    314,
+    315
+   ]
+  },
+  {
+   "skillRef": 15,
+   "id": "manaGain",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    3,
+    4
+   ],
+   "desc_en": "Mana Regen Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    307,
+    406
+   ]
+  },
+  {
+   "skillRef": 16,
+   "id": "debuffTime",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "multi",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "Applied Debuff Duration +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    407
+   ]
+  },
+  {
+   "skillRef": 17,
+   "id": "thorns",
+   "category": "STAT",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_DAMAGED",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Counterattacks for {v}% of ATK",
+   "desc6_ko": "",
+   "carrier_runes": [
+    107
+   ]
+  },
+  {
+   "skillRef": 21,
+   "id": "resFreeze",
+   "category": "RESIST",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    3,
+    4
+   ],
+   "desc_en": "Freeze Duration -{v}%",
+   "desc6_ko": "빙결 면역",
+   "carrier_runes": [
+    319,
+    422
+   ]
+  },
+  {
+   "skillRef": 22,
+   "id": "resStun",
+   "category": "RESIST",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "desc_en": "Stun Duration -{v}%",
+   "desc6_ko": "기절 면역",
+   "carrier_runes": [
+    118,
+    224,
+    320,
+    521
+   ]
+  },
+  {
+   "skillRef": 23,
+   "id": "resKnockback",
+   "category": "RESIST",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    2
+   ],
+   "desc_en": "Knockback -{v}%",
+   "desc6_ko": "넉백 면역",
+   "carrier_runes": [
+    119,
+    222
+   ]
+  },
+  {
+   "skillRef": 24,
+   "id": "resBlow",
+   "category": "RESIST",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    2,
+    3,
+    5
+   ],
+   "desc_en": "Blow -{v}%",
+   "desc6_ko": "블로우 면역",
+   "carrier_runes": [
+    120,
+    223,
+    321,
+    522
+   ]
+  },
+  {
+   "skillRef": 31,
+   "id": "staminaHit",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_HIT",
+   "minGrade": 3,
+   "sigFor": 5,
+   "emblems": [
+    4,
+    5
+   ],
+   "desc_en": "Depletes an additional {v}% Stamina",
+   "desc6_ko": "",
+   "carrier_runes": [
+    416,
+    508
+   ]
+  },
+  {
+   "skillRef": 32,
+   "id": "exhaustDmg",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    5
+   ],
+   "desc_en": "Damage While Groggy +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    218,
+    517
+   ]
+  },
+  {
+   "skillRef": 33,
+   "id": "exhaustTime",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    4,
+    5,
+    6
+   ],
+   "desc_en": "Groggy Duration +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    417,
+    518,
+    614
+   ]
+  },
+  {
+   "skillRef": 34,
+   "id": "weakBonus",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    4
+   ],
+   "desc_en": "Damage While Weak Point Is Exposed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    219,
+    418
+   ]
+  },
+  {
+   "skillRef": 35,
+   "id": "activeCool",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "desc_en": "Cooldown -{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    116,
+    220,
+    316,
+    419,
+    519,
+    615
+   ]
+  },
+  {
+   "skillRef": 36,
+   "id": "activeDur",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    3,
+    4
+   ],
+   "desc_en": "Duration +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    117,
+    317,
+    420
+   ]
+  },
+  {
+   "skillRef": 37,
+   "id": "activePower",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "SELF",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "desc_en": "Power +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    221,
+    318,
+    421,
+    520,
+    616
+   ]
+  },
+  {
+   "skillRef": 38,
+   "id": "dashSpeed",
+   "category": "GIMMICK",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Dash Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    128
+   ]
+  },
+  {
+   "skillRef": 41,
+   "id": "crossbowDmg",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Damage +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    601
+   ]
+  },
+  {
+   "skillRef": 42,
+   "id": "weakpointWound",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Enhanced Wound Rend — Damage Taken +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    602
+   ]
+  },
+  {
+   "skillRef": 43,
+   "id": "reloadSpd",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Energy Charge Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    603
+   ]
+  },
+  {
+   "skillRef": 44,
+   "id": "chargeBonus",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_FIRE",
+   "minGrade": 2,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Energy +{v}%p (including battle start)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    623
+   ]
+  },
+  {
+   "skillRef": 45,
+   "id": "weakWindow",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Weak Point Exposure Window +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    608
+   ]
+  },
+  {
+   "skillRef": 46,
+   "id": "missRefund",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_INTERRUPT_FAIL",
+   "minGrade": 1,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Charges Energy to {v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    624
+   ]
+  },
+  {
+   "skillRef": 47,
+   "id": "critArrow",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Harpoon Crit Rate +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    604
+   ]
+  },
+  {
+   "skillRef": 49,
+   "id": "exhaustArrow",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 2,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Damage to Groggy Bosses +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    606
+   ]
+  },
+  {
+   "skillRef": 51,
+   "id": "tankReload",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Stage {v} — Harpoon Cart No. 2 firing interval reduced (60s → 45s)",
+   "desc6_ko": "{v}단계 — 3호 작살차 추가 배치 (발사 주기 60초)",
+   "carrier_runes": [
+    617
+   ]
+  },
+  {
+   "skillRef": 52,
+   "id": "multiShot",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Double Shot — Automatically fires a second harpoon (Power {v}%)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    618
+   ]
+  },
+  {
+   "skillRef": 53,
+   "id": "interruptExtra",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "CROSSBOW",
+   "merge": "add",
+   "condition": "ON_INTERRUPT",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Applies {v} Additional Debuffs",
+   "desc6_ko": "",
+   "carrier_runes": [
+    619
+   ]
+  },
+  {
+   "skillRef": 56,
+   "id": "sunderArrow",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_WEAKPOINT_HIT",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "DEF -{v}% (5s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    613
+   ]
+  },
+  {
+   "skillRef": 61,
+   "id": "taunt",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Taunt — Forces Boss Targeting + Aggro Generation +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 62,
+   "id": "frenzy",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    2
+   ],
+   "desc_en": "Burst — ATK/Attack Speed +{v}% + Aggro -20%",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 63,
+   "id": "massHeal",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "All Legions Restore {v}% HP per Second",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 64,
+   "id": "weakenBoss",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "Boss DEF -{v}%",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 65,
+   "id": "allOutAttack",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "All-Out Attack — All Legions' ATK +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 66,
+   "id": "harpoonWound",
+   "category": "ACTIVE",
+   "type": "RAID_ACTIVE",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ACTIVE",
+   "minGrade": 0,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Wound Rend on Weak Point Hit — Damage Taken +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": []
+  },
+  {
+   "skillRef": 71,
+   "id": "tauntArmorBreak",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "DEF -{v}% (10s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    121
+   ]
+  },
+  {
+   "skillRef": 72,
+   "id": "tauntShield",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Damage Taken -{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    122
+   ]
+  },
+  {
+   "skillRef": 73,
+   "id": "tauntRecover",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_ACTIVE_END",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "Restores {v}% HP",
+   "desc6_ko": "",
+   "carrier_runes": [
+    123
+   ]
+  },
+  {
+   "skillRef": 75,
+   "id": "frenzyCrit",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    2
+   ],
+   "desc_en": "Crit Rate +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    226
+   ]
+  },
+  {
+   "skillRef": 76,
+   "id": "healCleanse",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_CAST",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Cleanses {v} Debuffs",
+   "desc6_ko": "",
+   "carrier_runes": [
+    322
+   ]
+  },
+  {
+   "skillRef": 77,
+   "id": "healShield",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_ACTIVE_END",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Damage Taken -{v}% (4s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    323
+   ]
+  },
+  {
+   "skillRef": 78,
+   "id": "weakenAmplify",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "Additional Damage Taken +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    425
+   ]
+  },
+  {
+   "skillRef": 79,
+   "id": "weakenMana",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "Mana Recovery +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    426
+   ]
+  },
+  {
+   "skillRef": 80,
+   "id": "allOutHaste",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    524
+   ]
+  },
+  {
+   "skillRef": 82,
+   "id": "weakpointStun",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Groggy Duration +{v}s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    620
+   ]
+  },
+  {
+   "skillRef": 83,
+   "id": "woundLinger",
+   "category": "CROSSBOW",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ALWAYS",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "Wound Rend Duration +{v}s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    621
+   ]
+  },
+  {
+   "skillRef": 84,
+   "id": "allOutExpose",
+   "category": "ACTIVE_MOD",
+   "type": "RAID",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "DURING_ACTIVE",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "Damage Taken +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    525
+   ]
+  },
+  {
+   "skillRef": 91,
+   "id": "comboBleed",
+   "category": "PROC",
+   "type": "RAID_PROC",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_STACK",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "Damage Taken +{v}% per Stack (10s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    526
+   ]
+  },
+  {
+   "skillRef": 92,
+   "id": "comboBreak",
+   "category": "PROC",
+   "type": "RAID_PROC",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "ON_STACK",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "DEF -{v}% per Stack",
+   "desc6_ko": "",
+   "carrier_runes": [
+    527
+   ]
+  },
+  {
+   "skillRef": 93,
+   "id": "onInterrupt",
+   "category": "PROC",
+   "type": "RAID_PROC",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "ON_INTERRUPT",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    6
+   ],
+   "desc_en": "ATK +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    622
+   ]
+  },
+  {
+   "skillRef": 94,
+   "id": "onExhaust",
+   "category": "PROC",
+   "type": "RAID_PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_GROGGY_START",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    2,
+    5
+   ],
+   "desc_en": "Attack Speed +{v}%",
+   "desc6_ko": "",
+   "carrier_runes": [
+    228,
+    528
+   ]
+  },
+  {
+   "skillRef": 95,
+   "id": "onHpLow",
+   "category": "PROC",
+   "type": "RAID_PROC",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "ON_HP_LOW",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    1,
+    3
+   ],
+   "desc_en": "Damage Taken -{v}% (8s, Once Only)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    124,
+    324
+   ]
+  },
+  {
+   "skillRef": 101,
+   "id": "pulseHealOne",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 2,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Restores {v}% HP to 1 Allied Hero Every 1s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    325,
+    629
+   ]
+  },
+  {
+   "skillRef": 102,
+   "id": "pulseHealWide",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Restores {v}% HP to 4 Allied Heroes Every 3s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    326
+   ]
+  },
+  {
+   "skillRef": 103,
+   "id": "pulseSoldierHeal",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Restores {v}% HP to 8 Allied Soldiers Every 2s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    327
+   ]
+  },
+  {
+   "skillRef": 104,
+   "id": "pulseCleanse",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    3
+   ],
+   "desc_en": "Cleanses Debuffs from {v} Allies Every 5s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    328
+   ]
+  },
+  {
+   "skillRef": 105,
+   "id": "pulseAtkBuff",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "4 Allies' ATK +{v}% Every 3s (6s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    427,
+    625
+   ]
+  },
+  {
+   "skillRef": 106,
+   "id": "pulseSpdBuff",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "4 Allies' Attack Speed +{v}% Every 3s (6s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    428,
+    626
+   ]
+  },
+  {
+   "skillRef": 107,
+   "id": "pulseCritBuff",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "4 Allies' Crit Rate +{v}% Every 4s (7s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    429,
+    627
+   ]
+  },
+  {
+   "skillRef": 108,
+   "id": "pulseManaPulse",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "RAID",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    4
+   ],
+   "desc_en": "Restores {v}% Mana to 4 Allies Every 4s",
+   "desc6_ko": "",
+   "carrier_runes": [
+    430,
+    628
+   ]
+  },
+  {
+   "skillRef": 109,
+   "id": "pulseShield",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 4,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "3 Allies' Damage Taken -{v}% Every 5s (5s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    126
+   ]
+  },
+  {
+   "skillRef": 110,
+   "id": "pulseFortify",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    1
+   ],
+   "desc_en": "8 Soldiers' DEF +{v}% Every 4s (4s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    127
+   ]
+  },
+  {
+   "skillRef": 111,
+   "id": "pulseRage",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "CORP",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 3,
+   "sigFor": 0,
+   "emblems": [
+    2
+   ],
+   "desc_en": "5 Soldiers' ATK +{v}% Every 4s (8s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    229
+   ]
+  },
+  {
+   "skillRef": 113,
+   "id": "pulseExpose",
+   "category": "PULSE",
+   "type": "RAID_PULSE",
+   "target": "BOSS",
+   "merge": "add",
+   "condition": "PERIODIC",
+   "minGrade": 5,
+   "sigFor": 0,
+   "emblems": [
+    5
+   ],
+   "desc_en": "Damage Taken +{v}% Every 8s (3s)",
+   "desc6_ko": "",
+   "carrier_runes": [
+    530
+   ]
+  }
+ ]
+}

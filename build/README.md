@@ -11,6 +11,15 @@ python3 build/build_codex.py
 It reads `data/units2_part*.md` (the per-unit content), `intro.md` (the combat-framework + key-findings
 preamble), `icon_map.json` (kindNum → icon code), and `base_stats.json` (per-unit base stats), and writes
 `../unit-codex.html` + `../UNIT-MECHANICS.md`.
+
+The emblem audit is a separate, independent output:
+
+```sh
+python3 build/build_emblems.py
+```
+
+It reads `emblem_catalog.json` and writes `../raid-emblems.html`. Same rules — stdlib only, paths
+relative to the script, no game files needed.
 Run it after editing a unit's writeup, the intro, or the icon map. (Paths are relative to the script, so the
 working directory doesn't matter.) Pure-Python stdlib — no dependencies.
 
@@ -23,6 +32,9 @@ working directory doesn't matter.) Pure-Python stdlib — no dependencies.
 | `icon_map.json` | kindNum → `EFUnits/` image code (visually verified) |
 | `base_stats.json` | per-class base stats (HP/ATK, def/phy/mag, atk & move speed, range, recovery, dmg type, immunities) — base + Ⅱ — rendered as each unit's "Base stats" block |
 | `extract_base_stats.py` | regenerates `base_stats.json` from the game's decrypted `UNIT` book (needs the game data dump — not in this repo) |
+| `build_emblems.py` | the emblem-audit builder (renders `../raid-emblems.html` from `emblem_catalog.json`; the 11 findings live in this file) |
+| `emblem_catalog.json` | the emblem/rune reference data — 6 emblems, 137 runes × 6 grades, 6 rarity tiers, 10 sub-options, 76 mechanics |
+| `extract_emblem_catalog.py` | regenerates `emblem_catalog.json` from the decrypted `EMBLEM` / `EMBLEM_SKILL` / `RUNE` books + the bundle locale (needs the game data dump — not in this repo) |
 | `data/units2_part*.md` | the per-unit content the builder reads (8 chunks) |
 | `data/units_part*.md` | the raw first-pass extraction (provenance; reformatted into `units2_*`) |
 | `data/unit_classmap.json` | className → bundle class-variable (extraction scaffolding) |
