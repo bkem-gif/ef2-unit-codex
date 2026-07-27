@@ -1,0 +1,585 @@
+<title>EF2 Raid Emblems — Audit</title>
+<style>
+:root {
+  --paper:#F7F7F4; --ink:#16181D; --ink-2:#3A3F4A; --neutral:#737784;
+  --rule:#D9D9D2; --card:#FFFFFF; --accent:#2D4B8E;
+  --crit:#A32A21; --warn:#9A6B10; --good:#2E6B4F;
+  --crit-bg:#FBEEEC; --warn-bg:#FBF5E6; --good-bg:#EDF4EF;
+  --serif: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono: ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:#101216; --ink:#E8E9EC; --ink-2:#AFB4BE; --neutral:#8B909C;
+    --rule:#282C34; --card:#171A20; --accent:#8FA9E0;
+    --crit:#E8796B; --warn:#D9AE58; --good:#7FBE9A;
+    --crit-bg:#231718; --warn-bg:#231F16; --good-bg:#16211C;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:#101216; --ink:#E8E9EC; --ink-2:#AFB4BE; --neutral:#8B909C;
+  --rule:#282C34; --card:#171A20; --accent:#8FA9E0;
+  --crit:#E8796B; --warn:#D9AE58; --good:#7FBE9A;
+  --crit-bg:#231718; --warn-bg:#231F16; --good-bg:#16211C;
+}
+:root[data-theme="light"] {
+  --paper:#F7F7F4; --ink:#16181D; --ink-2:#3A3F4A; --neutral:#737784;
+  --rule:#D9D9D2; --card:#FFFFFF; --accent:#2D4B8E;
+  --crit:#A32A21; --warn:#9A6B10; --good:#2E6B4F;
+  --crit-bg:#FBEEEC; --warn-bg:#FBF5E6; --good-bg:#EDF4EF;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:1180px; margin:0 auto; padding:0 24px 96px; }
+.mono { font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.sm { font-size:.8rem; color:var(--neutral); }
+
+header.top { padding:72px 0 40px; border-bottom:2px solid var(--ink); }
+.eyebrow { font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 18px; }
+h1 { font-family:var(--serif); font-size:clamp(2.2rem,5vw,3.4rem); line-height:1.08; margin:0 0 18px;
+  text-wrap:balance; font-weight:600; letter-spacing:-.015em; }
+.lede { font-size:1.12rem; color:var(--ink-2); max-width:64ch; margin:0; }
+
+.tally { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); margin:40px 0 0; }
+.tally div { background:var(--paper); padding:18px 20px; }
+.tally .n { font-family:var(--serif); font-size:2.1rem; line-height:1; display:block; }
+.tally .l { font-size:.76rem; color:var(--neutral); letter-spacing:.04em; margin-top:8px; display:block; }
+.tally .crit .n { color:var(--crit); }
+
+section { padding-top:64px; }
+h2 { font-family:var(--serif); font-size:1.7rem; margin:0 0 8px; font-weight:600; letter-spacing:-.01em; }
+.shead { border-bottom:1px solid var(--rule); padding-bottom:14px; margin-bottom:28px; }
+.shead p { margin:6px 0 0; color:var(--ink-2); max-width:68ch; }
+
+.find { background:var(--card); border:1px solid var(--rule); border-left:4px solid var(--neutral);
+  padding:22px 24px; margin-bottom:16px; }
+.find.crit { border-left-color:var(--crit); }
+.find.warn { border-left-color:var(--warn); }
+.find.good { border-left-color:var(--good); }
+.fhead { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+.find h3 { font-family:var(--serif); font-size:1.25rem; margin:0; font-weight:600; }
+.find .meta { margin:8px 0 18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.sevtag { font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; font-family:var(--mono);
+  padding:3px 8px; border-radius:2px; }
+.sevtag.crit { background:var(--crit-bg); color:var(--crit); }
+.sevtag.warn { background:var(--warn-bg); color:var(--warn); }
+.sevtag.good { background:var(--good-bg); color:var(--good); }
+.eqd { font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; font-family:var(--mono);
+  border:1px solid var(--accent); color:var(--accent); padding:2px 7px; border-radius:2px; }
+.grid3 { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:22px; }
+.grid3 h4 { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--neutral);
+  margin:0 0 7px; font-weight:600; }
+.grid3 p { margin:0; font-size:.9rem; color:var(--ink-2); }
+.impact { margin:18px 0 0; padding-top:14px; border-top:1px solid var(--rule); font-size:.9rem; }
+
+.embs { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:1px;
+  background:var(--rule); border:1px solid var(--rule); }
+.emb { background:var(--card); padding:20px 22px; }
+.emb h3 { font-family:var(--serif); font-size:1.2rem; margin:0; font-weight:600; }
+.emb .sub { margin:5px 0 14px; font-size:.78rem; color:var(--neutral); }
+.emb dl { margin:0; display:grid; grid-template-columns:auto 1fr; gap:7px 14px; font-size:.88rem; }
+.emb dt { font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:var(--neutral);
+  padding-top:3px; }
+.emb dd { margin:0; }
+.emb dd .mono { display:block; margin-top:3px; }
+
+.tblwrap { overflow-x:auto; border:1px solid var(--rule); background:var(--card); }
+table { border-collapse:collapse; width:100%; font-size:.85rem; }
+th { text-align:left; font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--neutral); font-weight:600; padding:11px 10px; border-bottom:1px solid var(--rule);
+  white-space:nowrap; position:sticky; top:0; background:var(--card); }
+td { padding:8px 10px; border-bottom:1px solid var(--rule); vertical-align:top; }
+tr:last-child td { border-bottom:0; }
+td.v { font-family:var(--mono); text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+td.z { color:var(--neutral); opacity:.45; }
+td.num { text-align:right; color:var(--neutral); }
+td.nm { font-weight:500; white-space:nowrap; }
+td.t { color:var(--neutral); }
+td.desc { color:var(--ink-2); min-width:210px; }
+tr.bad { background:var(--crit-bg); }
+.flag { font-family:var(--mono); font-size:.62rem; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--warn); border:1px solid var(--warn); padding:1px 4px; border-radius:2px;
+  margin-left:5px; vertical-align:1px; }
+
+.filters { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; align-items:center; }
+.filters input, .filters select { font-family:var(--sans); font-size:.85rem; padding:7px 10px;
+  border:1px solid var(--rule); background:var(--card); color:var(--ink); border-radius:2px; }
+.filters input { min-width:200px; }
+.filters input:focus-visible, .filters select:focus-visible { outline:2px solid var(--accent);
+  outline-offset:1px; }
+.count { font-size:.78rem; color:var(--neutral); font-family:var(--mono); }
+
+.note { background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--accent);
+  padding:18px 22px; font-size:.9rem; color:var(--ink-2); }
+.note ul { margin:10px 0 0; padding-left:20px; }
+.note li { margin-bottom:7px; }
+.note b, .impact strong { color:var(--ink); }
+footer { margin-top:72px; padding-top:22px; border-top:1px solid var(--rule);
+  font-size:.78rem; color:var(--neutral); }
+@media (prefers-reduced-motion: reduce) { * { animation:none!important; transition:none!important; } }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Endless Frontier 2 · bundle 1.12.80 (mounted) · guild raid</p>
+  <h1>The raid emblem system, audited against its own code</h1>
+  <p class="lede">Every emblem, every rune, every stat at every rarity — and for all 76 mechanics,
+  whether the game actually does what the tooltip says. Each divergence below was traced to engine
+  code, adversarially re-derived by an independent reviewer, then measured in a headless sim running
+  the same bundle.</p>
+  <div class="tally">
+    <div><span class="n">76</span><span class="l">mechanics traced</span></div>
+    <div class="crit"><span class="n">11</span><span class="l">divergences confirmed</span></div>
+    <div class="crit"><span class="n">3</span><span class="l">deliver nothing at all</span></div>
+    <div><span class="n">137</span><span class="l">runes catalogued</span></div>
+    <div><span class="n">822</span><span class="l">grade values verified</span></div>
+  </div>
+</header>
+
+<section>
+  <div class="shead"><h2>Confirmed divergences</h2>
+  <p>Ordered by severity. “What the sim measured” is the output of a probe that ran the real engine —
+  not a prediction. Every one of these survived an independent attempt to refute the code reading,
+  then a second independent audit of the measurement itself.</p></div>
+  <article class="find crit">
+  <header>
+    <div class="fhead"><h3>Double Shot</h3></div>
+    <p class="meta"><span class="sevtag crit">Delivers nothing</span>
+      <span class="mono sm">skillRef 52 · multiShot · 618 RuneTwinbolt</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Automatically fires a second harpoon (Power 50% at Legendary / 70% at Mythic).</p></div>
+    <div><h4>What the code does</h4><p>No implementation of any kind. The effect record is built and routed into crossbowContext.passives, but nothing ever reads it — there is no getCrossbowStat(&quot;multiShot&quot;) call anywhere in the 6.4MB bundle.</p></div>
+    <div><h4>What the sim measured</h4><p>Arrows per fire = 1.000 in both arms. 6 arrows, 10 boss hits, 109,200 crossbow damage — bit-identical with and without the rune. 0 second harpoons from 6 fires; 0 of a promised 76,440 damage.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> A dead crossbow slot. The tooltip ships in all 16 languages with an [ALWAYS][CROSSBOW] prefix that reads as a guaranteed passive.</p>
+</article>
+<article class="find crit">
+  <header>
+    <div class="fhead"><h3>Crit Rate pulse</h3></div>
+    <p class="meta"><span class="sevtag crit">Delivers nothing</span>
+      <span class="mono sm">skillRef 107 · pulseCritBuff · 627 RuneOmenF · 429 RuneOmen</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>4 Allies&#x27; Crit Rate +{v}% every 4s, lasting 7s. Duration exceeds interval, so a player reads it as permanent uptime.</p></div>
+    <div><h4>What the code does</h4><p>The pulse writes unit.critChance += v/100, but BaseUnit.updateActiveBuff() unconditionally reassigns critChance = orgCritChance + activeCritChanceBuff.value at the head of every unit&#x27;s execute(), before any attack resolves. Delivered uptime is 0 of the advertised 420 frames.</p></div>
+    <div><h4>What the sim measured</h4><p>Full battle, 9001 frames, 16,832 intercepted crit rolls: damage 6,970,088.853046298 in BOTH arms — identical to the last decimal. Crit rate 10.0642% both arms, 1694 crits both arms. The pulse fires on schedule 37 times and is erased every time.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Rune 627 RuneOmenF at Epic is a dead slot. Measured contribution to raid damage: exactly 0.000000% — the battle is bit-for-bit identical whether the rune pays +6% crit or +600%.</p>
+</article>
+<article class="find crit">
+  <header>
+    <div class="fhead"><h3>Freeze Resistance</h3></div>
+    <p class="meta"><span class="sevtag crit">Delivers nothing</span>
+      <span class="mono sm">skillRef 21 · resFreeze · 319 RuneWarmthC · 422</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Freeze Duration -{v}% (10/20/30/40/60%), and full Freeze Immunity at Mythic.</p></div>
+    <div><h4>What the code does</h4><p>The arithmetic is correct and matches the tooltip exactly. But nothing in a guild raid ever calls freeze() on an ally — the complete caller set contains no raid boss path.</p></div>
+    <div><h4>What the sim measured</h4><p>0 ally-inbound freezes across 12 full raid battles spanning all 5 bosses and 3 seeds (~4.2M ally-frames, max numFreeze = 0). The detector was validated by 3-of-3 injected freezes, so the zero is a real absence, not a broken probe.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Zero value in a guild raid at every grade including Mythic. The stat is genuinely written onto the units — it just guards against something the raid never does.</p>
+</article>
+<article class="find crit">
+  <header>
+    <div class="fhead"><h3>Stun Resistance</h3></div>
+    <p class="meta"><span class="sevtag crit">Delivers nothing</span>
+      <span class="mono sm">skillRef 22 · resStun · 118 RuneClarityA</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Stun Duration -{v}%. Rune 118 at Rare advertises -30%.</p></div>
+    <div><h4>What the code does</h4><p>stunResistPct has exactly one consumer, BaseUnit.stun(). The blow-recovery stagger — by far the most common stun in the raid — writes numStun directly, bypassing stun() and therefore bypassing the resistance entirely.</p></div>
+    <div><h4>What the sim measured</h4><p>Direct drive confirms the honest path works: stun(240) → 240/168/144/96 frames at grades 0/3/4/5. But blow-landing → 12 frames at EVERY grade. On Dragon Knight d1 the full battle is byte-identical with and without the rune (6,970,089 damage, 556 landings, corp0 103 stuns × 12 frames).</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Advertised -30%, delivers 0% on Dragon Knight d1. Corp 1 ate 20.6 seconds of stun with the rune equipped and exactly the same without it.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>Mana pulse</h3></div>
+    <p class="meta"><span class="sevtag warn">Wrong magnitude</span>
+      <span class="mono sm">skillRef 108 · pulseManaPulse · 628 RuneWellspringF</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Restores {v}% Mana to 4 Allies every 4s. The engine&#x27;s own renderer prints &#x27;마나 6% 회복&#x27; — with the percent sign.</p></div>
+    <div><h4>What the code does</h4><p>case &quot;pulseManaPulse&quot;: i.mana += s — bare value, no division by 100. Every sibling pulse whose tooltip renders {v}% does divide by 100. This one restores FLAT mana points.</p></div>
+    <div><h4>What the sim measured</h4><p>148 grants at exactly 6 mana each; 5,009 unit-frames of zero excess. Timing (240f) and target count (4) are both correct — only the unit is wrong.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Against a 500-mana pool, Epic 628 delivers 6 mana where the tooltip promises 30 — a 5.0× shortfall, and 9.0× on a 900-pool Winged Knight. Each pulse is worth 0.1 seconds of natural regen.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>Healing Power</h3></div>
+    <p class="meta"><span class="sevtag warn">Wrong magnitude</span>
+      <span class="mono sm">skillRef 14 · healPower · 306 RuneGrace</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Healing +{v}%. Rune 306 at Epic advertises +20%, condition ALWAYS.</p></div>
+    <div><h4>What the code does</h4><p>Read at exactly 3 sites, all emblem-internal. It multiplies emblem-generated healing only — the massHeal active, the five pulse heals, and healCycle. It cannot see a healer hero&#x27;s own class-skill heal, dot ticks, the tauntRecover heal, or castle regen. Separately, it is silently discarded on any rune whose filter isn&#x27;t ALL.</p></div>
+    <div><h4>What the sim measured</h4><p>healCycle 12% → 14.4% (×1.20 exactly). Hero class-skill heal(4) → 4, ratio 1.00 — untouched. Over a full raid it delivered +9.33% against an advertised +20%, because 122,159 of 250,297 total healing (48.8%) runs through paths healPower cannot see. A filter-locked rune (313 at Mythic, +57% ELF) left healCycle at 12% — the tooltip predicts 18.84%.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Under half the advertised rate in a representative build. Note the auditor demoted the +9.33% figure to a counterfactual — the measured A-vs-B whole-battle difference was +1.9%.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>Mass Heal cleanse</h3></div>
+    <p class="meta"><span class="sevtag warn">Value never read</span>
+      <span class="mono sm">skillRef 76 · healCleanse · 322</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Cleanses {v} Debuffs — rendered as 1 at Epic, 1 at Legendary, 2 at Mythic.</p></div>
+    <div><h4>What the code does</h4><p>runMassHealStart tests for the effect&#x27;s presence with .some() and never reads .value. All grades execute identical code: a fixed wipe of the 7 canonical debuff counters.</p></div>
+    <div><h4>What the sim measured</h4><p>Post-cast counter state at grades 4, 5 and 6 is byte-identical; control leaves all counters at 60. Full raid: 620 cleanse calls either way, boss damage bit-identical at 321,604.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Merging Legendary → Mythic doubles the displayed cleanse count and changes nothing. The upgrade sells a number that does not exist.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>Last Stand</h3></div>
+    <p class="meta"><span class="sevtag warn">Wrong trigger</span>
+      <span class="mono sm">skillRef 95 · onHpLow · 124 · 324 RuneLastStand</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>When corps HP first collapses to 20%, damage taken is reduced for 8s, once.</p></div>
+    <div><h4>What the code does</h4><p>The trigger computes aliveHP / aliveMaxHP — dead units are removed from BOTH numerator and denominator — while the HP bar the player watches uses aliveHP / totalMaxHP. A nearly-wiped corps whose last survivor is healthy therefore reads 100% and never arms.</p></div>
+    <div><h4>What the sim measured</h4><p>Forced honest state (31/31 alive at 15% bar): armed at frame 930, 0.50 multiplier live on 35 of 62 incoming hits. Forced wiped state (30 of 31 dead, hero at full): never armed. In the un-manipulated raid, corp 1 was ground from 31 units to 2, bar bottomed at 10.77%, and it armed zero times in 9001 frames.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> A wipe-saver that is worst precisely when you are being wiped — every death makes it less likely to fire.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>ATK pulse</h3></div>
+    <p class="meta"><span class="sevtag warn">Does not stack</span>
+      <span class="mono sm">skillRef 105 · pulseAtkBuff · 427 · 625 RuneWarSongF</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Declared merge = &#x27;add&#x27;. Two sources (+27% and +22%) read as +49%.</p></div>
+    <div><h4>What the code does</h4><p>Both call addAttackDamageBuff into shared buff id 312, whose value is the MAX within an id, not the sum. The same id is shared with exhaustDmg, weakBonus and onInterrupt.</p></div>
+    <div><h4>What the sim measured</h4><p>A alone 0.2700, B alone 0.2200, both together 0.2700 — never 0.4900, deterministically and across 3 seeds. 0.49 is representable on the same accumulator and cross-id buffs do add, so this is a per-id max, not a clamp.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Partially confirmed. The raid-level aggregate loss is small (0.01%/0.69%/5.08% across three seeds) because only 4 of 155 allies are picked per fire. The real cost is corp-wide: rune 218 &#x27;Damage While Groggy&#x27; (+38%) and 219 &#x27;Damage While Weak Point Exposed&#x27; (+38%) collide on the same id during exactly the burn window guides tell you to stack — but only while those windows overlap.</p>
+</article>
+<article class="find warn">
+  <header>
+    <div class="fhead"><h3>Attack Speed pulse</h3></div>
+    <p class="meta"><span class="sevtag warn">Does not stack</span>
+      <span class="mono sm">skillRef 106 · pulseSpdBuff · 428 RuneWarDrum · 626</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Declared merge = &#x27;add&#x27;. Two sources (+22% and +18%) read as +40%.</p></div>
+    <div><h4>What the code does</h4><p>addAttackSpeedBuff passes overwrite = true into shared buff id 313. Last writer wins outright — so a LOWER-value source can actively downgrade a live higher-value buff.</p></div>
+    <div><h4>What the sim measured</h4><p>Writing 428 (22%) then 626 (18%): value goes 0.2200 → 0.1800. Hard ceiling in the two-source arm is 0.2200, never 0.4000; no unit ever holds more than one id-313 entry, in direct drive and in both live battles.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> Worse than mere non-stacking: a second, weaker attack-speed rune makes the build actively worse.</p>
+</article>
+<article class="find good">
+  <header>
+    <div class="fhead"><h3>Execution</h3></div>
+    <p class="meta"><span class="sevtag good">Stronger than stated</span>
+      <span class="mono sm">skillRef 49 · exhaustArrow · 606 RuneExecution</span></p>
+  </header>
+  <div class="grid3">
+    <div><h4>What the game says</h4><p>Damage to Groggy Bosses +{v}% (+32% at Mythic), rendered with an [ALWAYS] prefix.</p></div>
+    <div><h4>What the code does</h4><p>The gate reads raidStunFrames &gt; 0, not inExhaustStun. raidStunFrames is also set by every successful weak-point interrupt, so the bonus pays during plain stagger — a state where the game shows no groggy indicator. The interrupt runs earlier in the same testArrowHit call, so the interrupting bolt grants itself the bonus.</p></div>
+    <div><h4>What the sim measured</h4><p>Base damage 8400.017 in every control. Full poise: ×1.0000. The interrupting bolt: ×1.3200 with raidStunFrames=0, inExhaustStun=false and the HUD groggy chip showing false. In one real battle, 37.2% of qualifying hits were in this undisclosed state.</p></div>
+  </div>
+  <p class="impact"><strong>Impact.</strong> This one favours the player — it is materially stronger than advertised. Worth knowing before it gets &#x27;fixed&#x27;.</p>
+</article>
+</section>
+
+
+
+<section>
+  <div class="shead"><h2>The six emblems</h2>
+  <p>Fixed — one per slot, no rarity of their own. Each carries one passive and one active; rarity
+  enters only through the five runes you socket into it.</p></div>
+  <div class="embs"><article class="emb">
+  <header><h3>Guardian Emblem</h3>
+    <p class="sub"><span class="mono">Guardian</span> · TANK · slot <span class="mono">corp1</span> · rune type <span class="mono">A</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>Aggro Generation +<b>30</b>%
+      <span class="mono sm">#7 aggroGen</span></dd>
+    <dt>Active</dt><dd>Taunt — Forces Boss Targeting + Aggro Generation +<b>60</b>%
+      <span class="mono sm">28s cooldown · 5s duration</span></dd>
+  </dl></article>
+<article class="emb">
+  <header><h3>Onslaught Emblem</h3>
+    <p class="sub"><span class="mono">Assault</span> · DEALER · slot <span class="mono">corp2</span> · rune type <span class="mono">B</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>ATK +<b>8</b>%
+      <span class="mono sm">#1 atkDmg</span></dd>
+    <dt>Active</dt><dd>Burst — ATK/Attack Speed +<b>20</b>% + Aggro -20%
+      <span class="mono sm">32s cooldown · 10s duration</span></dd>
+  </dl></article>
+<article class="emb">
+  <header><h3>Healing Emblem</h3>
+    <p class="sub"><span class="mono">Mercy</span> · HEALER · slot <span class="mono">corp3</span> · rune type <span class="mono">C</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>Max HP +<b>10</b>%
+      <span class="mono sm">#2 maxHp</span></dd>
+    <dt>Active</dt><dd>All Legions Restore <b>4</b>% HP per Second
+      <span class="mono sm">34s cooldown · 10s duration</span></dd>
+  </dl></article>
+<article class="emb">
+  <header><h3>Arcane Emblem</h3>
+    <p class="sub"><span class="mono">Hex</span> · SUPPORT · slot <span class="mono">corp4</span> · rune type <span class="mono">D</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>Mana Regen Speed +<b>8</b>%
+      <span class="mono sm">#15 manaGain</span></dd>
+    <dt>Active</dt><dd>Boss DEF -<b>18</b>%
+      <span class="mono sm">38s cooldown · 12s duration</span></dd>
+  </dl></article>
+<article class="emb">
+  <header><h3>Assault Emblem</h3>
+    <p class="sub"><span class="mono">Rally</span> · BREAKER · slot <span class="mono">corp5</span> · rune type <span class="mono">E</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>Depletes an additional <b>0.01</b>% Stamina
+      <span class="mono sm">#31 staminaHit</span></dd>
+    <dt>Active</dt><dd>All-Out Attack — All Legions&#x27; ATK +<b>20</b>%
+      <span class="mono sm">40s cooldown · 8s duration</span></dd>
+  </dl></article>
+<article class="emb">
+  <header><h3>Sniper Emblem</h3>
+    <p class="sub"><span class="mono">Snipe</span> · CROSSBOW · slot <span class="mono">crossbow</span> · rune type <span class="mono">F</span></p></header>
+  <dl>
+    <dt>Passive</dt><dd>Weak Point Exposure Window +<b>10</b>%
+      <span class="mono sm">#45 weakWindow</span></dd>
+    <dt>Active</dt><dd>Wound Rend on Weak Point Hit — Damage Taken +<b>15</b>%
+      <span class="mono sm">45s cooldown · 8s duration</span></dd>
+  </dl></article></div>
+</section>
+
+<section>
+  <div class="shead"><h2>Rarity</h2>
+  <p>Six grades. Sub-options unlock at Legendary and pay a second, higher value at Mythic. These two
+  tables ship inside the app bundle rather than from the server — proven by control experiment, so
+  they are the live values.</p></div>
+  <div class="tblwrap"><table>
+    <thead><tr><th>Grade</th><th>Name</th><th>Merge count</th><th>Merge coin</th><th>Sub-option</th></tr></thead>
+    <tbody><tr><td class="mono num">1</td><td class="nm">Common</td><td class="v">5</td><td class="v">100</td><td>—</td></tr>
+<tr><td class="mono num">2</td><td class="nm">Uncommon</td><td class="v">5</td><td class="v">300</td><td>—</td></tr>
+<tr><td class="mono num">3</td><td class="nm">Rare</td><td class="v">5</td><td class="v">900</td><td>—</td></tr>
+<tr><td class="mono num">4</td><td class="nm">Epic</td><td class="v">5</td><td class="v">2500</td><td>—</td></tr>
+<tr><td class="mono num">5</td><td class="nm">Legendary</td><td class="v">5</td><td class="v">7000</td><td>yes</td></tr>
+<tr><td class="mono num">6</td><td class="nm">Mythic</td><td class="v">—</td><td class="v">—</td><td>yes</td></tr></tbody></table></div>
+  <h3 style="font-family:var(--serif);font-weight:600;margin:32px 0 12px;font-size:1.15rem;">Sub-options</h3>
+  <div class="tblwrap"><table>
+    <thead><tr><th>#</th><th>Mechanic</th><th>Effect</th><th>Emblems</th><th>Legendary</th><th>Mythic</th></tr></thead>
+    <tbody><tr><td class="mono num">1</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="mono">2, 5</td><td class="v">4</td><td class="v">7</td></tr>
+<tr><td class="mono num">2</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="mono">1, 2, 3, 4, 5</td><td class="v">5</td><td class="v">8</td></tr>
+<tr><td class="mono num">3</td><td class="mono sm">defense</td><td class="desc">DEF +{v}%</td><td class="mono">1, 3, 4</td><td class="v">4</td><td class="v">7</td></tr>
+<tr><td class="mono num">4</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="mono">2, 4, 5</td><td class="v">3</td><td class="v">5</td></tr>
+<tr><td class="mono num">5</td><td class="mono sm">dmgTaken</td><td class="desc">Damage Taken -{v}%</td><td class="mono">1, 3</td><td class="v">-3</td><td class="v">-5</td></tr>
+<tr><td class="mono num">6</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="mono">1, 2, 3, 4, 5, 6</td><td class="v">3</td><td class="v">5</td></tr>
+<tr><td class="mono num">7</td><td class="mono sm">healCycle</td><td class="desc">Restores {v}% HP every 5s</td><td class="mono">1, 3</td><td class="v">2</td><td class="v">4</td></tr>
+<tr><td class="mono num">8</td><td class="mono sm">staminaHit</td><td class="desc">Depletes an additional {v}% Stamina</td><td class="mono">4, 5</td><td class="v">0.0025</td><td class="v">0.005</td></tr>
+<tr><td class="mono num">9</td><td class="mono sm">crossbowDmg</td><td class="desc">Damage +{v}%</td><td class="mono">6</td><td class="v">4</td><td class="v">7</td></tr>
+<tr><td class="mono num">10</td><td class="mono sm">reloadSpd</td><td class="desc">Energy Charge Speed +{v}%</td><td class="mono">6</td><td class="v">3</td><td class="v">5</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="shead"><h2>All 137 runes by rarity</h2>
+  <p>Every rune with its value at each grade. A dash means the value is literally zero — the resolver
+  hard-skips those, which also suppresses that rune's sub-option, and the game will not grant the
+  rune at that grade at all. <span class="flag">off-list</span> marks a rune the engine accepts into
+  an emblem its own skill allowlist excludes; <span class="flag">HERO</span>-style tags mark a
+  non-ALL filter that narrows who the effect reaches.</p></div>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Search name, mechanic, effect…" aria-label="Search runes">
+    <select id="fe" aria-label="Filter by emblem"><option value="">All emblems</option>
+      <option>Assault</option><option>Guardian</option><option>Hex</option><option>Mercy</option><option>Rally</option><option>Snipe</option></select>
+    <select id="fc" aria-label="Filter by category"><option value="">All categories</option>
+      <option>ACTIVE_MOD</option><option>CROSSBOW</option><option>GIMMICK</option><option>PROC</option><option>PULSE</option><option>RESIST</option><option>STAT</option></select>
+    <span class="count" id="cnt"></span>
+  </div>
+  <div class="tblwrap"><table id="rt">
+    <thead><tr><th>#</th><th>Rune</th><th>Type</th><th>Emblem</th><th>Mechanic</th><th>Effect</th>
+      <th>Com</th><th>Unc</th><th>Rare</th><th>Epic</th><th>Leg</th><th>Myth</th></tr></thead>
+    <tbody><tr data-emblem="Guardian" data-cat="STAT" data-search="runerock maxhp max hp +{v}%"><td class="mono num">101</td><td class="nm">RuneRock </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runeiron defense def +{v}%"><td class="mono num">102</td><td class="nm">RuneIron </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">defense</td><td class="desc">DEF +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runestride movespd movement speed +{v}%"><td class="mono num">103</td><td class="nm">RuneStride </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">moveSpd</td><td class="desc">Movement Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runemenace aggrogen aggro generation +{v}%"><td class="mono num">104</td><td class="nm">RuneMenace </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">aggroGen</td><td class="desc">Aggro Generation +{v}%</td><td class="v">7</td><td class="v">15</td><td class="v">25</td><td class="v">30</td><td class="v">40</td><td class="v">50</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runewall dmgtaken damage taken -{v}%"><td class="mono num">105</td><td class="nm">RuneWall </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">dmgTaken</td><td class="desc">Damage Taken -{v}%</td><td class="v">-3</td><td class="v">-5</td><td class="v">-7</td><td class="v">-12</td><td class="v">-18</td><td class="v">-25</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runemend healcycle restores {v}% hp every 5s"><td class="mono num">106</td><td class="nm">RuneMend </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">healCycle</td><td class="desc">Restores {v}% HP every 5s</td><td class="v">2</td><td class="v">4</td><td class="v">6</td><td class="v">8</td><td class="v">10</td><td class="v">12</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runethorn thorns counterattacks for {v}% of atk"><td class="mono num">107</td><td class="nm">RuneThorn </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">thorns</td><td class="desc">Counterattacks for {v}% of ATK</td><td class="v">2</td><td class="v">4</td><td class="v">6</td><td class="v">10</td><td class="v">15</td><td class="v">20</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runerockhuman maxhp max hp +{v}%"><td class="mono num">112</td><td class="nm">RuneRockHuman <span class="flag">HUMAN</span></td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runerockelf maxhp max hp +{v}%"><td class="mono num">113</td><td class="nm">RuneRockElf <span class="flag">ELF</span></td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runerockundead maxhp max hp +{v}%"><td class="mono num">114</td><td class="nm">RuneRockUndead <span class="flag">UNDEAD</span></td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Guardian" data-cat="STAT" data-search="runerockorc maxhp max hp +{v}%"><td class="mono num">115</td><td class="nm">RuneRockOrc <span class="flag">ORC</span></td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Guardian" data-cat="GIMMICK" data-search="runeresolvea activecool cooldown -{v}%"><td class="mono num">116</td><td class="nm">RuneResolveA </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Guardian" data-cat="GIMMICK" data-search="runeendurea activedur duration +{v}%"><td class="mono num">117</td><td class="nm">RuneEndureA </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">activeDur</td><td class="desc">Duration +{v}%</td><td class="v">2</td><td class="v">4</td><td class="v">7</td><td class="v">10</td><td class="v">15</td><td class="v">20</td></tr>
+<tr data-emblem="Guardian" data-cat="RESIST" data-search="runeclaritya resstun stun duration -{v}%"><td class="mono num">118</td><td class="nm">RuneClarityA </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">resStun</td><td class="desc">Stun Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Guardian" data-cat="RESIST" data-search="runeanchora resknockback knockback -{v}%"><td class="mono num">119</td><td class="nm">RuneAnchorA </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">resKnockback</td><td class="desc">Knockback -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Guardian" data-cat="RESIST" data-search="runegravitya resblow blow -{v}%"><td class="mono num">120</td><td class="nm">RuneGravityA </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">resBlow</td><td class="desc">Blow -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Guardian" data-cat="ACTIVE_MOD" data-search="runetauntbreak tauntarmorbreak def -{v}% (10s)"><td class="mono num">121</td><td class="nm">RuneTauntBreak </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">tauntArmorBreak</td><td class="desc">DEF -{v}% (10s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">15</td><td class="v">30</td><td class="v">50</td></tr>
+<tr data-emblem="Guardian" data-cat="ACTIVE_MOD" data-search="runetauntshield tauntshield damage taken -{v}%"><td class="mono num">122</td><td class="nm">RuneTauntShield </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">tauntShield</td><td class="desc">Damage Taken -{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">12</td><td class="v">16</td></tr>
+<tr data-emblem="Guardian" data-cat="ACTIVE_MOD" data-search="runetauntmend tauntrecover restores {v}% hp"><td class="mono num">123</td><td class="nm">RuneTauntMend </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">tauntRecover</td><td class="desc">Restores {v}% HP</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">20</td><td class="v">40</td></tr>
+<tr data-emblem="Guardian" data-cat="PROC" data-search="runelaststand onhplow damage taken -{v}% (8s, once only)"><td class="mono num">124</td><td class="nm">RuneLastStand </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">onHpLow</td><td class="desc">Damage Taken -{v}% (8s, Once Only)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">35</td><td class="v">50</td></tr>
+<tr data-emblem="Guardian" data-cat="PULSE" data-search="runeaegispulse pulseshield 3 allies&#x27; damage taken -{v}% every 5s (5s)"><td class="mono num">126</td><td class="nm">RuneAegisPulse </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">pulseShield</td><td class="desc">3 Allies&#x27; Damage Taken -{v}% Every 5s (5s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">6</td><td class="v">9</td><td class="v">13</td></tr>
+<tr data-emblem="Guardian" data-cat="PULSE" data-search="runerampart pulsefortify 8 soldiers&#x27; def +{v}% every 4s (4s)"><td class="mono num">127</td><td class="nm">RuneRampart </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">pulseFortify</td><td class="desc">8 Soldiers&#x27; DEF +{v}% Every 4s (4s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">20</td><td class="v">27</td></tr>
+<tr data-emblem="Guardian" data-cat="GIMMICK" data-search="runedash dashspeed dash speed +{v}%"><td class="mono num">128</td><td class="nm">RuneDash </td><td class="mono t">A</td><td>Guardian</td><td class="mono sm">dashSpeed</td><td class="desc">Dash Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">15</td><td class="v">30</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefury atkdmg atk +{v}%"><td class="mono num">201</td><td class="nm">RuneFury </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runevigor maxhp max hp +{v}%"><td class="mono num">202</td><td class="nm">RuneVigor </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runeswift atkspd attack speed +{v}%"><td class="mono num">203</td><td class="nm">RuneSwift </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runechase movespd movement speed +{v}%"><td class="mono num">204</td><td class="nm">RuneChase </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">moveSpd</td><td class="desc">Movement Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefar atkrange attack range +{v}%"><td class="mono num">205</td><td class="nm">RuneFar </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkRange</td><td class="desc">Attack Range +{v}%</td><td class="v">3</td><td class="v">7</td><td class="v">12</td><td class="v">20</td><td class="v">28</td><td class="v">40</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runeshadow aggrodown aggro generation -{v}%"><td class="mono num">206</td><td class="nm">RuneShadow </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">aggroDown</td><td class="desc">Aggro Generation -{v}%</td><td class="v">-7</td><td class="v">-15</td><td class="v">-25</td><td class="v">-30</td><td class="v">-40</td><td class="v">-50</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runekeen critrate crit rate +{v}%"><td class="mono num">207</td><td class="nm">RuneKeen </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">critRate</td><td class="desc">Crit Rate +{v}%</td><td class="v">3</td><td class="v">7</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runeslayer critdmg crit damage +{v}%"><td class="mono num">208</td><td class="nm">RuneSlayer </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">critDmg</td><td class="desc">Crit Damage +{v}%</td><td class="v z">—</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runeleech lifesteal absorbs {v}% of damage dealt as hp"><td class="mono num">209</td><td class="nm">RuneLeech </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">lifeSteal</td><td class="desc">Absorbs {v}% of damage dealt as HP</td><td class="v z">—</td><td class="v z">—</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">14</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefuryhuman atkdmg atk +{v}%"><td class="mono num">214</td><td class="nm">RuneFuryHuman <span class="flag">HUMAN</span></td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefuryelf atkdmg atk +{v}%"><td class="mono num">215</td><td class="nm">RuneFuryElf <span class="flag">ELF</span></td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefuryundead atkdmg atk +{v}%"><td class="mono num">216</td><td class="nm">RuneFuryUndead <span class="flag">UNDEAD</span></td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Assault" data-cat="STAT" data-search="runefuryorc atkdmg atk +{v}%"><td class="mono num">217</td><td class="nm">RuneFuryOrc <span class="flag">ORC</span></td><td class="mono t">B</td><td>Assault</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">36</td><td class="v">53</td><td class="v">90</td></tr>
+<tr data-emblem="Assault" data-cat="GIMMICK" data-search="runereaperb exhaustdmg damage while groggy +{v}%"><td class="mono num">218</td><td class="nm">RuneReaperB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">exhaustDmg</td><td class="desc">Damage While Groggy +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">14</td><td class="v">20</td><td class="v">28</td><td class="v">38</td></tr>
+<tr data-emblem="Assault" data-cat="GIMMICK" data-search="runeexploitb weakbonus damage while weak point is exposed +{v}%"><td class="mono num">219</td><td class="nm">RuneExploitB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">weakBonus</td><td class="desc">Damage While Weak Point Is Exposed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">14</td><td class="v">20</td><td class="v">28</td><td class="v">38</td></tr>
+<tr data-emblem="Assault" data-cat="GIMMICK" data-search="runeresolveb activecool cooldown -{v}%"><td class="mono num">220</td><td class="nm">RuneResolveB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Assault" data-cat="GIMMICK" data-search="runeamplifyb activepower power +{v}%"><td class="mono num">221</td><td class="nm">RuneAmplifyB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">activePower</td><td class="desc">Power +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Assault" data-cat="RESIST" data-search="runeanchorb resknockback knockback -{v}%"><td class="mono num">222</td><td class="nm">RuneAnchorB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">resKnockback</td><td class="desc">Knockback -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Assault" data-cat="RESIST" data-search="runegravityb resblow blow -{v}%"><td class="mono num">223</td><td class="nm">RuneGravityB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">resBlow</td><td class="desc">Blow -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Assault" data-cat="RESIST" data-search="runestunresistb resstun stun duration -{v}%"><td class="mono num">224</td><td class="nm">RuneStunResistB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">resStun</td><td class="desc">Stun Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Assault" data-cat="ACTIVE_MOD" data-search="runedeadlyfrenzy frenzycrit crit rate +{v}%"><td class="mono num">226</td><td class="nm">RuneDeadlyFrenzy </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">frenzyCrit</td><td class="desc">Crit Rate +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">15</td><td class="v">21</td></tr>
+<tr data-emblem="Assault" data-cat="PROC" data-search="runebloodlustb onexhaust attack speed +{v}%"><td class="mono num">228</td><td class="nm">RuneBloodlustB </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">onExhaust</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">25</td><td class="v">35</td></tr>
+<tr data-emblem="Assault" data-cat="PULSE" data-search="runewarband pulserage 5 soldiers&#x27; atk +{v}% every 4s (8s)"><td class="mono num">229</td><td class="nm">RuneWarband </td><td class="mono t">B</td><td>Assault</td><td class="mono sm">pulseRage</td><td class="desc">5 Soldiers&#x27; ATK +{v}% Every 4s (8s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">11</td><td class="v">16</td><td class="v">22</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runelifec maxhp max hp +{v}%"><td class="mono num">301</td><td class="nm">RuneLifeC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runeoakc defense def +{v}%"><td class="mono num">302</td><td class="nm">RuneOakC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">defense</td><td class="desc">DEF +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runeshadowc aggrodown aggro generation -{v}%"><td class="mono num">303</td><td class="nm">RuneShadowC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">aggroDown</td><td class="desc">Aggro Generation -{v}%</td><td class="v">-7</td><td class="v">-15</td><td class="v">-25</td><td class="v">-30</td><td class="v">-40</td><td class="v">-50</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runeaegisc dmgtaken damage taken -{v}%"><td class="mono num">304</td><td class="nm">RuneAegisC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">dmgTaken</td><td class="desc">Damage Taken -{v}%</td><td class="v">-3</td><td class="v">-5</td><td class="v">-7</td><td class="v">-12</td><td class="v">-18</td><td class="v">-25</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runemendc healcycle restores {v}% hp every 5s"><td class="mono num">305</td><td class="nm">RuneMendC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healCycle</td><td class="desc">Restores {v}% HP every 5s</td><td class="v">2</td><td class="v">4</td><td class="v">6</td><td class="v">8</td><td class="v">10</td><td class="v">12</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runegrace healpower healing +{v}%"><td class="mono num">306</td><td class="nm">RuneGrace </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healPower</td><td class="desc">Healing +{v}%</td><td class="v">5</td><td class="v">9</td><td class="v">14</td><td class="v">20</td><td class="v">28</td><td class="v">38</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runemeditatec managain mana regen speed +{v}%"><td class="mono num">307</td><td class="nm">RuneMeditateC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">manaGain</td><td class="desc">Mana Regen Speed +{v}%</td><td class="v">5</td><td class="v">8</td><td class="v">13</td><td class="v">19</td><td class="v">26</td><td class="v">35</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runegracehuman healpower healing +{v}%"><td class="mono num">312</td><td class="nm">RuneGraceHuman <span class="flag">HUMAN</span></td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healPower</td><td class="desc">Healing +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">30</td><td class="v">42</td><td class="v">57</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runegraceelf healpower healing +{v}%"><td class="mono num">313</td><td class="nm">RuneGraceElf <span class="flag">ELF</span></td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healPower</td><td class="desc">Healing +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">30</td><td class="v">42</td><td class="v">57</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runegraceundead healpower healing +{v}%"><td class="mono num">314</td><td class="nm">RuneGraceUndead <span class="flag">UNDEAD</span></td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healPower</td><td class="desc">Healing +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">30</td><td class="v">42</td><td class="v">57</td></tr>
+<tr data-emblem="Mercy" data-cat="STAT" data-search="runegraceorc healpower healing +{v}%"><td class="mono num">315</td><td class="nm">RuneGraceOrc <span class="flag">ORC</span></td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healPower</td><td class="desc">Healing +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">30</td><td class="v">42</td><td class="v">57</td></tr>
+<tr data-emblem="Mercy" data-cat="GIMMICK" data-search="runeresolvec activecool cooldown -{v}%"><td class="mono num">316</td><td class="nm">RuneResolveC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Mercy" data-cat="GIMMICK" data-search="runeblessc activedur duration +{v}%"><td class="mono num">317</td><td class="nm">RuneBlessC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">activeDur</td><td class="desc">Duration +{v}%</td><td class="v">2</td><td class="v">4</td><td class="v">7</td><td class="v">10</td><td class="v">15</td><td class="v">20</td></tr>
+<tr data-emblem="Mercy" data-cat="GIMMICK" data-search="runeamplifyc activepower power +{v}%"><td class="mono num">318</td><td class="nm">RuneAmplifyC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">activePower</td><td class="desc">Power +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Mercy" data-cat="RESIST" data-search="runewarmthc resfreeze freeze duration -{v}%"><td class="mono num">319</td><td class="nm">RuneWarmthC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">resFreeze</td><td class="desc">Freeze Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Mercy" data-cat="RESIST" data-search="runeclarityc resstun stun duration -{v}%"><td class="mono num">320</td><td class="nm">RuneClarityC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">resStun</td><td class="desc">Stun Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Mercy" data-cat="RESIST" data-search="runegravityc resblow blow -{v}%"><td class="mono num">321</td><td class="nm">RuneGravityC </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">resBlow</td><td class="desc">Blow -{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">100</td><td class="v">100</td><td class="v">100</td></tr>
+<tr data-emblem="Mercy" data-cat="ACTIVE_MOD" data-search="runecleanselight healcleanse cleanses {v} debuffs"><td class="mono num">322</td><td class="nm">RuneCleanseLight </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healCleanse</td><td class="desc">Cleanses {v} Debuffs</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1</td><td class="v">1</td><td class="v">2</td></tr>
+<tr data-emblem="Mercy" data-cat="ACTIVE_MOD" data-search="runesanctuary healshield damage taken -{v}% (4s)"><td class="mono num">323</td><td class="nm">RuneSanctuary </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">healShield</td><td class="desc">Damage Taken -{v}% (4s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">15</td></tr>
+<tr data-emblem="Mercy" data-cat="PROC" data-search="runemiracle onhplow damage taken -{v}% (8s, once only)"><td class="mono num">324</td><td class="nm">RuneMiracle </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">onHpLow</td><td class="desc">Damage Taken -{v}% (8s, Once Only)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">35</td><td class="v">50</td></tr>
+<tr data-emblem="Mercy" data-cat="PULSE" data-search="runedrip pulsehealone restores {v}% hp to 1 allied hero every 1s"><td class="mono num">325</td><td class="nm">RuneDrip </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">pulseHealOne</td><td class="desc">Restores {v}% HP to 1 Allied Hero Every 1s</td><td class="v z">—</td><td class="v">2</td><td class="v">3</td><td class="v">4.5</td><td class="v">6.5</td><td class="v">9</td></tr>
+<tr data-emblem="Mercy" data-cat="PULSE" data-search="runeshower pulsehealwide restores {v}% hp to 4 allied heroes every 3s"><td class="mono num">326</td><td class="nm">RuneShower </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">pulseHealWide</td><td class="desc">Restores {v}% HP to 4 Allied Heroes Every 3s</td><td class="v z">—</td><td class="v z">—</td><td class="v">4</td><td class="v">6</td><td class="v">8.5</td><td class="v">12</td></tr>
+<tr data-emblem="Mercy" data-cat="PULSE" data-search="runefieldmedic pulsesoldierheal restores {v}% hp to 8 allied soldiers every 2s"><td class="mono num">327</td><td class="nm">RuneFieldMedic </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">pulseSoldierHeal</td><td class="desc">Restores {v}% HP to 8 Allied Soldiers Every 2s</td><td class="v z">—</td><td class="v z">—</td><td class="v">3</td><td class="v">4.5</td><td class="v">6.5</td><td class="v">9</td></tr>
+<tr data-emblem="Mercy" data-cat="PULSE" data-search="runeabsolve pulsecleanse cleanses debuffs from {v} allies every 5s"><td class="mono num">328</td><td class="nm">RuneAbsolve </td><td class="mono t">C</td><td>Mercy</td><td class="mono sm">pulseCleanse</td><td class="desc">Cleanses Debuffs from {v} Allies Every 5s</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1</td><td class="v">1</td><td class="v">2</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runevigord maxhp max hp +{v}%"><td class="mono num">401</td><td class="nm">RuneVigorD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runeoakd defense def +{v}%"><td class="mono num">402</td><td class="nm">RuneOakD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">defense</td><td class="desc">DEF +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runetempo atkspd attack speed +{v}%"><td class="mono num">403</td><td class="nm">RuneTempo </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runefard atkrange attack range +{v}%"><td class="mono num">404</td><td class="nm">RuneFarD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkRange</td><td class="desc">Attack Range +{v}%</td><td class="v">3</td><td class="v">7</td><td class="v">12</td><td class="v">20</td><td class="v">28</td><td class="v">40</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runeshadowd aggrodown aggro generation -{v}%"><td class="mono num">405</td><td class="nm">RuneShadowD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">aggroDown</td><td class="desc">Aggro Generation -{v}%</td><td class="v">-7</td><td class="v">-15</td><td class="v">-25</td><td class="v">-30</td><td class="v">-40</td><td class="v">-50</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runechantd managain mana regen speed +{v}%"><td class="mono num">406</td><td class="nm">RuneChantD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">manaGain</td><td class="desc">Mana Regen Speed +{v}%</td><td class="v">5</td><td class="v">8</td><td class="v">13</td><td class="v">19</td><td class="v">26</td><td class="v">35</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runecorrode debufftime applied debuff duration +{v}%"><td class="mono num">407</td><td class="nm">RuneCorrode </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">debuffTime</td><td class="desc">Applied Debuff Duration +{v}%</td><td class="v">5</td><td class="v">8</td><td class="v">13</td><td class="v">19</td><td class="v">26</td><td class="v">35</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runetempohuman atkspd attack speed +{v}%"><td class="mono num">412</td><td class="nm">RuneTempoHuman <span class="flag">HUMAN</span></td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">23</td><td class="v">30</td><td class="v">45</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runetempoelf atkspd attack speed +{v}%"><td class="mono num">413</td><td class="nm">RuneTempoElf <span class="flag">ELF</span></td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">23</td><td class="v">30</td><td class="v">45</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runetempoundead atkspd attack speed +{v}%"><td class="mono num">414</td><td class="nm">RuneTempoUndead <span class="flag">UNDEAD</span></td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">23</td><td class="v">30</td><td class="v">45</td></tr>
+<tr data-emblem="Hex" data-cat="STAT" data-search="runetempoorc atkspd attack speed +{v}%"><td class="mono num">415</td><td class="nm">RuneTempoOrc <span class="flag">ORC</span></td><td class="mono t">D</td><td>Hex</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">23</td><td class="v">30</td><td class="v">45</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runesapd staminahit depletes an additional {v}% stamina"><td class="mono num">416</td><td class="nm">RuneSapD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">staminaHit</td><td class="desc">Depletes an additional {v}% Stamina</td><td class="v z">—</td><td class="v z">—</td><td class="v">0.007</td><td class="v">0.01</td><td class="v">0.014</td><td class="v">0.019</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runelingerd exhausttime groggy duration +{v}%"><td class="mono num">417</td><td class="nm">RuneLingerD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">exhaustTime</td><td class="desc">Groggy Duration +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">19</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runeexploitd weakbonus damage while weak point is exposed +{v}%"><td class="mono num">418</td><td class="nm">RuneExploitD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">weakBonus</td><td class="desc">Damage While Weak Point Is Exposed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">14</td><td class="v">20</td><td class="v">28</td><td class="v">38</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runeresolved activecool cooldown -{v}%"><td class="mono num">419</td><td class="nm">RuneResolveD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runeendured activedur duration +{v}%"><td class="mono num">420</td><td class="nm">RuneEndureD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">activeDur</td><td class="desc">Duration +{v}%</td><td class="v">2</td><td class="v">4</td><td class="v">7</td><td class="v">10</td><td class="v">15</td><td class="v">20</td></tr>
+<tr data-emblem="Hex" data-cat="GIMMICK" data-search="runeamplifyd activepower power +{v}%"><td class="mono num">421</td><td class="nm">RuneAmplifyD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">activePower</td><td class="desc">Power +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Hex" data-cat="RESIST" data-search="runewarmthd resfreeze freeze duration -{v}%"><td class="mono num">422</td><td class="nm">RuneWarmthD </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">resFreeze</td><td class="desc">Freeze Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Hex" data-cat="ACTIVE_MOD" data-search="runeunravel weakenamplify additional damage taken +{v}%"><td class="mono num">425</td><td class="nm">RuneUnravel </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">weakenAmplify</td><td class="desc">Additional Damage Taken +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">12</td><td class="v">16</td></tr>
+<tr data-emblem="Hex" data-cat="ACTIVE_MOD" data-search="runesiphon weakenmana mana recovery +{v}%"><td class="mono num">426</td><td class="nm">RuneSiphon </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">weakenMana</td><td class="desc">Mana Recovery +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">15</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Hex" data-cat="PULSE" data-search="runewarsong pulseatkbuff 4 allies&#x27; atk +{v}% every 3s (6s)"><td class="mono num">427</td><td class="nm">RuneWarSong </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">pulseAtkBuff</td><td class="desc">4 Allies&#x27; ATK +{v}% Every 3s (6s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">20</td><td class="v">27</td></tr>
+<tr data-emblem="Hex" data-cat="PULSE" data-search="runewardrum pulsespdbuff 4 allies&#x27; attack speed +{v}% every 3s (6s)"><td class="mono num">428</td><td class="nm">RuneWarDrum </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">pulseSpdBuff</td><td class="desc">4 Allies&#x27; Attack Speed +{v}% Every 3s (6s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">11</td><td class="v">16</td><td class="v">22</td></tr>
+<tr data-emblem="Hex" data-cat="PULSE" data-search="runeomen pulsecritbuff 4 allies&#x27; crit rate +{v}% every 4s (7s)"><td class="mono num">429</td><td class="nm">RuneOmen </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">pulseCritBuff</td><td class="desc">4 Allies&#x27; Crit Rate +{v}% Every 4s (7s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">12</td><td class="v">16</td></tr>
+<tr data-emblem="Hex" data-cat="PULSE" data-search="runewellspring pulsemanapulse restores {v}% mana to 4 allies every 4s"><td class="mono num">430</td><td class="nm">RuneWellspring </td><td class="mono t">D</td><td>Hex</td><td class="mono sm">pulseManaPulse</td><td class="desc">Restores {v}% Mana to 4 Allies Every 4s</td><td class="v z">—</td><td class="v z">—</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">14</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runefurye atkdmg atk +{v}%"><td class="mono num">501</td><td class="nm">RuneFuryE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">atkDmg</td><td class="desc">ATK +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runevigore maxhp max hp +{v}%"><td class="mono num">502</td><td class="nm">RuneVigorE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">maxHp</td><td class="desc">Max HP +{v}%</td><td class="v">3</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runeswifte atkspd attack speed +{v}%"><td class="mono num">503</td><td class="nm">RuneSwiftE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">atkSpd</td><td class="desc">Attack Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runechasee movespd movement speed +{v}%"><td class="mono num">504</td><td class="nm">RuneChaseE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">moveSpd</td><td class="desc">Movement Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runeshadowe aggrodown aggro generation -{v}%"><td class="mono num">505</td><td class="nm">RuneShadowE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">aggroDown</td><td class="desc">Aggro Generation -{v}%</td><td class="v">-7</td><td class="v">-15</td><td class="v">-25</td><td class="v">-30</td><td class="v">-40</td><td class="v">-50</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runekeene critrate crit rate +{v}%"><td class="mono num">506</td><td class="nm">RuneKeenE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">critRate</td><td class="desc">Crit Rate +{v}%</td><td class="v">3</td><td class="v">7</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Rally" data-cat="STAT" data-search="runeslayere critdmg crit damage +{v}%"><td class="mono num">507</td><td class="nm">RuneSlayerE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">critDmg</td><td class="desc">Crit Damage +{v}%</td><td class="v z">—</td><td class="v">6</td><td class="v">12</td><td class="v">24</td><td class="v">35</td><td class="v">60</td></tr>
+<tr data-emblem="Rally" data-cat="GIMMICK" data-search="runecrush staminahit depletes an additional {v}% stamina"><td class="mono num">508</td><td class="nm">RuneCrush </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">staminaHit</td><td class="desc">Depletes an additional {v}% Stamina</td><td class="v z">—</td><td class="v z">—</td><td class="v">0.01</td><td class="v">0.015</td><td class="v">0.022</td><td class="v">0.03</td></tr>
+<tr data-emblem="Rally" data-cat="GIMMICK" data-search="runereapere exhaustdmg damage while groggy +{v}%"><td class="mono num">517</td><td class="nm">RuneReaperE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">exhaustDmg</td><td class="desc">Damage While Groggy +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">14</td><td class="v">20</td><td class="v">28</td><td class="v">38</td></tr>
+<tr data-emblem="Rally" data-cat="GIMMICK" data-search="runelingere exhausttime groggy duration +{v}%"><td class="mono num">518</td><td class="nm">RuneLingerE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">exhaustTime</td><td class="desc">Groggy Duration +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">19</td></tr>
+<tr data-emblem="Rally" data-cat="GIMMICK" data-search="runeresolvee activecool cooldown -{v}%"><td class="mono num">519</td><td class="nm">RuneResolveE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Rally" data-cat="GIMMICK" data-search="runeamplifye activepower power +{v}%"><td class="mono num">520</td><td class="nm">RuneAmplifyE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">activePower</td><td class="desc">Power +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Rally" data-cat="RESIST" data-search="runeclaritye resstun stun duration -{v}%"><td class="mono num">521</td><td class="nm">RuneClarityE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">resStun</td><td class="desc">Stun Duration -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Rally" data-cat="RESIST" data-search="runegravitye resblow blow -{v}%"><td class="mono num">522</td><td class="nm">RuneGravityE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">resBlow</td><td class="desc">Blow -{v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">60</td><td class="v">100</td></tr>
+<tr data-emblem="Rally" data-cat="ACTIVE_MOD" data-search="runeonslaught allouthaste attack speed +{v}%"><td class="mono num">524</td><td class="nm">RuneOnslaught </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">allOutHaste</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">15</td><td class="v">20</td></tr>
+<tr data-emblem="Rally" data-cat="ACTIVE_MOD" data-search="runepincer alloutexpose damage taken +{v}%"><td class="mono num">525</td><td class="nm">RunePincer </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">allOutExpose</td><td class="desc">Damage Taken +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">7</td><td class="v">15</td></tr>
+<tr data-emblem="Rally" data-cat="PROC" data-search="runechaine combobleed damage taken +{v}% per stack (10s)"><td class="mono num">526</td><td class="nm">RuneChainE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">comboBleed</td><td class="desc">Damage Taken +{v}% per Stack (10s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">0.5</td><td class="v">0.75</td></tr>
+<tr data-emblem="Rally" data-cat="PROC" data-search="runeshatter combobreak def -{v}% per stack"><td class="mono num">527</td><td class="nm">RuneShatter </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">comboBreak</td><td class="desc">DEF -{v}% per Stack</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1.5</td><td class="v">2.5</td></tr>
+<tr data-emblem="Rally" data-cat="PROC" data-search="runebloodluste onexhaust attack speed +{v}%"><td class="mono num">528</td><td class="nm">RuneBloodlustE </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">onExhaust</td><td class="desc">Attack Speed +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">25</td><td class="v">35</td></tr>
+<tr data-emblem="Rally" data-cat="PULSE" data-search="runerift pulseexpose damage taken +{v}% every 8s (3s)"><td class="mono num">530</td><td class="nm">RuneRift </td><td class="mono t">E</td><td>Rally</td><td class="mono sm">pulseExpose</td><td class="desc">Damage Taken +{v}% Every 8s (3s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">6</td><td class="v">9</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runeaim crossbowdmg damage +{v}%"><td class="mono num">601</td><td class="nm">RuneAim </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">crossbowDmg</td><td class="desc">Damage +{v}%</td><td class="v">4</td><td class="v">7</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runewound weakpointwound enhanced wound rend — damage taken +{v}%"><td class="mono num">602</td><td class="nm">RuneWound </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">weakpointWound</td><td class="desc">Enhanced Wound Rend — Damage Taken +{v}%</td><td class="v">4</td><td class="v">7</td><td class="v">10</td><td class="v">14</td><td class="v">19</td><td class="v">25</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runereload reloadspd energy charge speed +{v}%"><td class="mono num">603</td><td class="nm">RuneReload </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">reloadSpd</td><td class="desc">Energy Charge Speed +{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">8</td><td class="v">12</td><td class="v">16</td><td class="v">22</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runemarksman critarrow harpoon crit rate +{v}%"><td class="mono num">604</td><td class="nm">RuneMarksman </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">critArrow</td><td class="desc">Harpoon Crit Rate +{v}%</td><td class="v z">—</td><td class="v">3</td><td class="v">5</td><td class="v">8</td><td class="v">11</td><td class="v">15</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runeexecution exhaustarrow damage to groggy bosses +{v}%"><td class="mono num">606</td><td class="nm">RuneExecution </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">exhaustArrow</td><td class="desc">Damage to Groggy Bosses +{v}%</td><td class="v z">—</td><td class="v">7</td><td class="v">11</td><td class="v">16</td><td class="v">23</td><td class="v">32</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runeinsight weakwindow weak point exposure window +{v}%"><td class="mono num">608</td><td class="nm">RuneInsight </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">weakWindow</td><td class="desc">Weak Point Exposure Window +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">12</td><td class="v">17</td><td class="v">23</td><td class="v">30</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runesunder sunderarrow def -{v}% (5s)"><td class="mono num">613</td><td class="nm">RuneSunder </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">sunderArrow</td><td class="desc">DEF -{v}% (5s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">20</td><td class="v">27</td></tr>
+<tr data-emblem="Snipe" data-cat="GIMMICK" data-search="runelingerf exhausttime groggy duration +{v}%"><td class="mono num">614</td><td class="nm">RuneLingerF </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">exhaustTime</td><td class="desc">Groggy Duration +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">14</td><td class="v">19</td></tr>
+<tr data-emblem="Snipe" data-cat="GIMMICK" data-search="runeresolvef activecool cooldown -{v}%"><td class="mono num">615</td><td class="nm">RuneResolveF </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">activeCool</td><td class="desc">Cooldown -{v}%</td><td class="v">3</td><td class="v">5</td><td class="v">7</td><td class="v">10</td><td class="v">13</td><td class="v">16</td></tr>
+<tr data-emblem="Snipe" data-cat="GIMMICK" data-search="runeamplifyf activepower power +{v}%"><td class="mono num">616</td><td class="nm">RuneAmplifyF </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">activePower</td><td class="desc">Power +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v">11</td><td class="v">16</td><td class="v">22</td><td class="v">30</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runesiege tankreload stage {v} — harpoon cart no. 2 firing interval reduced (60s → 45s)"><td class="mono num">617</td><td class="nm">RuneSiege </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">tankReload</td><td class="desc">Stage {v} — Harpoon Cart No. 2 firing interval reduced (60s → 45s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1</td><td class="v">1</td><td class="v">2</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runetwinbolt multishot double shot — automatically fires a second harpoon (power {v}%)"><td class="mono num">618</td><td class="nm">RuneTwinbolt </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">multiShot</td><td class="desc">Double Shot — Automatically fires a second harpoon (Power {v}%)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">50</td><td class="v">70</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runedoublecurse interruptextra applies {v} additional debuffs"><td class="mono num">619</td><td class="nm">RuneDoubleCurse </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">interruptExtra</td><td class="desc">Applies {v} Additional Debuffs</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1</td><td class="v">1</td><td class="v">1</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runebonecrush weakpointstun groggy duration +{v}s"><td class="mono num">620</td><td class="nm">RuneBonecrush </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">weakpointStun</td><td class="desc">Groggy Duration +{v}s</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">1</td><td class="v">1.5</td><td class="v">2</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runemarkf woundlinger wound rend duration +{v}s"><td class="mono num">621</td><td class="nm">RuneMarkF </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">woundLinger</td><td class="desc">Wound Rend Duration +{v}s</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">2</td><td class="v">3</td></tr>
+<tr data-emblem="Snipe" data-cat="PROC" data-search="runerally oninterrupt atk +{v}%"><td class="mono num">622</td><td class="nm">RuneRally </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">onInterrupt</td><td class="desc">ATK +{v}%</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">10</td><td class="v">15</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runecharge chargebonus energy +{v}%p (including battle start)"><td class="mono num">623</td><td class="nm">RuneCharge </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">chargeBonus</td><td class="desc">Energy +{v}%p (including battle start)</td><td class="v z">—</td><td class="v">5</td><td class="v">10</td><td class="v">15</td><td class="v">20</td><td class="v">30</td></tr>
+<tr data-emblem="Snipe" data-cat="CROSSBOW" data-search="runerecoup missrefund charges energy to {v}%"><td class="mono num">624</td><td class="nm">RuneRecoup </td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">missRefund</td><td class="desc">Charges Energy to {v}%</td><td class="v">10</td><td class="v">20</td><td class="v">30</td><td class="v">40</td><td class="v">50</td><td class="v">70</td></tr>
+<tr data-emblem="Snipe" data-cat="PULSE" data-search="runewarsongf pulseatkbuff 4 allies&#x27; atk +{v}% every 3s (6s)"><td class="mono num">625</td><td class="nm">RuneWarSongF <span class="flag">off-list</span></td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">pulseAtkBuff</td><td class="desc">4 Allies&#x27; ATK +{v}% Every 3s (6s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">8</td><td class="v">11</td><td class="v">16</td><td class="v">22</td></tr>
+<tr data-emblem="Snipe" data-cat="PULSE" data-search="runewardrumf pulsespdbuff 4 allies&#x27; attack speed +{v}% every 3s (6s)"><td class="mono num">626</td><td class="nm">RuneWarDrumF <span class="flag">off-list</span></td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">pulseSpdBuff</td><td class="desc">4 Allies&#x27; Attack Speed +{v}% Every 3s (6s)</td><td class="v z">—</td><td class="v z">—</td><td class="v">6</td><td class="v">9</td><td class="v">13</td><td class="v">18</td></tr>
+<tr data-emblem="Snipe" data-cat="PULSE" data-search="runeomenf pulsecritbuff 4 allies&#x27; crit rate +{v}% every 4s (7s)"><td class="mono num">627</td><td class="nm">RuneOmenF <span class="flag">off-list</span></td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">pulseCritBuff</td><td class="desc">4 Allies&#x27; Crit Rate +{v}% Every 4s (7s)</td><td class="v z">—</td><td class="v z">—</td><td class="v z">—</td><td class="v">6</td><td class="v">9</td><td class="v">13</td></tr>
+<tr data-emblem="Snipe" data-cat="PULSE" data-search="runewellspringf pulsemanapulse restores {v}% mana to 4 allies every 4s"><td class="mono num">628</td><td class="nm">RuneWellspringF <span class="flag">off-list</span></td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">pulseManaPulse</td><td class="desc">Restores {v}% Mana to 4 Allies Every 4s</td><td class="v z">—</td><td class="v z">—</td><td class="v">4</td><td class="v">6</td><td class="v">8</td><td class="v">11</td></tr>
+<tr data-emblem="Snipe" data-cat="PULSE" data-search="runedripf pulsehealone restores {v}% hp to 1 allied hero every 1s"><td class="mono num">629</td><td class="nm">RuneDripF <span class="flag">off-list</span></td><td class="mono t">F</td><td>Snipe</td><td class="mono sm">pulseHealOne</td><td class="desc">Restores {v}% HP to 1 Allied Hero Every 1s</td><td class="v z">—</td><td class="v">1.5</td><td class="v">2.5</td><td class="v">3.5</td><td class="v">5</td><td class="v">7</td></tr></tbody></table></div>
+</section>
+
+<section>
+  <div class="shead"><h2>How this was established</h2></div>
+  <div class="note">
+  <p>Three independent layers had to agree before anything above was called a divergence.</p>
+  <ul>
+    <li><b>Data.</b> Books captured read-only from the live client. <span class="mono sm">RUNE_GRADE</span>
+      and <span class="mono sm">RUNE_SUB</span> never arrive from the server; the engine falls back to
+      tables baked into the bundle. Proven by seeding a sentinel book and watching it override — so the
+      fallback is used because nothing arrives, not because something is masked.</li>
+    <li><b>Code.</b> All 76 mechanics traced to engine code, then every flagged claim handed to an
+      independent agent instructed to refute it. 45 were flagged; 34 did not survive.</li>
+    <li><b>Measurement.</b> Each survivor probed in a headless sim, then the probe itself audited by a
+      third agent who re-ran it and checked the controls. The sim bundle is byte-identical to the
+      shipped game bundle across the emblem subsystem, so this is the same code, not a lookalike.</li>
+  </ul>
+  <p style="margin-top:14px;">Engine facts worth carrying into any build decision:
+  <b>duplicate copies of the same rune do not stack</b> (the resolver dedupes by kind);
+  the only equip gate is rune type versus emblem type;
+  <span class="mono sm">minGrade</span> is never read by any code;
+  and active cooldown reduction caps at 80%, reachable to 41% by putting sub-option 6 in all five slots.</p>
+  </div>
+</section>
+
+<footer>Captured 2026-07-27T20:53:46.137Z · bundle 1.12.80 (mounted) ·
+raid tested: Dragon Knight d1 (kindNum 5, 21M HP, crossbow) unless a finding states otherwise</footer>
+</div>
+
+<script>
+(function () {
+  var q = document.getElementById('q'), fe = document.getElementById('fe'),
+      fc = document.getElementById('fc'), cnt = document.getElementById('cnt'),
+      rows = Array.prototype.slice.call(document.querySelectorAll('#rt tbody tr'));
+  function apply() {
+    var s = q.value.trim().toLowerCase(), em = fe.value, ca = fc.value, n = 0;
+    rows.forEach(function (r) {
+      var ok = (!s || r.dataset.search.indexOf(s) !== -1) &&
+               (!em || r.dataset.emblem === em) && (!ca || r.dataset.cat === ca);
+      r.style.display = ok ? '' : 'none';
+      if (ok) n++;
+    });
+    cnt.textContent = n + ' of ' + rows.length;
+  }
+  [q, fe, fc].forEach(function (el) { el.addEventListener('input', apply); });
+  apply();
+})();
+</script>

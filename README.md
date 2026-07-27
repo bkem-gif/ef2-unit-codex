@@ -22,6 +22,7 @@ so the icons load.
 | [`CASTLE.md`](CASTLE.md) | companion doc — the **player castle** ("Valkion Castle"): its three upgrade tracks (gold / medal-enhance / gem specials), buffs, combat behaviour, and the 8 "Arcane" special books (from bundle `1.11.55`) |
 | [`EF1-TIMELINE.md`](EF1-TIMELINE.md) | **EF1 context** — the update timeline of the *predecessor* game (Endless Frontier, 2016→2025): version-by-version dates, the Honor-Unit / Guild-Raid content cadence, and the 2025 maintenance pivot to EF2 (pieced together from store archives + the dev's patch posts) |
 | `raid-resistance.html` | interactive heatmap — **sand resistance** vs damage dealt/taken across all 15 guild-raid encounters (5 bosses × 3 stages), on a log axis with per-value hover readouts |
+| `raid-emblems.html` | interactive audit — the **guild-raid emblem system**: all 6 emblems, 137 runes × 6 rarities (searchable/filterable), and **11 deltas** where the tooltip doesn't match the engine, each traced to code *and* measured in a headless sim (from bundle `1.12.80`) |
 | `EFUnits/` | unit icons + [`ICON-MAP.md`](EFUnits/ICON-MAP.md) (which icon is which unit) |
 
 ## What each unit card shows
