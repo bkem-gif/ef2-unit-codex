@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EF2 Runes — Use / Avoid</title>
+<style>
+:root{
+  --paper:#F7F7F4; --ink:#16181D; --ink-2:#3A3F4A; --neutral:#737784;
+  --rule:#D9D9D2; --card:#FFFFFF; --accent:#2D4B8E;
+  --no:#A32A21; --mid:#9A6B10; --yes:#2E6B4F;
+  --no-bg:#FBEEEC; --mid-bg:#FBF5E6; --yes-bg:#EDF4EF;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#101216; --ink:#E8E9EC; --ink-2:#AFB4BE; --neutral:#8B909C;
+  --rule:#282C34; --card:#171A20; --accent:#8FA9E0;
+  --no:#E8796B; --mid:#D9AE58; --yes:#7FBE9A;
+  --no-bg:#231718; --mid-bg:#231F16; --yes-bg:#16211C;}}
+:root[data-theme="dark"]{
+  --paper:#101216; --ink:#E8E9EC; --ink-2:#AFB4BE; --neutral:#8B909C;
+  --rule:#282C34; --card:#171A20; --accent:#8FA9E0;
+  --no:#E8796B; --mid:#D9AE58; --yes:#7FBE9A;
+  --no-bg:#231718; --mid-bg:#231F16; --yes-bg:#16211C;}
+:root[data-theme="light"]{
+  --paper:#F7F7F4; --ink:#16181D; --ink-2:#3A3F4A; --neutral:#737784;
+  --rule:#D9D9D2; --card:#FFFFFF; --accent:#2D4B8E;
+  --no:#A32A21; --mid:#9A6B10; --yes:#2E6B4F;
+  --no-bg:#FBEEEC; --mid-bg:#FBF5E6; --yes-bg:#EDF4EF;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:940px;margin:0 auto;padding:56px 22px 80px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 14px}
+h1{font-family:var(--serif);font-size:clamp(1.9rem,4.4vw,2.7rem);line-height:1.1;margin:0 0 12px;
+  font-weight:600;letter-spacing:-.015em;text-wrap:balance}
+.lede{color:var(--ink-2);max-width:62ch;margin:0 0 8px}
+.note-top{font-size:.88rem;color:var(--neutral);max-width:62ch;margin:14px 0 0;
+  border-left:2px solid var(--accent);padding-left:12px}
+
+/* ---- infographic ---- */
+.bands{margin:44px 0 12px;display:flex;flex-direction:column;gap:14px}
+.band{border:1px solid var(--rule);background:var(--card);border-left:5px solid var(--neutral);
+  padding:18px 20px}
+.band.no{border-left-color:var(--no)}
+.band.mid{border-left-color:var(--mid)}
+.band.yes{border-left-color:var(--yes)}
+.bhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.bhead h2{font-family:var(--serif);font-size:1.3rem;margin:0;font-weight:600}
+.verdict{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px}
+.no .verdict{background:var(--no-bg);color:var(--no)}
+.mid .verdict{background:var(--mid-bg);color:var(--mid)}
+.yes .verdict{background:var(--yes-bg);color:var(--yes)}
+.bsub{margin:0 0 14px;font-size:.87rem;color:var(--neutral)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-family:var(--mono);font-size:.76rem;border:1px solid var(--rule);border-radius:2px;
+  padding:4px 9px;background:var(--paper);white-space:nowrap}
+.no .chip{border-color:var(--no);color:var(--no)}
+.mid .chip{border-color:var(--mid);color:var(--mid)}
+.yes .chip{border-color:var(--yes);color:var(--yes)}
+
+/* ---- table ---- */
+h3{font-family:var(--serif);font-size:1.25rem;margin:48px 0 12px;font-weight:600}
+.tblwrap{overflow-x:auto;border:1px solid var(--rule);background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:.87rem}
+th{text-align:left;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--neutral);
+  font-weight:600;padding:11px 12px;border-bottom:1px solid var(--rule);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.r{font-family:var(--mono);white-space:nowrap;font-size:.82rem}
+td.s{color:var(--neutral);white-space:nowrap}
+td.w{min-width:250px;color:var(--ink-2)}
+.tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;white-space:nowrap}
+.tag.no{background:var(--no-bg);color:var(--no)}
+.tag.mid{background:var(--mid-bg);color:var(--mid)}
+.tag.yes{background:var(--yes-bg);color:var(--yes)}
+
+.traps{margin-top:44px;border:1px solid var(--rule);background:var(--card);
+  border-left:3px solid var(--accent);padding:18px 22px}
+.traps h3{margin:0 0 10px;font-size:1.1rem}
+.traps ol{margin:0;padding-left:20px;font-size:.9rem;color:var(--ink-2)}
+.traps li{margin-bottom:8px}
+.traps b{color:var(--ink)}
+footer{margin-top:48px;padding-top:18px;border-top:1px solid var(--rule);
+  font-size:.76rem;color:var(--neutral)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<p class="eyebrow">Endless Frontier 2 · guild raid · bundle 1.12.80</p>
+<h1>Which runes to use, and which to never socket</h1>
+<p class="lede">Every verdict below was measured in the game's own engine, not inferred from tooltips.</p>
+<p class="note-top">You don't pick emblems — all six are fixed, one per slot, and you always have
+them all. The only real choice is which five runes go in each. So that's what this ranks.</p>
+
+<div class="bands">
+
+  <div class="band no">
+    <div class="bhead"><h2>Never socket these</h2><span class="verdict">zero or near-zero effect</span></div>
+    <p class="bsub">Measured contribution indistinguishable from an empty slot.</p>
+    <div class="chips">
+      <span class="chip">618 Twinbolt</span><span class="chip">429 Omen</span>
+      <span class="chip">627 OmenF</span><span class="chip">319 WarmthC</span>
+      <span class="chip">422 WarmthD</span><span class="chip">124 LastStand</span>
+      <span class="chip">324 Miracle</span><span class="chip">312–315 Grace (tribe)</span>
+    </div>
+  </div>
+
+  <div class="band mid">
+    <div class="bhead"><h2>Only under one condition</h2><span class="verdict">grade- or count-dependent</span></div>
+    <p class="bsub">Fine in the right spot, wasted in the wrong one. Read the table.</p>
+    <div class="chips">
+      <span class="chip">118 / 224 / 320 / 521 — Mythic only</span>
+      <span class="chip">322 CleanseLight — stop at Epic</span>
+      <span class="chip">430 / 628 Wellspring — weak</span>
+      <span class="chip">427+625, 428+626 — never both</span>
+    </div>
+  </div>
+
+  <div class="band yes">
+    <div class="bhead"><h2>Always worth a slot</h2><span class="verdict">verified working</span></div>
+    <p class="bsub">Do exactly what they say, or better.</p>
+    <div class="chips">
+      <span class="chip">606 Execution</span><span class="chip">617 Siege</span>
+      <span class="chip">601 Aim</span><span class="chip">613 Sunder</span>
+      <span class="chip">602 Wound</span><span class="chip">sub-option 6 — every slot</span>
+      <span class="chip">ATK / HP / DEF / AtkSpd / Crit</span>
+    </div>
+  </div>
+
+</div>
+
+<h3>The reasons, in one line each</h3>
+<div class="tblwrap"><table>
+<thead><tr><th>Rune</th><th>Slot</th><th>Verdict</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td class="r">618 Twinbolt</td><td class="s">Sniper</td><td><span class="tag no">never</span></td>
+    <td class="w">The second harpoon has no code behind it. Measured 1 arrow per shot, always.</td></tr>
+<tr><td class="r">429 Omen · 627 OmenF</td><td class="s">Arcane · Sniper</td><td><span class="tag no">never</span></td>
+    <td class="w">The crit buff is wiped every frame before any attack lands. Battle damage identical to the last decimal with it equipped.</td></tr>
+<tr><td class="r">319 WarmthC · 422 WarmthD</td><td class="s">Healing · Arcane</td><td><span class="tag no">never</span></td>
+    <td class="w">Freeze resistance works perfectly — but nothing in a raid ever freezes you. Zero freezes across 12 battles, all 5 bosses.</td></tr>
+<tr><td class="r">124 LastStand · 324 Miracle</td><td class="s">Guardian · Healing</td><td><span class="tag no">never</span></td>
+    <td class="w">The "20% HP" save counts only living units, so every death makes it <em>less</em> likely to fire. Never triggered in a real raid.</td></tr>
+<tr><td class="r">312–315 Grace (tribe)</td><td class="s">Healing</td><td><span class="tag no">never</span></td>
+    <td class="w">Tribe-locked healing runes are silently discarded — the code only counts unfiltered ones. Use 306 Grace instead.</td></tr>
+
+<tr><td class="r">118 · 224 · 320 · 521</td><td class="s">stun resist</td><td><span class="tag mid">Mythic only</span></td>
+    <td class="w">The "-X% stun" percentage never applies to the stagger you actually eat. At Mythic it flips to full immunity, which does work — 12 frames of stun at every lower grade, 0 at Mythic.</td></tr>
+<tr><td class="r">322 CleanseLight</td><td class="s">Healing</td><td><span class="tag mid">don't upgrade</span></td>
+    <td class="w">Cleansing works, but the number is never read. Merging Legendary → Mythic doubles the displayed count and changes nothing.</td></tr>
+<tr><td class="r">430 · 628 Wellspring</td><td class="s">Arcane · Sniper</td><td><span class="tag mid">weak</span></td>
+    <td class="w">Restores flat mana, not a percentage. About 5× less than the tooltip implies — roughly a tenth of a second of natural regen per pulse.</td></tr>
+<tr><td class="r">427 + 625 · 428 + 626</td><td class="s">Arcane + Sniper</td><td><span class="tag mid">pick one</span></td>
+    <td class="w">Two ATK-pulse or two speed-pulse runes don't add. Worse for speed: the weaker one overwrites the stronger.</td></tr>
+
+<tr><td class="r">606 Execution</td><td class="s">Sniper</td><td><span class="tag yes">always</span></td>
+    <td class="w">Stronger than advertised — pays its full bonus during ordinary interrupt stagger, not just true groggy.</td></tr>
+<tr><td class="r">617 Siege</td><td class="s">Sniper</td><td><span class="tag yes">always</span></td>
+    <td class="w">Adds a third crossbow. Measured +90% crossbow damage in a controlled swap.</td></tr>
+<tr><td class="r">601 Aim · 613 Sunder · 602 Wound</td><td class="s">Sniper</td><td><span class="tag yes">always</span></td>
+    <td class="w">Straightforward crossbow damage and weak-point effects, all wired correctly.</td></tr>
+<tr><td class="r">sub-option 6</td><td class="s">any slot</td><td><span class="tag yes">always</span></td>
+    <td class="w">The one sub every emblem can roll, and it stacks across all five slots: 16% cooldown cut alone → 41% with it everywhere.</td></tr>
+<tr><td class="r">ATK · HP · DEF · AtkSpd · Crit</td><td class="s">all</td><td><span class="tag yes">always</span></td>
+    <td class="w">The plain stat runes are honest. They're the safe default whenever you're unsure.</td></tr>
+</tbody></table></div>
+
+<div class="traps">
+<h3>Three traps that quietly cost you slots</h3>
+<ol>
+<li><b>Duplicates do nothing.</b> Two copies of the same rune count once. Five copies still count once. Always use five <em>different</em> runes.</li>
+<li><b>Tribe-locked runes.</b> Anything tagged HUMAN / ELF / UNDEAD / ORC only reaches part of your army — and for healing, nothing at all.</li>
+<li><b>Grade 6 isn't always an upgrade.</b> Sometimes it changes the mechanic (stun resist becomes immunity — good), sometimes it just changes a displayed number (cleanse — no effect).</li>
+</ol>
+</div>
+
+<footer>Verdicts measured against the real engine running headless, on Dragon Knight d1 unless noted.
+Full evidence, per-mechanic code traces and all 137 runes × 6 rarities: see the raid emblem audit.</footer>
+</div>
+
+</body>
+</html>
